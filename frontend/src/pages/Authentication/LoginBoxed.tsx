@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../../store';
+import { IRootState, useAppDispatch, useAppSelector } from '../../store';
 import { useEffect, useState } from 'react';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
 import Dropdown from '../../components/Dropdown';
@@ -12,16 +12,24 @@ import IconInstagram from '../../components/Icon/IconInstagram';
 import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 import IconTwitter from '../../components/Icon/IconTwitter';
 import IconGoogle from '../../components/Icon/IconGoogle';
+import { fetchUser } from '../../store/authSlice';
 
-const LoginBoxed = () => {
-    const dispatch = useDispatch();
+interface ComponentProps {
+    data: any;
+}
+
+const LoginBoxed: React.FC<ComponentProps> = () => {
+    // const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    // const { data } = useAppSelector((state: any) => state.getRecommendedJobsReducer);
+
     useEffect(() => {
         dispatch(setPageTitle('Login'));
     });
     const navigate = useNavigate();
-    const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-    const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+    const isDark = useAppSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
+    const isRtl = useAppSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+    const themeConfig = useAppSelector((state: IRootState) => state.themeConfig);
     // const setLocale = (flag: string) => {
     //     setFlag(flag);
     //     if (flag.toLowerCase() === 'ae') {
@@ -34,6 +42,7 @@ const LoginBoxed = () => {
 
     const submitForm = () => {
         navigate('/');
+        dispatch(fetchUser);
     };
 
     return (
