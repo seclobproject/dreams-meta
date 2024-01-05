@@ -15,7 +15,7 @@ import BinaryTree from "../config/binaryTree.js";
 // Register new user
 // POST: By admin/sponser
 const generateRandomString = () => {
-  const baseString = "SSG";
+  const baseString = "DRM";
   const randomDigits = Math.floor(Math.random() * 999999);
   return baseString + randomDigits.toString();
 };
@@ -54,7 +54,7 @@ router.post(
     const unrealisedEarning = [];
     const children = [];
 
-    const user = new User({
+    const user = await User.create({
       sponser,
       name,
       email,
@@ -71,95 +71,36 @@ router.post(
       children,
     });
 
-    // Find the last user in the binary tree to determine where to add the new user
-    const lastUser = await User.findOne({}).sort("-_id");
+    if (user) {
+      if (sponserUser) {
+        sponserUser.children.push(user._id);
 
-    if (!lastUser) {
-      const user = await User.create({
-        sponser,
-        name,
-        email,
-        phone,
-        address,
-        packageChosen,
-        password,
-        ownSponserId,
-        screenshot,
-        referenceNo,
-        earning,
-        unrealisedEarning,
-        userStatus,
-        children,
-      });
-
-      if (user) {
-        res
-          .status(201)
-          .json({ sts: "01", msg: "Successfully registered!", user });
-      }
-    } else {
-      if (!lastUser.left) {
-        const addUser = await User.findByIdAndUpdate(lastUser._id, {
-          left: user._id,
-        });
-
-        if (addUser) {
-          await addUser.save();
-          res
-            .status(201)
-            .json({ sts: "01", msg: "Successfully registered!", addUser });
+        const updatedUser = await sponserUser.save();
+        if (updatedUser) {
+          res.json({
+            _id: user._id,
+            sponser: user.sponser,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+            packageChosen: user.packageChosen,
+            ownSponserId: user.ownSponserId,
+            isSuperAdmin: user.isSuperAdmin,
+            userStatus: user.userStatus,
+          });
         } else {
-          res.status(400).json({ sts: "00", msg: "Some error occured!" });
+          res.status(400);
+          throw new Error("Some error occured. Please try again!");
         }
       } else {
-        const addUser = await User.findByIdAndUpdate(lastUser._id, {
-          right: user._id,
-        });
-
-        if (addUser) {
-          await addUser.save();
-          res
-            .status(201)
-            .json({ sts: "01", msg: "Successfully registered!", addUser });
-        } else {
-          res.status(400).json({ sts: "00", msg: "Some error occured!" });
-        }
+        res.status(400);
+        throw new Error("Some error occured. Make sure you are logged in!");
       }
+    } else {
+      res.status(400);
+      throw new Error("Registration failed. Please try again!");
     }
-
-    // if (user) {
-    //   if (sponserUser) {
-    //     sponserUser.children.push(user._id);
-
-    //     const updatedUser = await sponserUser.save();
-
-    //     res.json({
-    //       _id: user._id,
-    //       sponser: user.sponser,
-    //       name: user.name,
-    //       email: user.email,
-    //       phone: user.phone,
-    //       address: user.address,
-    //       packageChosen: user.packageChosen,
-    //       ownSponserId: user.ownSponserId,
-    //       screenshot: user.screenshot,
-    //       referenceNo: user.referenceNo,
-    //       earning: user.earning,
-    //       pinsLeft: user.pinsLeft,
-    //       unrealisedEarning: user.unrealisedEarning,
-    //       children: user.children,
-    //       isAdmin: user.isAdmin,
-    //       isSuperAdmin: user.isSuperAdmin,
-    //       userStatus: user.userStatus,
-    //     });
-    //   } else {
-    //     res.status(400);
-    //     throw new Error("Some error occured. Make sure you are logged in!");
-    //   }
-    // } else {
-    //   res.status(400);
-    //   throw new Error("Registration failed. Please try again!");
-    // }
   })
 );
 
@@ -174,7 +115,7 @@ router.post(
     if (user && (await user.matchPassword(password))) {
       const token = jwt.sign(
         { userId: user._id },
-        "secret_of_jwt_for_sevensquare_5959",
+        "secret_of_jwt_for_dreams-meta_5959",
         {
           expiresIn: "365d",
         }
@@ -188,7 +129,6 @@ router.post(
         phone: user.phone,
         address: user.address,
         packageChosen: user.packageChosen,
-        isAdmin: user.isAdmin,
         isSuperAdmin: user.isSuperAdmin,
         ownSponserId: user.ownSponserId,
         screenshot: user.screenshot,
@@ -319,110 +259,6 @@ const unrealisedToWallet = (arr) => {
   const sum = highestNumbers.reduce((acc, num) => acc + num, 0);
   return sum;
 };
-
-router.post(
-  "/verify-user-payment",
-  protect,
-  asyncHandler(async (req, res) => {
-    // const sponserUserId = req.user._id;
-
-    const { userId } = req.body;
-    const user = await User.findById(userId).populate("packageChosen");
-
-    let packageType = user.packageChosen.schemeType;
-
-    if (user) {
-      // Approve the user by uploaded screenshots
-      user.userStatus = "approved";
-      user.imgStatus = "approved";
-
-      const updatedUser = await user.save();
-
-      if (updatedUser && packageType === "staff") {
-        const sponserUser = await User.findById(user.sponser);
-
-        // Unrealised to wallet start
-        if (
-          sponserUser.children.length === 2 ||
-          sponserUser.children.length === 3
-        ) {
-          const unrealisedAmount = unrealisedToWallet(
-            sponserUser.unrealisedEarning
-          );
-
-          sponserUser.earning =
-            Math.round((sponserUser.earning + unrealisedAmount) * 10) / 10;
-
-          sponserUser.allTransactions.push({
-            sponserID: updatedUser.sponser,
-            name: updatedUser.name,
-            amount: unrealisedAmount,
-            status: "approved",
-          });
-
-          const highestNumber = Math.max(...sponserUser.unrealisedEarning);
-
-          const remainingNumbers = sponserUser.unrealisedEarning.filter(
-            (num) => num !== highestNumber
-          );
-
-          sponserUser.unrealisedEarning = remainingNumbers;
-        } else if (
-          sponserUser.children.length >= 4 &&
-          sponserUser.unrealisedEarning.length > 0
-        ) {
-          const sum = sponserUser.unrealisedEarning.reduce(
-            (acc, value) => acc + value,
-            0
-          );
-          sponserUser.earning =
-            Math.round((sponserUser.earning + sum) * 10) / 10;
-          sponserUser.unrealisedEarning = [];
-
-          sponserUser.allTransactions.push({
-            sponserID: updatedUser.sponser,
-            name: updatedUser.name,
-            amount: sum,
-            status: "approved",
-          });
-        }
-        // Unrealised to wallet end
-
-        const packageSelected = await user.populate({
-          path: "packageChosen",
-        });
-
-        //NEW
-        const percentages = [8, 5, 4, 3, 2, 1];
-        //NEW
-        const levels = Math.min(percentages.length, 7);
-        const packageAmount = packageSelected.packageChosen.amountExGST;
-        //NEW
-        const sponserCommission = (25 / 100) * packageAmount;
-        sponserUser.earning =
-          Math.round((sponserUser.earning + sponserCommission) * 10) / 10;
-
-        sponserUser.allTransactions.push({
-          sponserID: updatedUser.sponser,
-          name: updatedUser.name,
-          amount: sponserCommission,
-          status: "approved",
-        });
-
-        await sponserUser.save();
-
-        splitCommissions(sponserUser, packageAmount, levels, percentages);
-      }
-
-      res
-        .status(200)
-        .json({ updatedUser, message: "Commissions splitted successfully!" });
-    } else {
-      res.status(401);
-      throw new Error("Can't find this user. Please check again!");
-    }
-  })
-);
 
 // POST: Reject user verification
 // By super admin
@@ -672,7 +508,6 @@ router.put(
         name: updatedUser.name,
         email: updatedUser.email,
         phone: updatedUser.phone,
-        isAdmin: updatedUser.isAdmin,
       });
     } else {
       res.status(404);
