@@ -1,17 +1,17 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { IRootState, useAppDispatch, useAppSelector } from '../../store';
 import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+// import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
-import Dropdown from '../../components/Dropdown';
-import i18next from 'i18next';
-import IconCaretDown from '../../components/Icon/IconCaretDown';
+// import Dropdown from '../../components/Dropdown';
+// import i18next from 'i18next';
+// import IconCaretDown from '../../components/Icon/IconCaretDown';
 import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
-import IconInstagram from '../../components/Icon/IconInstagram';
-import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
-import IconTwitter from '../../components/Icon/IconTwitter';
-import IconGoogle from '../../components/Icon/IconGoogle';
+// import IconInstagram from '../../components/Icon/IconInstagram';
+// import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
+// import IconTwitter from '../../components/Icon/IconTwitter';
+// import IconGoogle from '../../components/Icon/IconGoogle';
 import { fetchUser } from '../../store/authSlice';
 
 interface ComponentProps {
@@ -19,17 +19,22 @@ interface ComponentProps {
 }
 
 const LoginBoxed: React.FC<ComponentProps> = () => {
-    // const dispatch = useDispatch();
     const dispatch = useAppDispatch();
-    // const { data } = useAppSelector((state: any) => state.getRecommendedJobsReducer);
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const { userInfo } = useAppSelector((state: any) => state.authReducer);
 
     useEffect(() => {
         dispatch(setPageTitle('Login'));
-    });
-    const navigate = useNavigate();
-    const isDark = useAppSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
-    const isRtl = useAppSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-    const themeConfig = useAppSelector((state: IRootState) => state.themeConfig);
+        if (userInfo) navigate('/');
+    }, [userInfo, navigate]);
+
+    // const isDark = useAppSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
+    // const isRtl = useAppSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+    // const themeConfig = useAppSelector((state: IRootState) => state.themeConfig);
     // const setLocale = (flag: string) => {
     //     setFlag(flag);
     //     if (flag.toLowerCase() === 'ae') {
@@ -40,9 +45,10 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
     // };
     // const [flag, setFlag] = useState(themeConfig.locale);
 
-    const submitForm = () => {
-        navigate('/');
-        dispatch(fetchUser);
+    const submitForm = (e: any) => {
+        e.preventDefault();
+        dispatch(fetchUser({ email, password }));
+        if (userInfo) navigate('/');
     };
 
     return (
@@ -103,11 +109,18 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
                                 <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign in</h1>
                                 <p className="text-base font-bold leading-normal text-white-dark">Enter your email and password to login</p>
                             </div>
-                            <form className="space-y-5 dark:text-white" onSubmit={submitForm}>
+                            <form className="space-y-5 dark:text-white" action="#">
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input
+                                            id="Email"
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="Enter Email"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
@@ -116,7 +129,14 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
                                 <div>
                                     <label htmlFor="Password">Password</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input
+                                            id="Password"
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            placeholder="Enter Password"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconLockDots fill={true} />
                                         </span>
@@ -128,7 +148,7 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
                                         <span className="text-white-dark">Subscribe to weekly newsletter</span>
                                     </label>
                                 </div> */}
-                                <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
+                                <button type="submit" onClick={submitForm} className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
                                     Sign in
                                 </button>
                             </form>

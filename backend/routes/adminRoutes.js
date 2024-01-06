@@ -44,6 +44,9 @@ const bfs = async (startingUserId, newUserId) => {
       [directionToAdd]: newUserId,
     });
 
+    // Add commission to everyone in line up to 4 levels above
+    await addCommissionToLine(currentNode._id, 4);
+
     return {
       currentNodeId: currentNode._id,
       directionAdded: directionToAdd,
@@ -52,9 +55,28 @@ const bfs = async (startingUserId, newUserId) => {
 
   throw new Error("Unable to assign user to the tree");
 };
-// const bfs = async ((startingUserId, newUserId) => {
 
-// });
+// Function to add commission to everyone in line up to specified levels above
+const addCommissionToLine = async (startingUserId, levelsAbove) => {
+  let currentUserId = startingUserId;
+  let currentLevel = 0;
+
+  while (currentUserId && currentLevel <= levelsAbove) {
+    const currentUser = await User.findById(currentUserId);
+
+    if (!currentUser) {
+      break;
+    }
+
+    currentUser.earning += 4;
+    // Save the updated user to the database
+    await currentUser.save();
+
+    // Move to the parent of the current user
+    currentUserId = currentUser.nodeId;
+    currentLevel++;
+  }
+};
 
 router.post(
   "/verify-user-payment",
@@ -70,16 +92,19 @@ router.post(
       user.userStatus = "approved";
       user.imgStatus = "approved";
 
-      // Create/add user to the tree start
-      // Find the last user in the binary tree to determine where to add the new user
-
-      // console.log(`The last user is ${lastUser}`);
-
       const updateTree = await bfs(user.sponser, userId);
 
-      
       if (updateTree) {
-        res.status(200).json({ message: "Success" });
+        const attachedNode = updateTree.currentNodeId;
+        user.nodeId = attachedNode;
+        const updatedUser = await user.save();
+        if (updatedUser) {
+          res.status(200).json({ sts: "01", message: "Success" });
+        } else {
+          res
+            .status(400)
+            .json({ sts: "00", msg: "Error occured while updating!" });
+        }
       } else {
         res.status(400).json({ message: "Error assigning user to the tree" });
       }

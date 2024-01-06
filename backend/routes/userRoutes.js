@@ -9,7 +9,6 @@ import { protect } from "../middleware/authMiddleware.js";
 import multer from "multer";
 import Package from "../models/packageModel.js";
 import path from "path";
-import BinaryTree from "../config/binaryTree.js";
 // import upload from "../middleware/fileUploadMiddleware.js";
 
 // Register new user

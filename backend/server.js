@@ -23,6 +23,6 @@ app.use("/api/admin", adminRoutes);
 app.use(errorHandler);
 app.use(notFound);
 
-const port = process.env.PORT || 6000;
+const port = process.env.PORT || 6002;
 
 app.listen(port, () => console.log(`Server running in ${port}`));

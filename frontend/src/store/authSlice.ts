@@ -23,9 +23,13 @@ export const fetchUser = createAsyncThunk('fetchUser', async (data: any) => {
         headers: { 'content-type': 'application/json' },
     };
 
-    const response = await axios.post(`${URL}/api/user`, { email, password }, config);
+    const response = await axios.post(`${URL}/api/users/login`, { email, password }, config);
 
     return response.data;
+});
+
+export const logout = createAsyncThunk('logout', async () => {
+    localStorage.removeItem('userInfo');
 });
 
 const storedUserInfo = localStorage.getItem('userInfo');
@@ -49,7 +53,7 @@ const authSlice = createSlice({
             state.error = false;
         });
         builder.addCase(fetchUser.fulfilled, (state, action) => {
-            state.pending = true;
+            state.pending = false;
             state.userInfo = action.payload;
             state.error = false;
             localStorage.setItem('userInfo', JSON.stringify(action.payload));
@@ -57,6 +61,9 @@ const authSlice = createSlice({
         builder.addCase(fetchUser.rejected, (state, action) => {
             console.log('Error', action.payload);
             state.error = true;
+        });
+        builder.addCase(logout.fulfilled, (state, action) => {
+            state.userInfo = null;
         });
     },
 });
