@@ -44,8 +44,11 @@ const bfs = async (startingUserId, newUserId) => {
       [directionToAdd]: newUserId,
     });
 
+    // Get sponsor ID to avoid from adding commission twice
+    const sponser = await User.findById(newUserId);
+    const sponserId = sponser.sponser;
     // Add commission to everyone in line up to 4 levels above
-    await addCommissionToLine(currentNode._id, 4);
+    await addCommissionToLine(currentNode._id, 4, sponserId);
 
     return {
       currentNodeId: currentNode._id,
@@ -57,7 +60,7 @@ const bfs = async (startingUserId, newUserId) => {
 };
 
 // Function to add commission to everyone in line up to specified levels above
-const addCommissionToLine = async (startingUserId, levelsAbove) => {
+const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
   let currentUserId = startingUserId;
   let currentLevel = 0;
 
@@ -66,9 +69,18 @@ const addCommissionToLine = async (startingUserId, levelsAbove) => {
 
     if (!currentUser) {
       break;
+    }else if(currentUser._id == sponserId){
+      continue;
     }
 
-    currentUser.earning += 4;
+    if (currentUser.earning < 30) {
+      const remainingEarningSpace = 30 - currentUser.earning;
+      currentUser.earning += Math.min(commissionToAdd, remainingEarningSpace);
+      currentUser.upgradeAmount += Math.max(0, commissionToAdd - remainingEarningSpace);
+    } else {
+      currentUser.upgradeAmount += commissionToAdd;
+    }
+
     // Save the updated user to the database
     await currentUser.save();
 
@@ -85,12 +97,18 @@ router.post(
     // const sponserUserId = req.user._id;
 
     const { userId } = req.body;
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate("sponser");
 
     if (user) {
       // Approve the user by uploaded screenshots
       user.userStatus = "approved";
       user.imgStatus = "approved";
+
+      // Add $4 commission to sponsor
+      if (user.sponser) {
+        const sponser = user.sponser;
+        sponser.earning += 4;
+      }
 
       const updateTree = await bfs(user.sponser, userId);
 
@@ -106,7 +124,7 @@ router.post(
             .json({ sts: "00", msg: "Error occured while updating!" });
         }
       } else {
-        res.status(400).json({ message: "Error assigning user to the tree" });
+        res.status(400).json({ msg: "Error assigning user to the tree" });
       }
     } else {
       res.status(401);
@@ -115,6 +133,7 @@ router.post(
       );
     }
   })
+  
 );
 
 export default router;

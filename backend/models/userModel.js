@@ -78,17 +78,14 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    transactions: [transactionSchema],
-    bankDetails: {
-      holderName: String,
-      accountNum: String,
-      ifscCode: String,
-      bank: String,
-      aadhar: String,
-      pan: String,
-      aadharPhoto: String,
-      panPhoto: String,
+    upgradeAmount: {
+      type: Number,
+      default: 0,
     },
+    currentPlan: {
+      type: String,
+    },
+    transactions: [transactionSchema],
     userStatus: {
       type: String,
       enum: ["pending", "approved", "rejected"],

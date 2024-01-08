@@ -515,4 +515,87 @@ router.put(
   })
 );
 
+// GET: Upgrade plan from current to next level
+router.get(
+  "/upgrade-plan",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      if (user.currentPlan == "basic") {
+        if (user.upgradeAmount >= 60 && user.children.length >= 1) {
+          user.currentPlan = "normal";
+          const updatedUser = await user.save();
+
+          if (updatedUser) {
+            res.status(201).json({
+              sts: "01",
+              msg: "Your plan upgraded successfully.",
+            });
+          } else {
+            res.status(400).json({
+              sts: "00",
+              msg: "Updating user failed. Please try again!",
+            });
+          }
+        } else {
+          res.status(400).json({
+            sts: "00",
+            msg: "Insufficient amount to upgrade the plan!",
+          });
+        }
+      } else if (currentPlan == "normal") {
+        if (user.upgradeAmount >= 100 && user.children.length >= 2) {
+          user.currentPlan = "advanced";
+          const updatedUser = await user.save();
+
+          if (updatedUser) {
+            res.status(201).json({
+              sts: "01",
+              msg: "Your plan upgraded successfully.",
+            });
+          } else {
+            res.status(400).json({
+              sts: "00",
+              msg: "Updating user failed. Please try again!",
+            });
+          }
+        } else {
+          res.status(400).json({
+            sts: "00",
+            msg: "Insufficient amount to upgrade the plan!",
+          });
+        }
+      } else if (currentPlan == "advanced") {
+        if (user.upgradeAmount >= 200 && user.children.length >= 3) {
+          user.currentPlan = "ultimate";
+          const updatedUser = await user.save();
+
+          if (updatedUser) {
+            res.status(201).json({
+              sts: "01",
+              msg: "Your plan upgraded successfully.",
+            });
+          } else {
+            res.status(400).json({
+              sts: "00",
+              msg: "Updating user failed. Please try again!",
+            });
+          }
+        } else {
+          res.status(400).json({
+            sts: "00",
+            msg: "Insufficient amount to upgrade the plan!",
+          });
+        }
+      }
+    } else {
+      res.status(404).json({ sts: "00", msg: "User not found!" });
+    }
+  })
+);
+
 export default router;
