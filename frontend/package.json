@@ -2,6 +2,7 @@
     "name": "vristo-react-vite",
     "private": true,
     "version": "0.0.0",
+    "proxy": "http://localhost:6000",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -30,6 +31,7 @@
         "@types/react-text-mask": "^5.4.11",
         "@x1mrdonut1x/nouislider-react": "^3.4.3",
         "apexcharts": "^3.37.1",
+        "axios": "^1.6.4",
         "easymde": "^2.18.0",
         "formik": "^2.2.9",
         "highlight.js": "^11.6.0",

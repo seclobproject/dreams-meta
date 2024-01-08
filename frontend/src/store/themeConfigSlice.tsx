@@ -6,7 +6,7 @@ const defaultState = {
     isDarkMode: false,
     mainLayout: 'app',
     theme: 'light',
-    menu: 'vertical',
+    menu: 'horizontal',
     layout: 'full',
     rtlClass: 'ltr',
     animation: '',
@@ -134,7 +134,7 @@ const themeConfigSlice = createSlice({
         },
 
         setPageTitle(state, { payload }) {
-            document.title = `${payload} | VRISTO - Multipurpose Tailwind Dashboard Template`;
+            document.title = `${payload} | Dreams Meta`;
         },
     },
 });
