@@ -47,6 +47,7 @@ const bfs = async (startingUserId, newUserId) => {
     // Get sponsor ID to avoid from adding commission twice
     const sponser = await User.findById(newUserId);
     const sponserId = sponser.sponser;
+    
     // Add commission to everyone in line up to 4 levels above
     await addCommissionToLine(currentNode._id, 4, sponserId);
 
@@ -69,16 +70,21 @@ const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
 
     if (!currentUser) {
       break;
-    }else if(currentUser._id == sponserId){
+    } else if (currentUser._id == sponserId) {
+      console.log('reached here');
       continue;
     }
 
+    const commissionToAdd = 4;
     if (currentUser.earning < 30) {
       const remainingEarningSpace = 30 - currentUser.earning;
       currentUser.earning += Math.min(commissionToAdd, remainingEarningSpace);
-      currentUser.upgradeAmount += Math.max(0, commissionToAdd - remainingEarningSpace);
+      currentUser.joiningAmount += Math.max(
+        0,
+        commissionToAdd - remainingEarningSpace
+      );
     } else {
-      currentUser.upgradeAmount += commissionToAdd;
+      currentUser.joiningAmount += commissionToAdd;
     }
 
     // Save the updated user to the database
@@ -98,19 +104,30 @@ router.post(
 
     const { userId } = req.body;
     const user = await User.findById(userId).populate("sponser");
+    const admin = await User.findOne({ isAdmin: true });
 
     if (user) {
-      // Approve the user by uploaded screenshots
-      user.userStatus = "approved";
-      user.imgStatus = "approved";
+      // Approve the user
+      user.userStatus = true;
 
-      // Add $4 commission to sponsor
+      // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
+      let sponser;
       if (user.sponser) {
-        const sponser = user.sponser;
-        sponser.earning += 4;
+        const ogSponser = user.sponser;
+        if (ogSponser.userStatus === true) {
+          sponser = user.sponser;
+          sponser.children.push(user._id);
+          sponser.earning += 4;
+        } else {
+          sponser = admin;
+          user.sponser = admin._id;
+          sponser.children.push(user._id);
+        }
       }
 
-      const updateTree = await bfs(user.sponser, userId);
+      await sponser.save();
+      await user.save();
+      const updateTree = await bfs(sponser._id, userId);
 
       if (updateTree) {
         const attachedNode = updateTree.currentNodeId;
@@ -133,7 +150,6 @@ router.post(
       );
     }
   })
-  
 );
 
 export default router;

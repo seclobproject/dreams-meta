@@ -1,21 +1,21 @@
 import { IRootState, useAppDispatch, useAppSelector } from '../../store';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
+import IconMail from '../../components/Icon/IconMail';
+import IconLockDots from '../../components/Icon/IconLockDots';
+import { fetchUser } from '../../store/authSlice';
+// import { useDispatch, useSelector } from 'react-redux';
 // import Dropdown from '../../components/Dropdown';
 // import i18next from 'i18next';
 // import IconCaretDown from '../../components/Icon/IconCaretDown';
-import IconMail from '../../components/Icon/IconMail';
-import IconLockDots from '../../components/Icon/IconLockDots';
 // import IconInstagram from '../../components/Icon/IconInstagram';
 // import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 // import IconTwitter from '../../components/Icon/IconTwitter';
 // import IconGoogle from '../../components/Icon/IconGoogle';
-import { fetchUser } from '../../store/authSlice';
 
 interface ComponentProps {
-    data: any;
+    data?: any;
 }
 
 const LoginBoxed: React.FC<ComponentProps> = () => {

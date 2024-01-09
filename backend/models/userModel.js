@@ -50,10 +50,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    packageChosen: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Package",
-    },
     password: {
       type: String,
       required: true,
@@ -66,35 +62,22 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    screenshot: {
-      type: String,
-      default: null,
-    },
-    referenceNo: {
-      type: String,
-      default: null,
-    },
     earning: {
       type: Number,
       default: 0,
     },
-    upgradeAmount: {
+    joiningAmount: {
       type: Number,
       default: 0,
     },
     currentPlan: {
       type: String,
     },
-    transactions: [transactionSchema],
     userStatus: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
+      type: Boolean,
+      default: false,
     },
-    imgStatus: {
-      type: String,
-      enum: ["pending", "approved", "progress"],
-      default: "pending",
-    },
+    transactions: [transactionSchema],
     allTransactions: [allTransactionSchema],
     children: [
       {

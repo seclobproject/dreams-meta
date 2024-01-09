@@ -1,40 +1,56 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../../store';
+import { IRootState, useAppDispatch, useAppSelector } from '../../store';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
 import { useEffect, useState } from 'react';
-import Dropdown from '../../components/Dropdown';
-import i18next from 'i18next';
-import IconCaretDown from '../../components/Icon/IconCaretDown';
 import IconUser from '../../components/Icon/IconUser';
 import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
-import IconInstagram from '../../components/Icon/IconInstagram';
-import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
-import IconTwitter from '../../components/Icon/IconTwitter';
-import IconGoogle from '../../components/Icon/IconGoogle';
+import IconPhoneCall from '../../components/Icon/IconPhoneCall';
+import { addNewUser } from '../../store/userSlice';
+// import Dropdown from '../../components/Dropdown';
+// import i18next from 'i18next';
+// import IconCaretDown from '../../components/Icon/IconCaretDown';
+// import IconInstagram from '../../components/Icon/IconInstagram';
+// import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
+// import IconTwitter from '../../components/Icon/IconTwitter';
+// import IconGoogle from '../../components/Icon/IconGoogle';
 
 const RegisterBoxed = () => {
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(setPageTitle('Register Boxed'));
-    });
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-    const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-    const setLocale = (flag: string) => {
-        setFlag(flag);
-        if (flag.toLowerCase() === 'ae') {
-            dispatch(toggleRTL('rtl'));
-        } else {
-            dispatch(toggleRTL('ltr'));
-        }
-    };
-    const [flag, setFlag] = useState(themeConfig.locale);
 
-    const submitForm = () => {
-        navigate('/');
+    const [userName, setUserName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
+    const [password, setPassword] = useState('');
+
+    const { loading, data: userData, error } = useAppSelector((state: any) => state.addNewUserReducer);
+
+    // const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(setPageTitle('Register new member'));
+    });
+
+    // const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
+    // const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+    // const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+    // const setLocale = (flag: string) => {
+    //     setFlag(flag);
+    //     if (flag.toLowerCase() === 'ae') {
+    //         dispatch(toggleRTL('rtl'));
+    //     } else {
+    //         dispatch(toggleRTL('ltr'));
+    //     }
+    // };
+    // const [flag, setFlag] = useState(themeConfig.locale);
+
+    const submitForm = (e: any) => {
+        e.preventDefault();
+        const data = { userName, email, phone, address, password };
+        dispatch(addNewUser(data));
+        if (userData) navigate('/');
     };
 
     return (
@@ -51,7 +67,7 @@ const RegisterBoxed = () => {
                 <div className="relative w-full max-w-[870px] rounded-md bg-[linear-gradient(45deg,#fff9f9_0%,rgba(255,255,255,0)_25%,rgba(255,255,255,0)_75%,_#fff9f9_100%)] p-2 dark:bg-[linear-gradient(52.22deg,#0E1726_0%,rgba(14,23,38,0)_18.66%,rgba(14,23,38,0)_51.04%,rgba(14,23,38,0)_80.07%,#0E1726_100%)]">
                     <div className="relative flex flex-col justify-center rounded-md bg-white/60 backdrop-blur-lg dark:bg-black/50 px-6 lg:min-h-[758px] py-20">
                         <div className="absolute top-6 end-6">
-                            <div className="dropdown">
+                            {/* <div className="dropdown">
                                 <Dropdown
                                     offset={[0, 8]}
                                     placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -89,18 +105,26 @@ const RegisterBoxed = () => {
                                         })}
                                     </ul>
                                 </Dropdown>
-                            </div>
+                            </div> */}
                         </div>
                         <div className="mx-auto w-full max-w-[440px]">
                             <div className="mb-10">
-                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign Up</h1>
-                                <p className="text-base font-bold leading-normal text-white-dark">Enter your email and password to register</p>
+                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Add new member</h1>
+                                <p className="text-base font-bold leading-normal text-white-dark">Enter member details here to register</p>
                             </div>
-                            <form className="space-y-5 dark:text-white" onSubmit={submitForm}>
+                            <form className="space-y-5 dark:text-white" action="#">
                                 <div>
-                                    <label htmlFor="Name">Name</label>
+                                    <label htmlFor="userName">Name</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Name" type="text" placeholder="Enter Name" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input
+                                            id="userName"
+                                            value={userName}
+                                            onChange={(e) => setUserName(e.target.value)}
+                                            type="text"
+                                            placeholder="Enter Name"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                            required
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconUser fill={true} />
                                         </span>
@@ -109,32 +133,94 @@ const RegisterBoxed = () => {
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input
+                                            id="Email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            type="email"
+                                            placeholder="Enter Email"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                            required
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
                                     </div>
                                 </div>
                                 <div>
+                                    <label htmlFor="phone">Phone</label>
+                                    <div className="relative text-white-dark">
+                                        <input
+                                            id="phone"
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
+                                            type="number"
+                                            placeholder="Enter Phone Number"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                            required
+                                        />
+                                        <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                            <IconPhoneCall fill={true} />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label htmlFor="address">Address</label>
+                                    <div className="relative text-white-dark">
+                                        <input
+                                            id="address"
+                                            value={address}
+                                            onChange={(e) => setAddress(e.target.value)}
+                                            type="text"
+                                            placeholder="Enter Address"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                            required
+                                        />
+                                        <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                            <IconPhoneCall fill={true} />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
                                     <label htmlFor="Password">Password</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input
+                                            id="Password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            type="password"
+                                            placeholder="Enter Password"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                            required
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconLockDots fill={true} />
                                         </span>
                                     </div>
                                 </div>
-                                <div>
+                                {/* <div>
                                     <label className="flex cursor-pointer items-center">
                                         <input type="checkbox" className="form-checkbox bg-white dark:bg-black" />
                                         <span className="text-white-dark">Subscribe to weekly newsletter</span>
                                     </label>
-                                </div>
-                                <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
+                                </div> */}
+                                <button onClick={submitForm} type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
+                                    {loading && <span className="animate-spin border-2 border-white border-l-transparent rounded-full w-5 h-5 ltr:mr-4 rtl:ml-4 inline-block align-middle"></span>}
                                     Sign Up
                                 </button>
                             </form>
-                            <div className="relative my-7 text-center md:mb-9">
+                            <div className="text-center mt-7 dark:text-white">
+                                {userData && (
+                                    <div>
+                                        Submitted successfully!&nbsp;
+                                        <Link to="/" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
+                                            Go to Home
+                                        </Link>
+                                    </div>
+                                )}
+                                {error && <div>{error}</div>}
+                            </div>
+                            {/* <div className="relative my-7 text-center md:mb-9">
                                 <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
                                 <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-white-light">or</span>
                             </div>
@@ -177,13 +263,7 @@ const RegisterBoxed = () => {
                                         </Link>
                                     </li>
                                 </ul>
-                            </div>
-                            <div className="text-center dark:text-white">
-                                Already have an account ?&nbsp;
-                                <Link to="/auth/boxed-signin" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
-                                    SIGN IN
-                                </Link>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

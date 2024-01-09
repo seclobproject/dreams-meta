@@ -25,13 +25,9 @@ router.post(
   asyncHandler(async (req, res) => {
     const sponser = req.user._id;
 
-    const userStatus = "pending";
-
-    const sponserUser = await User.findById(sponser);
-
     const ownSponserId = generateRandomString();
 
-    const { name, email, phone, address, packageChosen, password } = req.body;
+    const { name, email, phone, address, password } = req.body;
 
     const existingUser = await User.findOne({ email });
     const existingUserByPhone = await User.findOne({ phone });
@@ -41,17 +37,10 @@ router.post(
       throw new Error("User already exists!");
     }
 
-    let screenshot = null;
-    let referenceNo = null;
-
-    if (req.body.screenshot && req.body.referenceNo) {
-      screenshot = req.body.screenshot;
-      referenceNo = req.body.referenceNo;
-    }
-
     const earning = 0;
-    const unrealisedEarning = [];
+    const joiningAmount = 0;
     const children = [];
+    const currentPlan = "promoter";
 
     const user = await User.create({
       sponser,
@@ -59,43 +48,25 @@ router.post(
       email,
       phone,
       address,
-      packageChosen,
       password,
       ownSponserId,
-      screenshot,
-      referenceNo,
       earning,
-      unrealisedEarning,
-      userStatus,
+      joiningAmount,
       children,
+      currentPlan,
     });
 
     if (user) {
-      if (sponserUser) {
-        sponserUser.children.push(user._id);
-
-        const updatedUser = await sponserUser.save();
-        if (updatedUser) {
-          res.json({
-            _id: user._id,
-            sponser: user.sponser,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            address: user.address,
-            packageChosen: user.packageChosen,
-            ownSponserId: user.ownSponserId,
-            isSuperAdmin: user.isSuperAdmin,
-            userStatus: user.userStatus,
-          });
-        } else {
-          res.status(400);
-          throw new Error("Some error occured. Please try again!");
-        }
-      } else {
-        res.status(400);
-        throw new Error("Some error occured. Make sure you are logged in!");
-      }
+      res.json({
+        id: user._id,
+        sponser: user.sponser,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        ownSponserId: user.ownSponserId,
+        currentPlan: user.currentPlan,
+      });
     } else {
       res.status(400);
       throw new Error("Registration failed. Please try again!");
@@ -526,7 +497,7 @@ router.get(
 
     if (user) {
       if (user.currentPlan == "basic") {
-        if (user.upgradeAmount >= 60 && user.children.length >= 1) {
+        if (user.joiningAmount >= 60 && user.children.length >= 1) {
           user.currentPlan = "normal";
           const updatedUser = await user.save();
 
@@ -548,7 +519,7 @@ router.get(
           });
         }
       } else if (currentPlan == "normal") {
-        if (user.upgradeAmount >= 100 && user.children.length >= 2) {
+        if (user.joiningAmount >= 100 && user.children.length >= 2) {
           user.currentPlan = "advanced";
           const updatedUser = await user.save();
 
@@ -570,7 +541,7 @@ router.get(
           });
         }
       } else if (currentPlan == "advanced") {
-        if (user.upgradeAmount >= 200 && user.children.length >= 3) {
+        if (user.joiningAmount >= 200 && user.children.length >= 3) {
           user.currentPlan = "ultimate";
           const updatedUser = await user.save();
 
