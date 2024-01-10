@@ -5,6 +5,8 @@ import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
 
+import { addMemberToSecondTree } from './supportingFunctions/addMemberToSecondTree.js'
+
 // Verify the user by admin and add the user to the proper position in the tree
 // after successful verification
 // BFS function to assign the user to the tree
@@ -47,7 +49,7 @@ const bfs = async (startingUserId, newUserId) => {
     // Get sponsor ID to avoid from adding commission twice
     const sponser = await User.findById(newUserId);
     const sponserId = sponser.sponser;
-    
+
     // Add commission to everyone in line up to 4 levels above
     await addCommissionToLine(currentNode._id, 4, sponserId);
 
@@ -71,13 +73,43 @@ const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
     if (!currentUser) {
       break;
     } else if (currentUser._id == sponserId) {
-      console.log('reached here');
       continue;
     }
 
     const commissionToAdd = 4;
-    if (currentUser.earning < 30) {
+
+    if (currentUser.earning < 30 && currentUser.currentPlan == "promoter") {
       const remainingEarningSpace = 30 - currentUser.earning;
+      currentUser.earning += Math.min(commissionToAdd, remainingEarningSpace);
+      currentUser.joiningAmount += Math.max(
+        0,
+        commissionToAdd - remainingEarningSpace
+      );
+    } else if (
+      currentUser.earning < 60 &&
+      currentUser.currentPlan == "royalAchiever"
+    ) {
+      const remainingEarningSpace = 60 - currentUser.earning;
+      currentUser.earning += Math.min(commissionToAdd, remainingEarningSpace);
+      currentUser.joiningAmount += Math.max(
+        0,
+        commissionToAdd - remainingEarningSpace
+      );
+    } else if (
+      currentUser.earning < 100 &&
+      currentUser.currentPlan == "crownAchiever"
+    ) {
+      const remainingEarningSpace = 100 - currentUser.earning;
+      currentUser.earning += Math.min(commissionToAdd, remainingEarningSpace);
+      currentUser.joiningAmount += Math.max(
+        0,
+        commissionToAdd - remainingEarningSpace
+      );
+    } else if (
+      currentUser.earning < 200 &&
+      currentUser.currentPlan == "diamondAchiever"
+    ) {
+      const remainingEarningSpace = 200 - currentUser.earning;
       currentUser.earning += Math.min(commissionToAdd, remainingEarningSpace);
       currentUser.joiningAmount += Math.max(
         0,
@@ -85,6 +117,10 @@ const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
       );
     } else {
       currentUser.joiningAmount += commissionToAdd;
+    }
+
+    if (currentUser.joiningAmount >= 30) {
+      await addMemberToSecondTree(currentUser._id, currentUser.nodeId);
     }
 
     // Save the updated user to the database
@@ -95,6 +131,8 @@ const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
     currentLevel++;
   }
 };
+
+
 
 router.post(
   "/verify-user-payment",
@@ -149,6 +187,19 @@ router.post(
         "Can't find this user. Make sure you are registered properly!"
       );
     }
+  })
+);
+
+// GET all users to admin
+router.get(
+  "/get-users",
+  protect,
+  asyncHandler(async (req, res) => {
+    const users = await User.find()
+      .populate("packageChosen")
+      .populate("sponser");
+
+    res.json(users);
   })
 );
 
