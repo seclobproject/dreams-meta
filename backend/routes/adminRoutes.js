@@ -5,7 +5,7 @@ import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
 
-import { addMemberToSecondTree } from './supportingFunctions/addMemberToSecondTree.js'
+import { addMemberToSecondTree } from "./supportingFunctions/addMemberToSecondTree.js";
 
 // Verify the user by admin and add the user to the proper position in the tree
 // after successful verification
@@ -51,7 +51,7 @@ const bfs = async (startingUserId, newUserId) => {
     const sponserId = sponser.sponser;
 
     // Add commission to everyone in line up to 4 levels above
-    await addCommissionToLine(currentNode._id, 4, sponserId);
+    await addCommissionToLine(currentNode._id, 4, sponserId, 4);
 
     return {
       currentNodeId: currentNode._id,
@@ -63,7 +63,12 @@ const bfs = async (startingUserId, newUserId) => {
 };
 
 // Function to add commission to everyone in line up to specified levels above
-const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
+const addCommissionToLine = async (
+  startingUserId,
+  levelsAbove,
+  sponserId,
+  commissionAmount
+) => {
   let currentUserId = startingUserId;
   let currentLevel = 0;
 
@@ -76,7 +81,7 @@ const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
       continue;
     }
 
-    const commissionToAdd = 4;
+    const commissionToAdd = commissionAmount;
 
     if (currentUser.earning < 30 && currentUser.currentPlan == "promoter") {
       const remainingEarningSpace = 30 - currentUser.earning;
@@ -119,10 +124,6 @@ const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
       currentUser.joiningAmount += commissionToAdd;
     }
 
-    if (currentUser.joiningAmount >= 30) {
-      await addMemberToSecondTree(currentUser._id, currentUser.nodeId);
-    }
-
     // Save the updated user to the database
     await currentUser.save();
 
@@ -131,8 +132,6 @@ const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
     currentLevel++;
   }
 };
-
-
 
 router.post(
   "/verify-user-payment",
@@ -186,6 +185,84 @@ router.post(
       throw new Error(
         "Can't find this user. Make sure you are registered properly!"
       );
+    }
+  })
+);
+
+// Count the number of users under a person and update the plan
+
+// Binary Tree Class
+const royalAchieverTree = async (newUserId) => {
+  const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
+
+  console.log(`parentUser is ${parentUser}`);
+
+  if (!parentUser) {
+    return;
+  }
+
+  // Queue for BFS
+  const queue = [parentUser];
+
+  while (queue.length > 0) {
+    const currentNode = queue.shift();
+
+    // Determine the direction to add the new user
+    let directionToAdd = "royalAchieverLeft";
+
+    if (!currentNode.royalAchieverLeft) {
+      directionToAdd = "royalAchieverLeft";
+    } else if (!currentNode.royalAchieverRight) {
+      directionToAdd = "royalAchieverRight";
+    } else {
+      // Both left and right are filled, move to the next level
+      if (currentNode.royalAchieverLeft) {
+        queue.push(await User.findById(currentNode.royalAchieverLeft));
+      }
+      if (currentNode.royalAchieverRight) {
+        queue.push(await User.findById(currentNode.royalAchieverRight));
+      }
+      continue;
+    }
+
+    // Try to add the new user in the determined direction
+    await User.findByIdAndUpdate(currentNode._id, {
+      [directionToAdd]: newUserId,
+    });
+
+    // Get sponsor ID to avoid from adding commission twice
+    const sponser = await User.findById(newUserId);
+    const sponserId = sponser.sponser;
+
+    // Add commission to everyone in line up to 4 levels above
+    await addCommissionToLine(currentNode._id, 4, sponserId, 8);
+
+    return {
+      currentNodeId: currentNode._id,
+      directionAdded: directionToAdd,
+    };
+  }
+
+  throw new Error("Unable to assign user to the tree");
+};
+
+router.get(
+  "/upgrade-level",
+  asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+
+    if (user.joiningAmount >= 60 && user.currentPlan == "promoter") {
+      user.joiningAmount -= 60;
+      user.currentPlan = "royalAchiever";
+
+      const updateTree = await royalAchieverTree(userId);
+
+      await user.save();
+      res.status(200).json({ msg: "Success" });
+
+    } else {
+      res.status(400).json({ msg: "Not aligning with criteria" });
     }
   })
 );

@@ -97,6 +97,30 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    royalAchieverLeft: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    royalAchieverRight: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    crownAchieverLeft: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    crownAchieverRight: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    diamondAchieverLeft: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    diamondAchieverRight: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
     timestamps: true,
