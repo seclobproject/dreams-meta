@@ -194,7 +194,7 @@ const Header = () => {
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuDashboard className="shrink-0" />
-                                <span className="px-1">{t('dashboard')}</span>
+                                <span className="px-1">{t('Home')}</span>
                             </div>
                             <div className="right_arrow">
                                 <IconCaretDown />
@@ -202,17 +202,17 @@ const Header = () => {
                         </button>
                         <ul className="sub-menu">
                             <li>
-                                <NavLink to="/">{t('sales')}</NavLink>
+                                <NavLink to="/finance">{t('Home')}</NavLink>
                             </li>
                             <li>
+                                <NavLink to="/signup">{t('Add New Member')}</NavLink>
+                            </li>
+                            {/* <li>
                                 <NavLink to="/analytics">{t('analytics')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/finance">{t('finance')}</NavLink>
-                            </li>
-                            <li>
                                 <NavLink to="/crypto">{t('crypto')}</NavLink>
-                            </li>
+                            </li> */}
                         </ul>
                     </li>
                     <li className="menu nav-item relative">

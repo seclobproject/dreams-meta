@@ -4,92 +4,11 @@ const router = express.Router();
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { bfs } from "./supportingFunctions/TreeFunctions.js";
 
 // Verify the user by admin and add the user to the proper position in the tree
 // after successful verification
 // BFS function to assign the user to the tree
-const bfs = async (startingUserId, newUserId) => {
-  const startingUser = await User.findById(startingUserId);
-
-  if (!startingUser) {
-    return null;
-  }
-
-  // Queue for BFS
-  const queue = [startingUser];
-
-  while (queue.length > 0) {
-    const currentNode = queue.shift();
-
-    // Determine the direction to add the new user
-    let directionToAdd = "left";
-
-    if (!currentNode.left) {
-      directionToAdd = "left";
-    } else if (!currentNode.right) {
-      directionToAdd = "right";
-    } else {
-      // Both left and right are filled, move to the next level
-      if (currentNode.left) {
-        queue.push(await User.findById(currentNode.left));
-      }
-      if (currentNode.right) {
-        queue.push(await User.findById(currentNode.right));
-      }
-      continue;
-    }
-
-    // Try to add the new user in the determined direction
-    await User.findByIdAndUpdate(currentNode._id, {
-      [directionToAdd]: newUserId,
-    });
-
-    // Get sponsor ID to avoid from adding commission twice
-    const sponser = await User.findById(newUserId);
-    const sponserId = sponser.sponser;
-    // Add commission to everyone in line up to 4 levels above
-    await addCommissionToLine(currentNode._id, 4, sponserId);
-
-    return {
-      currentNodeId: currentNode._id,
-      directionAdded: directionToAdd,
-    };
-  }
-
-  throw new Error("Unable to assign user to the tree");
-};
-
-// Function to add commission to everyone in line up to specified levels above
-const addCommissionToLine = async (startingUserId, levelsAbove, sponserId) => {
-  let currentUserId = startingUserId;
-  let currentLevel = 0;
-
-  while (currentUserId && currentLevel <= levelsAbove) {
-    const currentUser = await User.findById(currentUserId);
-
-    if (!currentUser) {
-      break;
-    }else if(currentUser._id == sponserId){
-      continue;
-    }
-
-    if (currentUser.earning < 30) {
-      const remainingEarningSpace = 30 - currentUser.earning;
-      currentUser.earning += Math.min(commissionToAdd, remainingEarningSpace);
-      currentUser.upgradeAmount += Math.max(0, commissionToAdd - remainingEarningSpace);
-    } else {
-      currentUser.upgradeAmount += commissionToAdd;
-    }
-
-    // Save the updated user to the database
-    await currentUser.save();
-
-    // Move to the parent of the current user
-    currentUserId = currentUser.nodeId;
-    currentLevel++;
-  }
-};
-
 router.post(
   "/verify-user-payment",
   protect,
@@ -98,19 +17,32 @@ router.post(
 
     const { userId } = req.body;
     const user = await User.findById(userId).populate("sponser");
+    const admin = await User.findOne({ isAdmin: true });
 
     if (user) {
-      // Approve the user by uploaded screenshots
-      user.userStatus = "approved";
-      user.imgStatus = "approved";
+      // Approve the user
+      user.userStatus = true;
 
-      // Add $4 commission to sponsor
+      // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
+      let sponser;
       if (user.sponser) {
-        const sponser = user.sponser;
-        sponser.earning += 4;
+        const ogSponser = user.sponser;
+        if (ogSponser.userStatus === true) {
+          sponser = user.sponser;
+          sponser.children.push(user._id);
+          sponser.earning += 4;
+        } else {
+          sponser = admin;
+          user.sponser = admin._id;
+          sponser.children.push(user._id);
+        }
       }
 
-      const updateTree = await bfs(user.sponser, userId);
+      await sponser.save();
+      await user.save();
+      const left = "left";
+      const right = "right";
+      const updateTree = await bfs(sponser, userId, left, right);
 
       if (updateTree) {
         const attachedNode = updateTree.currentNodeId;
@@ -133,7 +65,66 @@ router.post(
       );
     }
   })
-  
+);
+
+// Get: upgrade the plan of user if he has enough balance in rejoining amount wallet
+router.get(
+  "/upgrade-level",
+  asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+
+    if (user.joiningAmount >= 60 && user.currentPlan == "promoter") {
+      user.joiningAmount -= 60;
+      user.currentPlan = "royalAchiever";
+
+      const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
+      const left = "royalAchieverLeft";
+      const right = "royalAchieverRight";
+      await bfs(parentUser, userId, left, right);
+    } else if (
+      user.joiningAmount >= 100 &&
+      user.currentPlan == "royalAchiever"
+    ) {
+      user.joiningAmount -= 100;
+      user.currentPlan = "crownAchiever";
+
+      const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
+      
+      const left = "crownAchieverLeft";
+      const right = "crownAchieverRight";
+      await bfs(parentUser, userId, left, right);
+    } else if (
+      user.joiningAmount >= 200 &&
+      user.currentPlan == "crownAchiever" || "diamondAchiever"
+    ) {
+      user.joiningAmount -= 200;
+      user.currentPlan = "diamondAchiever";
+
+      const parentUser = await User.findOne({ currentPlan: "diamondAchiever" });
+      const left = "diamondAchieverLeft";
+      const right = "diamondAchieverRight";
+      await bfs(parentUser, userId, left, right);
+    }
+
+    const updateUser = await user.save();
+    if (updateUser) {
+      res.status(200).json({ msg: "Success" });
+    }
+  })
+);
+
+// GET all users to admin
+router.get(
+  "/get-users",
+  protect,
+  asyncHandler(async (req, res) => {
+    const users = await User.find()
+      .populate("packageChosen")
+      .populate("sponser");
+
+    res.json(users);
+  })
 );
 
 export default router;

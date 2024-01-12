@@ -104,7 +104,7 @@ const routes = [
     // dashboard
     {
         path: '/',
-        element: <Index />,
+        element: <Finance />,
     },
     // {
     //     path: '/index',
@@ -433,12 +433,14 @@ const routes = [
     //Authentication
     //Edited
     {
-        path: 'signin',
+        path: '/signin',
         element: <LoginBoxed />,
         layout: 'blank',
     },
+    //Signup
+    //Edited
     {
-        path: '/auth/boxed-signup',
+        path: '/signup',
         element: <RegisterBoxed />,
         layout: 'blank',
     },

@@ -1,21 +1,21 @@
 import { IRootState, useAppDispatch, useAppSelector } from '../../store';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
+import IconMail from '../../components/Icon/IconMail';
+import IconLockDots from '../../components/Icon/IconLockDots';
+import { fetchUser } from '../../store/authSlice';
+// import { useDispatch, useSelector } from 'react-redux';
 // import Dropdown from '../../components/Dropdown';
 // import i18next from 'i18next';
 // import IconCaretDown from '../../components/Icon/IconCaretDown';
-import IconMail from '../../components/Icon/IconMail';
-import IconLockDots from '../../components/Icon/IconLockDots';
 // import IconInstagram from '../../components/Icon/IconInstagram';
 // import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 // import IconTwitter from '../../components/Icon/IconTwitter';
 // import IconGoogle from '../../components/Icon/IconGoogle';
-import { fetchUser } from '../../store/authSlice';
 
 interface ComponentProps {
-    data: any;
+    data?: any;
 }
 
 const LoginBoxed: React.FC<ComponentProps> = () => {
@@ -29,7 +29,7 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
 
     useEffect(() => {
         dispatch(setPageTitle('Login'));
-        if (userInfo) navigate('/');
+        if (userInfo) navigate('/signup');
     }, [userInfo, navigate]);
 
     // const isDark = useAppSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
@@ -48,7 +48,7 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
     const submitForm = (e: any) => {
         e.preventDefault();
         dispatch(fetchUser({ email, password }));
-        if (userInfo) navigate('/');
+        // if (userInfo) navigate('/');
     };
 
     return (
@@ -104,7 +104,16 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
                                 </Dropdown>
                             </div>
                         </div> */}
+
                         <div className="mx-auto w-full max-w-[440px]">
+                            <div className="main-logo flex justify-center shrink-0 mb-10">
+                                <div className="dark:block hidden">
+                                    <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo.png" alt="logo" />
+                                </div>
+                                <div className="visible dark:hidden">
+                                    <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo-dark.png" alt="logo" />
+                                </div>
+                            </div>
                             <div className="mb-10">
                                 <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign in</h1>
                                 <p className="text-base font-bold leading-normal text-white-dark">Enter your email and password to login</p>
@@ -196,12 +205,12 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
                                     </li>
                                 </ul>
                             </div> */}
-                            <div className="text-center dark:text-white mt-5">
+                            {/* <div className="text-center dark:text-white mt-5">
                                 Don't have an account ?&nbsp;
                                 <Link to="/auth/boxed-signup" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
                                     SIGN UP
                                 </Link>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

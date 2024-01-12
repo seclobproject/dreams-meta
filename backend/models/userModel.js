@@ -41,19 +41,6 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    phone: {
-      type: Number,
-      required: true,
-      unique: true,
-    },
-    address: {
-      type: String,
-      required: true,
-    },
-    packageChosen: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Package",
-    },
     password: {
       type: String,
       required: true,
@@ -66,35 +53,22 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    screenshot: {
-      type: String,
-      default: null,
-    },
-    referenceNo: {
-      type: String,
-      default: null,
-    },
     earning: {
       type: Number,
       default: 0,
     },
-    upgradeAmount: {
+    joiningAmount: {
       type: Number,
       default: 0,
     },
     currentPlan: {
       type: String,
     },
-    transactions: [transactionSchema],
     userStatus: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
+      type: Boolean,
+      default: false,
     },
-    imgStatus: {
-      type: String,
-      enum: ["pending", "approved", "progress"],
-      default: "pending",
-    },
+    transactions: [transactionSchema],
     allTransactions: [allTransactionSchema],
     children: [
       {
@@ -111,6 +85,30 @@ const userSchema = new mongoose.Schema(
       ref: "User",
     },
     nodeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    royalAchieverLeft: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    royalAchieverRight: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    crownAchieverLeft: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    crownAchieverRight: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    diamondAchieverLeft: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    diamondAchieverRight: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
