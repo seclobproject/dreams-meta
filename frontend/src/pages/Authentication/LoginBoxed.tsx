@@ -104,7 +104,16 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
                                 </Dropdown>
                             </div>
                         </div> */}
+
                         <div className="mx-auto w-full max-w-[440px]">
+                            <div className="main-logo flex justify-center shrink-0 mb-10">
+                                <div className="dark:block hidden">
+                                    <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo.png" alt="logo" />
+                                </div>
+                                <div className="visible dark:hidden">
+                                    <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo-dark.png" alt="logo" />
+                                </div>
+                            </div>
                             <div className="mb-10">
                                 <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign in</h1>
                                 <p className="text-base font-bold leading-normal text-white-dark">Enter your email and password to login</p>

@@ -119,6 +119,14 @@ const RegisterBoxed = () => {
                             </div> */}
                         </div>
                         <div className="mx-auto w-full max-w-[440px]">
+                            <div className="main-logo flex justify-center shrink-0 mb-10">
+                                <div className="dark:block hidden">
+                                    <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo.png" alt="logo" />
+                                </div>
+                                <div className="visible dark:hidden">
+                                    <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo-dark.png" alt="logo" />
+                                </div>
+                            </div>
                             <div className="mb-10">
                                 <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Add new member</h1>
                                 <p className="text-base font-bold leading-normal text-white-dark">Enter member details here to register</p>
@@ -231,7 +239,9 @@ const RegisterBoxed = () => {
                                 )}
                                 {error && <div className="text-red-600">{error}</div>}
                             </div>
-                            <div onClick={logoutHandler} className="text-center mt-7 dark:text-white cursor-pointer">Logout</div>
+                            <div onClick={logoutHandler} className="text-center mt-7 dark:text-white cursor-pointer">
+                                Logout
+                            </div>
                             {/* <div className="relative my-7 text-center md:mb-9">
                                 <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
                                 <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-white-light">or</span>
