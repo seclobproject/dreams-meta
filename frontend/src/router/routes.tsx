@@ -104,7 +104,7 @@ const routes = [
     // dashboard
     {
         path: '/',
-        element: <Index />,
+        element: <Finance />,
     },
     // {
     //     path: '/index',

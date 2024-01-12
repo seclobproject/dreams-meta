@@ -25,12 +25,11 @@ router.post(
 
     const ownSponserId = generateRandomString();
 
-    const { name, email, phone, address, password } = req.body;
+    const { name, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
-    const existingUserByPhone = await User.findOne({ phone });
 
-    if (existingUser || existingUserByPhone) {
+    if (existingUser) {
       res.status(400);
       throw new Error("User already exists!");
     }
@@ -44,8 +43,6 @@ router.post(
       sponser,
       name,
       email,
-      phone,
-      address,
       password,
       ownSponserId,
       earning,
@@ -60,7 +57,6 @@ router.post(
         sponser: user.sponser,
         name: user.name,
         email: user.email,
-        phone: user.phone,
         address: user.address,
         ownSponserId: user.ownSponserId,
         currentPlan: user.currentPlan,
@@ -94,8 +90,6 @@ router.post(
         sponser: user.sponser,
         name: user.name,
         email: user.email,
-        phone: user.phone,
-        address: user.address,
         ownSponserId: user.ownSponserId,
         earning: user.earning,
         userStatus: user.userStatus,

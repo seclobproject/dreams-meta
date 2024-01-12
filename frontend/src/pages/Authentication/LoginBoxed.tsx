@@ -29,7 +29,7 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
 
     useEffect(() => {
         dispatch(setPageTitle('Login'));
-        if (userInfo) navigate('/');
+        if (userInfo) navigate('/signup');
     }, [userInfo, navigate]);
 
     // const isDark = useAppSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
@@ -48,7 +48,7 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
     const submitForm = (e: any) => {
         e.preventDefault();
         dispatch(fetchUser({ email, password }));
-        if (userInfo) navigate('/');
+        // if (userInfo) navigate('/');
     };
 
     return (
@@ -196,12 +196,12 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
                                     </li>
                                 </ul>
                             </div> */}
-                            <div className="text-center dark:text-white mt-5">
+                            {/* <div className="text-center dark:text-white mt-5">
                                 Don't have an account ?&nbsp;
                                 <Link to="/auth/boxed-signup" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
                                     SIGN UP
                                 </Link>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

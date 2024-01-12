@@ -8,6 +8,7 @@ import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
 import IconPhoneCall from '../../components/Icon/IconPhoneCall';
 import { addNewUser } from '../../store/userSlice';
+import { logout } from '../../store/authSlice';
 // import Dropdown from '../../components/Dropdown';
 // import i18next from 'i18next';
 // import IconCaretDown from '../../components/Icon/IconCaretDown';
@@ -27,11 +28,16 @@ const RegisterBoxed = () => {
     const [password, setPassword] = useState('');
 
     const { loading, data: userData, error } = useAppSelector((state: any) => state.addNewUserReducer);
+    const { userInfo } = useAppSelector((state: any) => state.authReducer);
 
     // const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Register new member'));
-    });
+
+        if (!userInfo) {
+            navigate('/signin');
+        }
+    }, [userInfo]);
 
     // const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
     // const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
@@ -48,9 +54,14 @@ const RegisterBoxed = () => {
 
     const submitForm = (e: any) => {
         e.preventDefault();
-        const data = { userName, email, phone, address, password };
+        const data = { userName, email, password };
         dispatch(addNewUser(data));
-        if (userData) navigate('/');
+        // if (userData) navigate('/');
+    };
+
+    const logoutHandler = (e: any) => {
+        e.preventDefault();
+        dispatch(logout());
     };
 
     return (
@@ -147,7 +158,7 @@ const RegisterBoxed = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <div>
+                                {/* <div>
                                     <label htmlFor="phone">Phone</label>
                                     <div className="relative text-white-dark">
                                         <input
@@ -180,7 +191,7 @@ const RegisterBoxed = () => {
                                             <IconPhoneCall fill={true} />
                                         </span>
                                     </div>
-                                </div>
+                                </div> */}
                                 <div>
                                     <label htmlFor="Password">Password</label>
                                     <div className="relative text-white-dark">
@@ -213,13 +224,14 @@ const RegisterBoxed = () => {
                                 {userData && (
                                     <div>
                                         Submitted successfully!&nbsp;
-                                        <Link to="/" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
+                                        <Link to="/" onClick={logoutHandler} className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
                                             Go to Home
                                         </Link>
                                     </div>
                                 )}
-                                {error && <div>{error}</div>}
+                                {error && <div className="text-red-600">{error}</div>}
                             </div>
+                            <div onClick={logoutHandler} className="text-center mt-7 dark:text-white cursor-pointer">Logout</div>
                             {/* <div className="relative my-7 text-center md:mb-9">
                                 <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
                                 <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-white-light">or</span>

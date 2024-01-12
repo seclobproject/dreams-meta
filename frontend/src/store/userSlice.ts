@@ -32,8 +32,6 @@ export const addNewUser = createAsyncThunk('addNewUser', async (user: any) => {
         {
             name: user.userName,
             email: user.email,
-            phone: user.phone,
-            address: user.address,
             password: user.password,
         },
         config
@@ -68,7 +66,7 @@ export const getAddNewUser = createSlice({
                 console.error('Error', action.payload);
 
                 if ((action.error.message === 'Request failed with status code 500')) {
-                    state.error = 'Please make sure you filled all the above details';
+                    state.error = 'Please make sure you filled all the above details!';
                 } else if ((action.error.message === 'Request failed with status code 400')) {
                     state.error = 'Email or Phone already used!';
                 }
