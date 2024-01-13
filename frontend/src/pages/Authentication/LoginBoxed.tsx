@@ -29,7 +29,7 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
 
     useEffect(() => {
         dispatch(setPageTitle('Login'));
-        if (userInfo) navigate('/signup');
+        if (userInfo) navigate(`/signup/${userInfo._id}`);
     }, [userInfo, navigate]);
 
     // const isDark = useAppSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);

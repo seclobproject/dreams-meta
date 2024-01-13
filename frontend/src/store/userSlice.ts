@@ -65,14 +65,66 @@ export const getAddNewUser = createSlice({
                 state.loading = false;
                 console.error('Error', action.payload);
 
-                if ((action.error.message === 'Request failed with status code 500')) {
+                if (action.error.message === 'Request failed with status code 500') {
                     state.error = 'Please make sure you filled all the above details!';
-                } else if ((action.error.message === 'Request failed with status code 400')) {
+                } else if (action.error.message === 'Request failed with status code 400') {
                     state.error = 'Email or Phone already used!';
                 }
+            });
+    },
+});
 
+// Redux action to add new user with referral
+export const addNewUserWithRefferal = createAsyncThunk('addNewUserWithRefferal', async (user: any) => {
+    const config = {
+        headers: {
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.post(
+        `${URL}/api/users/add-user-by-refferal`,
+        {
+            name: user.userName,
+            email: user.email,
+            password: user.password,
+            sponser: user.userId,
+        },
+        config
+    );
+
+    return response.data;
+});
+
+export const addNewUserWithRefferalSlice = createSlice({
+    name: 'addNewUserWithRefferalSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(addNewUserWithRefferal.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(addNewUserWithRefferal.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(addNewUserWithRefferal.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Please make sure you filled all the above details!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'Email or Phone already used!';
+                }
             });
     },
 });
 
 export const addNewUserReducer = getAddNewUser.reducer;
+export const addNewUserByReferralReducer = addNewUserWithRefferalSlice.reducer;
