@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState, useAppDispatch, useAppSelector } from '../../store';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
@@ -6,8 +6,7 @@ import { useEffect, useState } from 'react';
 import IconUser from '../../components/Icon/IconUser';
 import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
-import IconPhoneCall from '../../components/Icon/IconPhoneCall';
-import { addNewUser } from '../../store/userSlice';
+import { addNewUser, addNewUserWithRefferal } from '../../store/userSlice';
 import { logout } from '../../store/authSlice';
 // import Dropdown from '../../components/Dropdown';
 // import i18next from 'i18next';
@@ -17,7 +16,9 @@ import { logout } from '../../store/authSlice';
 // import IconTwitter from '../../components/Icon/IconTwitter';
 // import IconGoogle from '../../components/Icon/IconGoogle';
 
-const RegisterBoxed = () => {
+const RegisterWithReferral = () => {
+    const { userId } = useParams();
+
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -25,17 +26,11 @@ const RegisterBoxed = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const { loading, data: userData, error } = useAppSelector((state: any) => state.addNewUserReducer);
-    const { userInfo } = useAppSelector((state: any) => state.authReducer);
+    const { loading, data: userData, error } = useAppSelector((state: any) => state.addNewUserByReferralReducer);
 
-    // const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Register new member'));
-
-        if (!userInfo) {
-            navigate('/signin');
-        }
-    }, [userInfo]);
+    }, [userData]);
 
     // const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
     // const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
@@ -52,14 +47,15 @@ const RegisterBoxed = () => {
 
     const submitForm = (e: any) => {
         e.preventDefault();
-        const data = { userName, email, password };
-        dispatch(addNewUser(data));
+        const data = { userName, email, password, userId };
+        dispatch(addNewUserWithRefferal(data));
         // if (userData) navigate('/');
     };
-
+    
     const logoutHandler = (e: any) => {
         e.preventDefault();
         dispatch(logout());
+        navigate('/');
     };
 
     return (
@@ -227,14 +223,7 @@ const RegisterBoxed = () => {
                                 </button>
                             </form>
                             <div className="text-center mt-7 dark:text-white">
-                                {userData && (
-                                    <div>
-                                        Submitted successfully!&nbsp;
-                                        <Link to="/" onClick={logoutHandler} className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
-                                            Go to Home
-                                        </Link>
-                                    </div>
-                                )}
+                                {userData && <div>Submitted successfully!</div>}
                                 {error && <div className="text-red-600">{error}</div>}
                             </div>
                             <div onClick={logoutHandler} className="text-center mt-7 dark:text-white cursor-pointer">
@@ -292,4 +281,4 @@ const RegisterBoxed = () => {
     );
 };
 
-export default RegisterBoxed;
+export default RegisterWithReferral;

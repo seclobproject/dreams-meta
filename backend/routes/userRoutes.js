@@ -68,6 +68,56 @@ router.post(
   })
 );
 
+
+router.post(
+  "/add-user-by-refferal",
+  asyncHandler(async (req, res) => {
+
+    const ownSponserId = generateRandomString();
+
+    const { name, email, password, sponser } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      res.status(400);
+      throw new Error("User already exists!");
+    }
+
+    const earning = 0;
+    const joiningAmount = 0;
+    const children = [];
+    const currentPlan = "promoter";
+
+    const user = await User.create({
+      sponser,
+      name,
+      email,
+      password,
+      ownSponserId,
+      earning,
+      joiningAmount,
+      children,
+      currentPlan,
+    });
+
+    if (user) {
+      res.json({
+        id: user._id,
+        sponser: user.sponser,
+        name: user.name,
+        email: user.email,
+        address: user.address,
+        ownSponserId: user.ownSponserId,
+        currentPlan: user.currentPlan,
+      });
+    } else {
+      res.status(400);
+      throw new Error("Registration failed. Please try again!");
+    }
+  })
+);
+
 // Login user/admin
 router.post(
   "/login",

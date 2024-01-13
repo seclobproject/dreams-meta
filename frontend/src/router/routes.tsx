@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import RegisterWithReferral from '../pages/Authentication/RegisterWithReferral';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -442,6 +443,11 @@ const routes = [
     {
         path: '/signup',
         element: <RegisterBoxed />,
+        layout: 'blank',
+    },
+    {
+        path: '/signup/:userId',
+        element: <RegisterWithReferral />,
         layout: 'blank',
     },
     {
