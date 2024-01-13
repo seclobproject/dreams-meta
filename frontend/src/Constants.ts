@@ -1,1 +1,1 @@
-export const URL = 'http://dreamzmeta.com';
+export const URL = 'https://dreamzmeta.com';
