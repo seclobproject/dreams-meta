@@ -131,14 +131,14 @@ const RegisterBoxed = () => {
                             </div>
                             <form className="space-y-5 dark:text-white" action="#">
                                 <div>
-                                    <label htmlFor="userName">Name</label>
+                                    <label htmlFor="userName">User Name</label>
                                     <div className="relative text-white-dark">
                                         <input
                                             id="userName"
                                             value={userName}
                                             onChange={(e) => setUserName(e.target.value)}
                                             type="text"
-                                            placeholder="Enter Name"
+                                            placeholder="Enter User Name"
                                             className="form-input ps-10 placeholder:text-white-dark"
                                             required
                                         />
