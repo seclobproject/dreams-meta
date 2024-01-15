@@ -8,6 +8,8 @@ import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
 import { addNewUser, addNewUserWithRefferal } from '../../store/userSlice';
 import { logout } from '../../store/authSlice';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import Swal from 'sweetalert2';
 // import Dropdown from '../../components/Dropdown';
 // import i18next from 'i18next';
 // import IconCaretDown from '../../components/Icon/IconCaretDown';
@@ -18,6 +20,7 @@ import { logout } from '../../store/authSlice';
 
 const RegisterWithReferral = () => {
     const { userId } = useParams();
+    const [url, setUrl] = useState(window.location.href);
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -45,13 +48,45 @@ const RegisterWithReferral = () => {
     // };
     // const [flag, setFlag] = useState(themeConfig.locale);
 
+    const showAlert = async (type: number) => {
+        if (type === 15) {
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top',
+                showConfirmButton: false,
+                timer: 3000,
+            });
+            toast.fire({
+                icon: 'success',
+                title: 'Copied successfully',
+                padding: '10px 20px',
+            });
+        }
+    };
+
+    const handleShareClick = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Share',
+                    text: 'Share your refferal link',
+                    url: window.location.href,
+                });
+            } catch (error) {
+                console.error('Error sharing:', error);
+            }
+        } else {
+            console.warn('Web Share API not supported on this browser');
+        }
+    };
+
     const submitForm = (e: any) => {
         e.preventDefault();
         const data = { userName, email, password, userId };
         dispatch(addNewUserWithRefferal(data));
         // if (userData) navigate('/');
     };
-    
+
     const logoutHandler = (e: any) => {
         e.preventDefault();
         dispatch(logout());
@@ -121,20 +156,47 @@ const RegisterWithReferral = () => {
                                     <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo-dark.png" alt="logo" />
                                 </div>
                             </div>
-                            <div className="mb-10">
-                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Add new member</h1>
+                            <label htmlFor="userName">Copy your refferal ID from below</label>
+                            <div className="flex items-center mb-5">
+                                <input type="text" value={url} className="form-input" onChange={(e) => setUrl(e.target.value)} />
+                                <div className="referralBtn sm:flex sm:space-y-0 sm:space-x-2 rtl:space-x-reverse">
+                                    <div className="hidden md:block">
+                                        <CopyToClipboard
+                                            text={url}
+                                            onCopy={(text, result) => {
+                                                if (result) {
+                                                    showAlert(15);
+                                                }
+                                            }}
+                                        >
+                                            <button type="button" className="btn btn-primary ms-2">
+                                                Copy
+                                            </button>
+                                        </CopyToClipboard>
+                                    </div>
+                                    <div className="md:hidden">
+                                        <CopyToClipboard text={url}>
+                                            <button type="button" onClick={handleShareClick} className="btn btn-primary ms-2">
+                                                Share
+                                            </button>
+                                        </CopyToClipboard>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mb-10 flex flex-col items-center">
+                                <h1 className="text-xl font-extrabold uppercase !leading-snug text-primary md:text-2xl">Add new member</h1>
                                 <p className="text-base font-bold leading-normal text-white-dark">Enter member details here to register</p>
                             </div>
                             <form className="space-y-5 dark:text-white" action="#">
                                 <div>
-                                    <label htmlFor="userName">Name</label>
+                                    <label htmlFor="userName">User Name</label>
                                     <div className="relative text-white-dark">
                                         <input
                                             id="userName"
                                             value={userName}
                                             onChange={(e) => setUserName(e.target.value)}
                                             type="text"
-                                            placeholder="Enter Name"
+                                            placeholder="Enter User Name"
                                             className="form-input ps-10 placeholder:text-white-dark"
                                             required
                                         />

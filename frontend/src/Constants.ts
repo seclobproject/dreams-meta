@@ -1,1 +1,1 @@
-export const URL = 'http://dreamzmeta.com';
+export const URL = 'http://localhost:6002';

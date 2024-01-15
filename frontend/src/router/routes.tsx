@@ -105,7 +105,7 @@ const routes = [
     // dashboard
     {
         path: '/',
-        element: <Finance />,
+        element: <LoginBoxed />, //Finance
     },
     // {
     //     path: '/index',
