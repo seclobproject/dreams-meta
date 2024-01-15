@@ -156,7 +156,7 @@ const RegisterWithReferral = () => {
                                     <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo-dark.png" alt="logo" />
                                 </div>
                             </div>
-                            <label htmlFor="userName">Copy your refferal ID from below</label>
+                            <label htmlFor="userName">Copy the refferal link from below</label>
                             <div className="flex items-center mb-5">
                                 <input type="text" value={url} className="form-input" onChange={(e) => setUrl(e.target.value)} />
                                 <div className="referralBtn sm:flex sm:space-y-0 sm:space-x-2 rtl:space-x-reverse">

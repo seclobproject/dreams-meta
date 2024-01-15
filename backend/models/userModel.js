@@ -112,6 +112,13 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    autoPool: {
+      type: Boolean,
+      default: false,
+    },
+    autoPoolPlan: {
+      type: String,
+    },
   },
   {
     timestamps: true,

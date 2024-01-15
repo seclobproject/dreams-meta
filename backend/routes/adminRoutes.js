@@ -38,6 +38,15 @@ router.post(
         }
       }
 
+      if (
+        sponser.children.length >= 4 &&
+        sponser.currentPlan == "promoter" &&
+        sponser.autoPool == false
+      ) {
+        sponser.autoPool = true;
+        sponser.autoPoolPlan = "starPossession";
+      }
+
       await sponser.save();
       await user.save();
       const left = "left";
@@ -90,13 +99,13 @@ router.get(
       user.currentPlan = "crownAchiever";
 
       const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
-      
+
       const left = "crownAchieverLeft";
       const right = "crownAchieverRight";
       await bfs(parentUser, userId, left, right);
     } else if (
-      user.joiningAmount >= 200 &&
-      user.currentPlan == "crownAchiever" || "diamondAchiever"
+      (user.joiningAmount >= 200 && user.currentPlan == "crownAchiever") ||
+      "diamondAchiever"
     ) {
       user.joiningAmount -= 200;
       user.currentPlan = "diamondAchiever";
