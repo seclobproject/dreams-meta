@@ -41,13 +41,12 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    phone: {
+      type: Number,
+    },
     password: {
       type: String,
       required: true,
-    },
-    isSuperAdmin: {
-      type: Boolean,
-      default: false,
     },
     ownSponserId: {
       type: String,
@@ -111,6 +110,25 @@ const userSchema = new mongoose.Schema(
     diamondAchieverRight: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    autoPool: {
+      type: Boolean,
+      default: false,
+    },
+    autoPoolPlan: {
+      type: String,
+    },
+    autoPoolAmount: {
+      type: Number,
+      default: 0,
+    },
+    autoPoolBank: {
+      type: Number,
+      default: 0,
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
     },
   },
   {

@@ -68,11 +68,9 @@ router.post(
   })
 );
 
-
 router.post(
   "/add-user-by-refferal",
   asyncHandler(async (req, res) => {
-
     const ownSponserId = generateRandomString();
 
     const { name, email, password, sponser } = req.body;
@@ -88,6 +86,7 @@ router.post(
     const joiningAmount = 0;
     const children = [];
     const currentPlan = "promoter";
+    const autoPool = false;
 
     const user = await User.create({
       sponser,
@@ -99,6 +98,7 @@ router.post(
       joiningAmount,
       children,
       currentPlan,
+      autoPool,
     });
 
     if (user) {
@@ -131,10 +131,10 @@ router.post(
         { userId: user._id },
         "secret_of_jwt_for_dreams-meta_5959",
         {
-          expiresIn: "365d",
+          expiresIn: "800d",
         }
       );
-
+      
       res.status(200).json({
         _id: user._id,
         sponser: user.sponser,
@@ -142,7 +142,12 @@ router.post(
         email: user.email,
         ownSponserId: user.ownSponserId,
         earning: user.earning,
+        joiningAmount: user.joiningAmount,
+        autoPool: user.autoPool,
+        autoPoolPlan: user.autoPoolPlan,
+        autoPoolAmount: user.autoPoolAmount,
         userStatus: user.userStatus,
+        isAdmin: user.isAdmin,
         children: user.children,
         token_type: "Bearer",
         access_token: token,
@@ -276,7 +281,6 @@ router.post(
 //     }
 //   })
 // );
-
 
 // GET: All users to admin (under that specific admin with his referralID)
 
@@ -497,11 +501,7 @@ router.post(
 //   })
 // );
 
-
-
-
 // GET: Upgrade plan from current to next level
-
 
 router.get(
   "/upgrade-plan",
@@ -513,13 +513,13 @@ router.get(
 
     if (user) {
       if (user.currentPlan == "promoter") {
-
         if (user.joiningAmount >= 60) {
           user.currentPlan = "royalAchiever";
           user.joiningAmount -= 60;
+          if (user.autoPool == true) {
+            user.autoPoolPlan = "silverPossession";
+          }
           const updatedUser = await user.save();
-
-          
 
           if (updatedUser) {
             res.status(201).json({
@@ -538,11 +538,12 @@ router.get(
             msg: "Insufficient amount to upgrade the plan!",
           });
         }
-
       } else if (currentPlan == "royalAchiever") {
-
         if (user.joiningAmount >= 100) {
           user.currentPlan = "crownAchiever";
+          if (user.autoPool == true) {
+            user.autoPoolPlan = "goldPossession";
+          }
           const updatedUser = await user.save();
 
           if (updatedUser) {
@@ -562,11 +563,12 @@ router.get(
             msg: "Insufficient amount to upgrade the plan!",
           });
         }
-
       } else if (currentPlan == "crownAchiever") {
-
         if (user.joiningAmount >= 200) {
           user.currentPlan = "diamondAchiever";
+          if (user.autoPool == true) {
+            user.autoPoolPlan = "diamondPossession";
+          }
           const updatedUser = await user.save();
 
           if (updatedUser) {
@@ -586,9 +588,7 @@ router.get(
             msg: "Insufficient amount to upgrade the plan!",
           });
         }
-
       }
-
     } else {
       res.status(404).json({ sts: "00", msg: "User not found!" });
     }

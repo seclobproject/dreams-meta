@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom';
 import Dropdown from '../components/Dropdown';
 import ReactApexChart from 'react-apexcharts';
 import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../store';
+import { IRootState, useAppSelector } from '../store';
 import { setPageTitle } from '../store/themeConfigSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import IconHorizontalDots from '../components/Icon/IconHorizontalDots';
 import IconEye from '../components/Icon/IconEye';
 import IconBitcoin from '../components/Icon/IconBitcoin';
@@ -15,9 +15,24 @@ import IconTether from '../components/Icon/IconTether';
 import IconSolana from '../components/Icon/IconSolana';
 import IconCircleCheck from '../components/Icon/IconCircleCheck';
 import IconInfoCircle from '../components/Icon/IconInfoCircle';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import IconPencilPaper from '../components/Icon/IconPencilPaper';
+import IconCoffee from '../components/Icon/IconCoffee';
+import IconCalendar from '../components/Icon/IconCalendar';
+import IconMapPin from '../components/Icon/IconMapPin';
+import IconMail from '../components/Icon/IconMail';
+import IconPhone from '../components/Icon/IconPhone';
+import IconTwitter from '../components/Icon/IconTwitter';
+import IconDribbble from '../components/Icon/IconDribbble';
+import IconGithub from '../components/Icon/IconGithub';
 
 const Finance = () => {
     const dispatch = useDispatch();
+
+    const { userInfo } = useAppSelector((state: any) => state.authReducer);
+
+    const [url, setUrl] = useState(`https://dreamzmeta.com/signup/${userInfo._id}`);
+
     useEffect(() => {
         dispatch(setPageTitle('Finance'));
     });
@@ -391,7 +406,7 @@ const Finance = () => {
 
     return (
         <div>
-            <ul className="flex space-x-2 rtl:space-x-reverse">
+            {/* <ul className="flex space-x-2 rtl:space-x-reverse">
                 <li>
                     <Link to="#" className="text-primary hover:underline">
                         Dashboard
@@ -400,212 +415,108 @@ const Finance = () => {
                 <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
                     <span>Finance</span>
                 </li>
-            </ul>
+            </ul> */}
             <div className="pt-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-6 text-white">
-                    <div className="panel bg-gradient-to-r from-cyan-500 to-cyan-400">
-                        <div className="flex justify-between">
-                            <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Users Visit</div>
-                            <div className="dropdown">
-                                <Dropdown
-                                    offset={[0, 5]}
-                                    placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                    btnClassName="hover:opacity-80"
-                                    button={<IconHorizontalDots className="hover:opacity-80 opacity-70" />}
-                                >
-                                    <ul className="text-black dark:text-white-dark">
-                                        <li>
-                                            <button type="button">View Report</button>
-                                        </li>
-                                        <li>
-                                            <button type="button">Edit Report</button>
-                                        </li>
-                                    </ul>
-                                </Dropdown>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 text-white">
+                    <div className="panel">
+                        <div className="flex items-center justify-between mb-5">
+                            <h5 className="font-semibold text-lg dark:text-white-light">Profile</h5>
+                            <Link to="/users/user-account-settings" className="ltr:ml-auto rtl:mr-auto btn btn-primary p-2 rounded-full">
+                                <IconPencilPaper />
+                            </Link>
+                        </div>
+                        <div className="">
+                            <div className="flex flex-col justify-center items-center">
+                                <img src="/assets/images/user-silhouette.png" alt="img" className="w-16 h-16 rounded-full object-cover  mb-5" />
+                                <p className="font-semibold text-primary text-xl">{userInfo.name}</p>
                             </div>
+                            <ul className="mt-5 flex flex-col max-w-[160px] m-auto space-y-4 font-semibold text-white-dark">
+                                <li className="flex items-center gap-2">Sponsor ID: ${userInfo.ownSponserId}</li>
+                                <li>Account Status: {userInfo.userStatus == 'true' ? <span className="text-green-600">Activated</span> : <span className="text-red-700">Pending</span>}</li>
+                                <li>Auto Pool: {userInfo.autoPool == false ? <span className="text-red-700">Not Activated</span> : <span className="text-green-600">Activated</span>}</li>
+                            </ul>
                         </div>
-                        <div className="flex items-center mt-5">
-                            <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> $170.46 </div>
-                            <div className="badge bg-white/30">+ 2.35% </div>
-                        </div>
-                        <div className="flex items-center font-semibold mt-5">
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="panel bg-gradient-to-r from-cyan-500 to-cyan-400">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Wallet Amount</div>
+                            </div>
+                            <div className="flex items-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> ${userInfo.earning} </div>
+                                {/* <div className="badge bg-white/30">+ 2.35% </div> */}
+                            </div>
+                            {/* <div className="flex items-center font-semibold mt-5">
                             <IconEye className="ltr:mr-2 rtl:ml-2 shrink-0" />
                             Last Week 44,700
+                        </div> */}
                         </div>
-                    </div>
 
-                    {/* Sessions */}
-                    <div className="panel bg-gradient-to-r from-violet-500 to-violet-400">
-                        <div className="flex justify-between">
-                            <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Sessions</div>
-                            <div className="dropdown">
-                                <Dropdown
-                                    offset={[0, 5]}
-                                    placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                    btnClassName="hover:opacity-80"
-                                    button={<IconHorizontalDots className="hover:opacity-80 opacity-70" />}
-                                >
-                                    <ul className="text-black dark:text-white-dark">
-                                        <li>
-                                            <button type="button">View Report</button>
-                                        </li>
-                                        <li>
-                                            <button type="button">Edit Report</button>
-                                        </li>
-                                    </ul>
-                                </Dropdown>
+                        {/* Sessions */}
+                        <div className="panel bg-gradient-to-r from-violet-500 to-violet-400">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Direct Refferals</div>
                             </div>
-                        </div>
-                        <div className="flex items-center mt-5">
-                            <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> 74,137 </div>
-                            <div className="badge bg-white/30">- 2.35% </div>
-                        </div>
-                        <div className="flex items-center font-semibold mt-5">
+                            <div className="flex items-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> {userInfo.children.length} </div>
+                                {/* <div className="badge bg-white/30">- 2.35% </div> */}
+                            </div>
+                            {/* <div className="flex items-center font-semibold mt-5">
                             <IconEye className="ltr:mr-2 rtl:ml-2 shrink-0" />
                             Last Week 84,709
+                        </div> */}
                         </div>
-                    </div>
-
-                    {/*  Time On-Site */}
-                    <div className="panel bg-gradient-to-r from-blue-500 to-blue-400">
-                        <div className="flex justify-between">
-                            <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Time On-Site</div>
-                            <div className="dropdown">
-                                <Dropdown
-                                    offset={[0, 5]}
-                                    placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                    btnClassName="hover:opacity-80"
-                                    button={<IconHorizontalDots className="hover:opacity-80 opacity-70" />}
-                                >
-                                    <ul className="text-black dark:text-white-dark">
-                                        <li>
-                                            <button type="button">View Report</button>
-                                        </li>
-                                        <li>
-                                            <button type="button">Edit Report</button>
-                                        </li>
-                                    </ul>
-                                </Dropdown>
+                        {/*  Time On-Site */}
+                        <div className="panel bg-gradient-to-r from-blue-500 to-blue-400">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Rejoining Wallet Amount</div>
                             </div>
-                        </div>
-                        <div className="flex items-center mt-5">
-                            <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> 38,085 </div>
-                            <div className="badge bg-white/30">+ 1.35% </div>
-                        </div>
-                        <div className="flex items-center font-semibold mt-5">
+                            <div className="flex items-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> ${userInfo.joiningAmount} </div>
+                                {/* <div className="badge bg-white/30">+ 1.35% </div> */}
+                            </div>
+                            {/* <div className="flex items-center font-semibold mt-5">
                             <IconEye className="ltr:mr-2 rtl:ml-2 shrink-0" />
                             Last Week 37,894
+                        </div> */}
                         </div>
-                    </div>
-
-                    {/* Bounce Rate */}
-                    <div className="panel bg-gradient-to-r from-fuchsia-500 to-fuchsia-400">
-                        <div className="flex justify-between">
-                            <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Bounce Rate</div>
-                            <div className="dropdown">
-                                <Dropdown
-                                    offset={[0, 5]}
-                                    placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                    btnClassName="hover:opacity-80"
-                                    button={<IconHorizontalDots className="hover:opacity-80 opacity-70" />}
-                                >
-                                    <ul className="text-black dark:text-white-dark">
-                                        <li>
-                                            <button type="button">View Report</button>
-                                        </li>
-                                        <li>
-                                            <button type="button">Edit Report</button>
-                                        </li>
-                                    </ul>
-                                </Dropdown>
+                        {/* Bounce Rate */}
+                        <div className="panel bg-gradient-to-r from-fuchsia-500 to-fuchsia-400">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Refferal Link</div>
                             </div>
-                        </div>
-                        <div className="flex items-center mt-5">
-                            <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> 49.10% </div>
-                            <div className="badge bg-white/30">- 0.35% </div>
-                        </div>
-                        <div className="flex items-center font-semibold mt-5">
-                            <IconEye className="ltr:mr-2 rtl:ml-2 shrink-0" />
-                            Last Week 50.01%
+                            <div className="flex items-center my-5">
+                                <input type="text" value={url} className="form-input" onChange={(e) => setUrl(e.target.value)} />
+                                <div className="referralBtn sm:flex sm:space-y-0 sm:space-x-2 rtl:space-x-reverse">
+                                    <CopyToClipboard
+                                        text={url}
+                                        onCopy={(text, result) => {
+                                            if (result) {
+                                                alert('Refferal link copied successfully!');
+                                            }
+                                        }}
+                                    >
+                                        <button type="button" className="btn btn-primary ms-2">
+                                            Copy
+                                        </button>
+                                    </CopyToClipboard>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    {/*  Favorites  */}
-                    <div>
-                        <div className="flex items-center mb-5 font-bold">
-                            <span className="text-lg">Favorites</span>
-                            <button type="button" className="ltr:ml-auto rtl:mr-auto text-primary hover:text-black dark:hover:text-white-dark">
-                                See All
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:mb-5">
-                            {/*  Bitcoin  */}
-                            <div className="panel">
-                                <div className="flex items-center font-semibold mb-5">
-                                    <div className="shrink-0 w-10 h-10 rounded-full grid place-content-center">
-                                        <IconBitcoin />
-                                    </div>
-                                    <div className="ltr:ml-2 rtl:mr-2">
-                                        <h6 className="text-dark dark:text-white-light">BTC</h6>
-                                        <p className="text-white-dark text-xs">Bitcoin</p>
-                                    </div>
-                                </div>
-                                <div className="mb-5 overflow-hidden">
-                                    <ReactApexChart series={bitcoin.series} options={bitcoin.options} type="line" height={45} />
-                                </div>
-                                <div className="flex justify-between items-center font-bold text-base">
-                                    $20,000 <span className="text-success font-normal text-sm">+0.25%</span>
-                                </div>
-                            </div>
-                            {/*  Ethereum*/}
-                            <div className="panel">
-                                <div className="flex items-center font-semibold mb-5">
-                                    <div className="shrink-0 w-10 h-10 bg-warning rounded-full grid place-content-center p-2">
-                                        <IconEthereum />
-                                    </div>
-                                    <div className="ltr:ml-2 rtl:mr-2">
-                                        <h6 className="text-dark dark:text-white-light">ETH</h6>
-                                        <p className="text-white-dark text-xs">Ethereum</p>
-                                    </div>
-                                </div>
-                                <div className="mb-5 overflow-hidden">
-                                    <ReactApexChart series={ethereum.series} options={ethereum.options} type="line" height={45} />
-                                </div>
-                                <div className="flex justify-between items-center font-bold text-base">
-                                    $21,000 <span className="text-danger font-normal text-sm">-1.25%</span>
-                                </div>
-                            </div>
-                            {/*  Litecoin*/}
-                            <div className="panel">
-                                <div className="flex items-center font-semibold mb-5">
-                                    <div className="shrink-0 w-10 h-10 rounded-full grid place-content-center">
-                                        <IconLitecoin />
-                                    </div>
-                                    <div className="ltr:ml-2 rtl:mr-2">
-                                        <h6 className="text-dark dark:text-white-light">LTC</h6>
-                                        <p className="text-white-dark text-xs">Litecoin</p>
-                                    </div>
-                                </div>
-                                <div className="mb-5 overflow-hidden">
-                                    <ReactApexChart series={litecoin.series} options={litecoin.options} type="line" height={45} />
-                                </div>
-                                <div className="flex justify-between items-center font-bold text-base">
-                                    $11,657 <span className="text-success font-normal text-sm">+0.25%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div className="">
                     {/*  Prices  */}
                     <div>
-                        <div className="flex items-center mb-5 font-bold">
+                        {/* <div className="flex items-center mb-5 font-bold">
                             <span className="text-lg">Live Prices</span>
                             <button type="button" className="ltr:ml-auto rtl:mr-auto text-primary hover:text-black dark:hover:text-white-dark">
                                 See All
                             </button>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+                        </div> */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-6 mb-6">
                             {/*  Binance */}
                             <div className="panel">
                                 <div className="flex items-center font-semibold mb-5">
@@ -660,170 +571,61 @@ const Finance = () => {
                                     $21,000 <span className="text-danger font-normal text-sm">-1.25%</span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <div className="grid gap-6 xl:grid-flow-row">
-                        {/*  Previous Statement  */}
-                        <div className="panel overflow-hidden">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="text-lg font-bold">Previous Statement</div>
-                                    <div className="text-success"> Paid on June 27, 2022 </div>
-                                </div>
-                                <div className="dropdown">
-                                    <Dropdown
-                                        offset={[0, 5]}
-                                        placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                        btnClassName="hover:opacity-80"
-                                        button={<IconHorizontalDots className="hover:opacity-80 opacity-70" />}
-                                    >
-                                        <ul>
-                                            <li>
-                                                <button type="button">View Report</button>
-                                            </li>
-                                            <li>
-                                                <button type="button">Edit Report</button>
-                                            </li>
-                                        </ul>
-                                    </Dropdown>
-                                </div>
-                            </div>
-                            <div className="relative mt-10">
-                                <div className="absolute -bottom-12 ltr:-right-12 rtl:-left-12 w-24 h-24">
-                                    <IconCircleCheck className="text-success opacity-20 w-full h-full" />
-                                </div>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                    <div>
-                                        <div className="text-primary">Card Limit</div>
-                                        <div className="mt-2 font-semibold text-2xl">$50,000.00</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-primary">Spent</div>
-                                        <div className="mt-2 font-semibold text-2xl">$15,000.00</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-primary">Minimum</div>
-                                        <div className="mt-2 font-semibold text-2xl">$2,500.00</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/*  Current Statement */}
-                        <div className="panel overflow-hidden">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="text-lg font-bold">Current Statement</div>
-                                    <div className="text-danger"> Must be paid before July 27, 2022 </div>
-                                </div>
-                                <div className="dropdown">
-                                    <Dropdown offset={[0, 5]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} button={<IconHorizontalDots className="hover:opacity-80 opacity-70" />}>
-                                        <ul>
-                                            <li>
-                                                <button type="button">View Report</button>
-                                            </li>
-                                            <li>
-                                                <button type="button">Edit Report</button>
-                                            </li>
-                                        </ul>
-                                    </Dropdown>
-                                </div>
-                            </div>
-                            <div className="relative mt-10">
-                                <div className="absolute -bottom-12 ltr:-right-12 rtl:-left-12 w-24 h-24">
-                                    <IconInfoCircle className="text-danger opacity-20 w-24 h-full" />
-                                </div>
 
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                    <div>
-                                        <div className="text-primary">Card Limit</div>
-                                        <div className="mt-2 font-semibold text-2xl">$50,000.00</div>
+                            {/*  Bitcoin  */}
+                            <div className="panel">
+                                <div className="flex items-center font-semibold mb-5">
+                                    <div className="shrink-0 w-10 h-10 rounded-full grid place-content-center">
+                                        <IconBitcoin />
                                     </div>
-                                    <div>
-                                        <div className="text-primary">Spent</div>
-                                        <div className="mt-2 font-semibold text-2xl">$30,500.00</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-primary">Minimum</div>
-                                        <div className="mt-2 font-semibold text-2xl">$8,000.00</div>
+                                    <div className="ltr:ml-2 rtl:mr-2">
+                                        <h6 className="text-dark dark:text-white-light">BTC</h6>
+                                        <p className="text-white-dark text-xs">Bitcoin</p>
                                     </div>
                                 </div>
+                                <div className="mb-5 overflow-hidden">
+                                    <ReactApexChart series={bitcoin.series} options={bitcoin.options} type="line" height={45} />
+                                </div>
+                                <div className="flex justify-between items-center font-bold text-base">
+                                    $20,000 <span className="text-success font-normal text-sm">+0.25%</span>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    {/*  Recent Transactions  */}
-                    <div className="panel">
-                        <div className="mb-5 text-lg font-bold">Recent Transactions</div>
-                        <div className="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th className="ltr:rounded-l-md rtl:rounded-r-md">ID</th>
-                                        <th>DATE</th>
-                                        <th>NAME</th>
-                                        <th>AMOUNT</th>
-                                        <th className="text-center ltr:rounded-r-md rtl:rounded-l-md">STATUS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td className="font-semibold">#01</td>
-                                        <td className="whitespace-nowrap">Oct 08, 2021</td>
-                                        <td className="whitespace-nowrap">Eric Page</td>
-                                        <td>$1,358.75</td>
-                                        <td className="text-center">
-                                            <span className="badge bg-success/20 text-success rounded-full hover:top-0">Completed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="font-semibold">#02</td>
-                                        <td className="whitespace-nowrap">Dec 18, 2021</td>
-                                        <td className="whitespace-nowrap">Nita Parr</td>
-                                        <td>-$1,042.82</td>
-                                        <td className="text-center">
-                                            <span className="badge bg-info/20 text-info rounded-full hover:top-0">In Process</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="font-semibold">#03</td>
-                                        <td className="whitespace-nowrap">Dec 25, 2021</td>
-                                        <td className="whitespace-nowrap">Carl Bell</td>
-                                        <td>$1,828.16</td>
-                                        <td className="text-center">
-                                            <span className="badge bg-danger/20 text-danger rounded-full hover:top-0">Pending</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="font-semibold">#04</td>
-                                        <td className="whitespace-nowrap">Nov 29, 2021</td>
-                                        <td className="whitespace-nowrap">Dan Hart</td>
-                                        <td>$1,647.55</td>
-                                        <td className="text-center">
-                                            <span className="badge bg-success/20 text-success rounded-full hover:top-0">Completed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="font-semibold">#05</td>
-                                        <td className="whitespace-nowrap">Nov 24, 2021</td>
-                                        <td className="whitespace-nowrap">Jake Ross</td>
-                                        <td>$927.43</td>
-                                        <td className="text-center">
-                                            <span className="badge bg-success/20 text-success rounded-full hover:top-0">Completed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="font-semibold">#06</td>
-                                        <td className="whitespace-nowrap">Jan 26, 2022</td>
-                                        <td className="whitespace-nowrap">Anna Bell</td>
-                                        <td>$250.00</td>
-                                        <td className="text-center">
-                                            <span className="badge bg-info/20 text-info rounded-full hover:top-0">In Process</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            {/*  Ethereum*/}
+                            <div className="panel">
+                                <div className="flex items-center font-semibold mb-5">
+                                    <div className="shrink-0 w-10 h-10 bg-warning rounded-full grid place-content-center p-2">
+                                        <IconEthereum />
+                                    </div>
+                                    <div className="ltr:ml-2 rtl:mr-2">
+                                        <h6 className="text-dark dark:text-white-light">ETH</h6>
+                                        <p className="text-white-dark text-xs">Ethereum</p>
+                                    </div>
+                                </div>
+                                <div className="mb-5 overflow-hidden">
+                                    <ReactApexChart series={ethereum.series} options={ethereum.options} type="line" height={45} />
+                                </div>
+                                <div className="flex justify-between items-center font-bold text-base">
+                                    $21,000 <span className="text-danger font-normal text-sm">-1.25%</span>
+                                </div>
+                            </div>
+                            {/*  Litecoin*/}
+                            <div className="panel">
+                                <div className="flex items-center font-semibold mb-5">
+                                    <div className="shrink-0 w-10 h-10 rounded-full grid place-content-center">
+                                        <IconLitecoin />
+                                    </div>
+                                    <div className="ltr:ml-2 rtl:mr-2">
+                                        <h6 className="text-dark dark:text-white-light">LTC</h6>
+                                        <p className="text-white-dark text-xs">Litecoin</p>
+                                    </div>
+                                </div>
+                                <div className="mb-5 overflow-hidden">
+                                    <ReactApexChart series={litecoin.series} options={litecoin.options} type="line" height={45} />
+                                </div>
+                                <div className="flex justify-between items-center font-bold text-base">
+                                    $11,657 <span className="text-success font-normal text-sm">+0.25%</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
