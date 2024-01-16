@@ -86,6 +86,7 @@ router.post(
     const joiningAmount = 0;
     const children = [];
     const currentPlan = "promoter";
+    const autoPool = false;
 
     const user = await User.create({
       sponser,
@@ -97,6 +98,7 @@ router.post(
       joiningAmount,
       children,
       currentPlan,
+      autoPool,
     });
 
     if (user) {
@@ -129,10 +131,10 @@ router.post(
         { userId: user._id },
         "secret_of_jwt_for_dreams-meta_5959",
         {
-          expiresIn: "365d",
+          expiresIn: "800d",
         }
       );
-
+      
       res.status(200).json({
         _id: user._id,
         sponser: user.sponser,
@@ -143,7 +145,9 @@ router.post(
         joiningAmount: user.joiningAmount,
         autoPool: user.autoPool,
         autoPoolPlan: user.autoPoolPlan,
+        autoPoolAmount: user.autoPoolAmount,
         userStatus: user.userStatus,
+        isAdmin: user.isAdmin,
         children: user.children,
         token_type: "Bearer",
         access_token: token,

@@ -23,6 +23,10 @@ router.post(
       // Approve the user
       user.userStatus = true;
 
+      // Add $2 to Auto Pool bank of admin
+      admin.autoPoolBank += 2;
+      const updateAutoPoolBank = await admin.save();
+
       // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
       let sponser;
       if (user.sponser) {
@@ -82,10 +86,13 @@ router.get(
   asyncHandler(async (req, res) => {
     const { userId } = req.body;
     const user = await User.findById(userId);
+    const admin = await User.findOne({ isAdmin: true });
 
     if (user.joiningAmount >= 60 && user.currentPlan == "promoter") {
       user.joiningAmount -= 60;
       user.currentPlan = "royalAchiever";
+
+      admin.autoPoolBank += 4;
 
       const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
       const left = "royalAchieverLeft";
@@ -98,17 +105,21 @@ router.get(
       user.joiningAmount -= 100;
       user.currentPlan = "crownAchiever";
 
+      admin.autoPoolBank += 7.5;
+
       const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
 
       const left = "crownAchieverLeft";
       const right = "crownAchieverRight";
       await bfs(parentUser, userId, left, right);
     } else if (
-      (user.joiningAmount >= 200 && user.currentPlan == "crownAchiever") ||
-      "diamondAchiever"
+      user.joiningAmount >= 200 &&
+      (user.currentPlan == "crownAchiever" || "diamondAchiever")
     ) {
       user.joiningAmount -= 200;
       user.currentPlan = "diamondAchiever";
+
+      admin.autoPoolBank += 15;
 
       const parentUser = await User.findOne({ currentPlan: "diamondAchiever" });
       const left = "diamondAchieverLeft";
@@ -116,6 +127,7 @@ router.get(
       await bfs(parentUser, userId, left, right);
     }
 
+    const updateAdmin = await admin.save()
     const updateUser = await user.save();
     if (updateUser) {
       res.status(200).json({ msg: "Success" });

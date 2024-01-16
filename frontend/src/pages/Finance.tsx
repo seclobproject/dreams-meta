@@ -427,13 +427,13 @@ const Finance = () => {
                         </div>
                         <div className="">
                             <div className="flex flex-col justify-center items-center">
-                                <img src="/assets/images/user-silhouette.png" alt="img" className="w-24 h-24 rounded-full object-cover  mb-5" />
+                                <img src="/assets/images/user-silhouette.png" alt="img" className="w-16 h-16 rounded-full object-cover  mb-5" />
                                 <p className="font-semibold text-primary text-xl">{userInfo.name}</p>
                             </div>
                             <ul className="mt-5 flex flex-col max-w-[160px] m-auto space-y-4 font-semibold text-white-dark">
                                 <li className="flex items-center gap-2">Sponsor ID: ${userInfo.ownSponserId}</li>
-                                <li className="flex items-center gap-2">Account Status: {userInfo.userStatus == 'true' ? `Activated` : `Pending`}</li>
-                                <li className="flex items-center gap-2">Auto Pool: {userInfo.autoPool}</li>
+                                <li>Account Status: {userInfo.userStatus == 'true' ? <span className="text-green-600">Activated</span> : <span className="text-red-700">Pending</span>}</li>
+                                <li>Auto Pool: {userInfo.autoPool == false ? <span className="text-red-700">Not Activated</span> : <span className="text-green-600">Activated</span>}</li>
                             </ul>
                         </div>
                     </div>
