@@ -600,8 +600,7 @@ router.put(
   "/edit-profile",
   protect,
   asyncHandler(async (req, res) => {
-
-    const user = await User.findById(req.body.userId);
+    const user = await User.findById(req.user._id);
 
     if (user) {
       user.name = req.body.name || user.name;
@@ -613,14 +612,56 @@ router.put(
 
       const updatedUser = await user.save();
 
-      res.json({
+      const token = jwt.sign(
+        { userId: user._id },
+        "secret_of_jwt_for_dreams-meta_5959",
+        {
+          expiresIn: "800d",
+        }
+      );
+
+      res.status(200).json({
         _id: updatedUser._id,
+        sponser: updatedUser.sponser,
         name: updatedUser.name,
+        email: updatedUser.email,
+        ownSponserId: updatedUser.ownSponserId,
+        earning: updatedUser.earning,
+        joiningAmount: updatedUser.joiningAmount,
+        autoPool: updatedUser.autoPool,
+        autoPoolPlan: updatedUser.autoPoolPlan,
+        autoPoolAmount: updatedUser.autoPoolAmount,
+        userStatus: updatedUser.userStatus,
+        isAdmin: updatedUser.isAdmin,
+        children: updatedUser.children,
+        token_type: "Bearer",
+        access_token: token,
+        sts: "01",
+        msg: "Login Success",
       });
     } else {
       res.status(404);
       throw new Error("User not found");
     }
+  })
+);
+
+// Get all users under you
+router.get(
+  "/get-users",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate("children");
+    const sponsors = user.children;
+
+    if (user) {
+      res.status(200).json({ sts: "01", sponsors });
+    } else {
+      res.status(400).json({ sts: "00", msg: "Fetching data failed!" });
+    }
+    
   })
 );
 

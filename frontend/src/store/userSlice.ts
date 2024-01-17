@@ -60,6 +60,8 @@ export const getAddNewUser = createSlice({
             .addCase(addNewUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload;
+                localStorage.removeItem('userInfo');
+                localStorage.setItem('userInfo', JSON.stringify(action.payload));
             })
             .addCase(addNewUser.rejected, (state, action) => {
                 state.loading = false;
@@ -126,5 +128,109 @@ export const addNewUserWithRefferalSlice = createSlice({
     },
 });
 
+// Redux action to edit user profile
+export const editUserProfile = createAsyncThunk('editUserProfile', async (user: any) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.put(
+        `${URL}/api/users/edit-profile`,
+        {
+            name: user.userName,
+            email: user.email,
+            password: user.password,
+        },
+        config
+    );
+
+    return response.data;
+});
+
+export const editUserSlice = createSlice({
+    name: 'editUserSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(editUserProfile.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(editUserProfile.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(editUserProfile.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Please make sure you filled all the above details!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'Email or Phone already used!';
+                }
+            });
+    },
+});
+
+// Redux action to edit user profile
+export const getAllSponsors = createAsyncThunk('getAllSponsors', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/get-users`, config);
+
+    return response.data;
+});
+
+export const getAllUsersSlice = createSlice({
+    name: 'getAllUsersSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getAllSponsors.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getAllSponsors.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getAllSponsors.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Please make sure you filled all the above details!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'Email or Phone already used!';
+                }
+            });
+    },
+});
+
 export const addNewUserReducer = getAddNewUser.reducer;
 export const addNewUserByReferralReducer = addNewUserWithRefferalSlice.reducer;
+export const editUserReducer = editUserSlice.reducer;
+export const getAllUsersReducer = getAllUsersSlice.reducer;

@@ -9,6 +9,8 @@ import IconBell from '../../components/Icon/IconBell';
 import IconXCircle from '../../components/Icon/IconXCircle';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { getAllSponsors } from '../../store/userSlice';
 
 const rowData = [
     {
@@ -514,10 +516,20 @@ const rowData = [
 ];
 
 const MultipleTables = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+
+    const { loading, data, error } = useAppSelector((state: any) => state.getAllUsersReducer);
+
+    let sponsors;
+    if (data) {
+        sponsors = data.sponsors;
+    }
+    
     useEffect(() => {
         dispatch(setPageTitle('Multiple Tables'));
+        dispatch(getAllSponsors());
     });
+
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
@@ -630,7 +642,7 @@ const MultipleTables = () => {
 
     return (
         <div>
-            <div className="panel flex items-center overflow-x-auto whitespace-nowrap p-3 text-primary">
+            {/* <div className="panel flex items-center overflow-x-auto whitespace-nowrap p-3 text-primary">
                 <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
                     <IconBell />
                 </div>
@@ -638,7 +650,7 @@ const MultipleTables = () => {
                 <a href="https://www.npmjs.com/package/mantine-datatable" target="_blank" className="block hover:underline">
                     https://www.npmjs.com/package/mantine-datatable
                 </a>
-            </div>
+            </div> */}
 
             <div className="panel mt-6">
                 <div className="flex md:items-center md:flex-row flex-col mb-5 gap-5">
@@ -702,82 +714,6 @@ const MultipleTables = () => {
                         onRecordsPerPageChange={setPageSize}
                         sortStatus={sortStatus}
                         onSortStatusChange={setSortStatus}
-                        minHeight={200}
-                        paginationText={({ from, to, totalRecords }) => `Showing  ${from} to ${to} of ${totalRecords} entries`}
-                    />
-                </div>
-            </div>
-
-            <div className="panel mt-6">
-                <div className="flex md:items-center md:flex-row flex-col mb-5 gap-5">
-                    <h5 className="font-semibold text-lg dark:text-white-light">Table 2</h5>
-                    <div className="ltr:ml-auto rtl:mr-auto">
-                        <input type="text" className="form-input w-auto" placeholder="Search..." value={search2} onChange={(e) => setSearch2(e.target.value)} />
-                    </div>
-                </div>
-                <div className="datatables">
-                    <DataTable
-                        className="whitespace-nowrap table-hover"
-                        records={recordsData2}
-                        columns={[
-                            {
-                                accessor: 'firstName',
-                                title: 'Name',
-                                sortable: true,
-                                render: ({ firstName, lastName, id }) => (
-                                    <div className="flex items-center w-max">
-                                        <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={`/assets/images/profile-${id}.jpeg`} alt="" />
-                                        <div>{firstName + ' ' + lastName}</div>
-                                    </div>
-                                ),
-                            },
-                            {
-                                accessor: 'age',
-                                title: 'Age',
-                                sortable: true,
-                                render: ({ age }) => (
-                                    <div className="w-4/5 min-w-[100px] h-2.5 bg-[#ebedf2] dark:bg-dark/40 rounded-full flex">
-                                        <div className={`h-2.5 rounded-full rounded-bl-full text-center text-white text-xs bg-${randomColor()}`} style={{ width: `${age}%` }}></div>
-                                    </div>
-                                ),
-                            },
-                            { accessor: 'company', title: 'Company', sortable: true },
-                            {
-                                accessor: 'dob',
-                                title: 'Start Date',
-                                sortable: true,
-                                render: ({ dob }) => <div>{formatDate(dob)}</div>,
-                            },
-                            { accessor: 'email', title: 'Email', sortable: true },
-                            { accessor: 'phone', title: 'Phone No.', sortable: true },
-                            {
-                                accessor: 'action',
-                                title: 'Action',
-                                titleClassName: '!text-center',
-                                render: () => (
-                                    <div className="flex items-center w-max mx-auto gap-2">
-                                        <Tippy content="Edit">
-                                            <button type="button">
-                                                <IconPencil />
-                                            </button>
-                                        </Tippy>
-                                        <Tippy content="Delete">
-                                            <button type="button">
-                                                <IconTrashLines />
-                                            </button>
-                                        </Tippy>
-                                    </div>
-                                ),
-                            },
-                        ]}
-                        totalRecords={initialRecords2.length}
-                        recordsPerPage={pageSize2}
-                        page={page2}
-                        onPageChange={(p) => setPage2(p)}
-                        recordsPerPageOptions={PAGE_SIZES}
-                        onRecordsPerPageChange={setPageSize2}
-                        sortStatus={sortStatus2}
-                        onSortStatusChange={setSortStatus2}
                         minHeight={200}
                         paginationText={({ from, to, totalRecords }) => `Showing  ${from} to ${to} of ${totalRecords} entries`}
                     />
