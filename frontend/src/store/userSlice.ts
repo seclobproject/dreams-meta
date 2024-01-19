@@ -184,7 +184,7 @@ export const editUserSlice = createSlice({
 });
 
 // Redux action to edit user profile
-export const getAllSponsors = createAsyncThunk('getAllSponsors', async () => {
+export const getAllUsers = createAsyncThunk('getAllSponsors', async () => {
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
 
@@ -210,14 +210,14 @@ export const getAllUsersSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(getAllSponsors.pending, (state: any) => {
+            .addCase(getAllUsers.pending, (state: any) => {
                 state.loading = true;
             })
-            .addCase(getAllSponsors.fulfilled, (state, action) => {
+            .addCase(getAllUsers.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload;
             })
-            .addCase(getAllSponsors.rejected, (state, action) => {
+            .addCase(getAllUsers.rejected, (state, action) => {
                 state.loading = false;
                 console.error('Error', action.payload);
 
@@ -230,7 +230,59 @@ export const getAllUsersSlice = createSlice({
     },
 });
 
+
+// Redux action to get the user details
+export const getUserDetails = createAsyncThunk('getUserDetails', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/get-user-details`, config);
+
+    return response.data;
+});
+
+export const getUserDetailsSlice = createSlice({
+    name: 'getUserDetailsSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getUserDetails.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getUserDetails.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getUserDetails.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Some internal server error occured!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'User not found!';
+                }
+
+            });
+    },
+});
+
+
+
 export const addNewUserReducer = getAddNewUser.reducer;
 export const addNewUserByReferralReducer = addNewUserWithRefferalSlice.reducer;
 export const editUserReducer = editUserSlice.reducer;
 export const getAllUsersReducer = getAllUsersSlice.reducer;
+export const getUserDetailsReducer = getUserDetailsSlice.reducer;

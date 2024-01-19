@@ -10,7 +10,7 @@ import IconXCircle from '../../components/Icon/IconXCircle';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
 import { useAppDispatch, useAppSelector } from '../../store';
-import { getAllSponsors } from '../../store/userSlice';
+import { getAllUsers } from '../../store/userSlice';
 
 const rowData = [
     {
@@ -520,25 +520,23 @@ const MultipleTables = () => {
 
     const { loading, data, error } = useAppSelector((state: any) => state.getAllUsersReducer);
 
-    let sponsors;
-    if (data) {
-        sponsors = data.sponsors;
-    }
-    
+    useEffect(() => {
+        dispatch(getAllUsers());
+    }, []);
+
     useEffect(() => {
         dispatch(setPageTitle('Multiple Tables'));
-        dispatch(getAllSponsors());
     });
 
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-    const [initialRecords, setInitialRecords] = useState(sortBy(rowData, 'firstName'));
+    const [initialRecords, setInitialRecords] = useState(sortBy(data, 'name'));
     const [recordsData, setRecordsData] = useState(initialRecords);
 
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-        columnAccessor: 'firstName',
+        columnAccessor: 'name',
         direction: 'asc',
     });
 
@@ -554,35 +552,36 @@ const MultipleTables = () => {
 
     useEffect(() => {
         setInitialRecords(() => {
-            return rowData.filter((item) => {
-                return (
-                    item.firstName.toLowerCase().includes(search.toLowerCase()) ||
-                    item.company.toLowerCase().includes(search.toLowerCase()) ||
-                    item.age.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.dob.toLowerCase().includes(search.toLowerCase()) ||
-                    item.email.toLowerCase().includes(search.toLowerCase()) ||
-                    item.phone.toLowerCase().includes(search.toLowerCase())
-                );
-            });
+            return data
+                ? data.filter((item: any) => {
+                      return (
+                          item.name.toLowerCase().includes(search.toLowerCase()) ||
+                          item.email.toLowerCase().includes(search.toLowerCase()) ||
+                          item.ownSponserId.toString().toLowerCase().includes(search.toLowerCase()) ||
+                          item.earning.toLowerCase().includes(search.toLowerCase()) ||
+                          item.userStatus.toLowerCase().includes(search.toLowerCase())
+                      );
+                  })
+                : [];
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     useEffect(() => {
-        const data = sortBy(initialRecords, sortStatus.columnAccessor);
-        setInitialRecords(sortStatus.direction === 'desc' ? data.reverse() : data);
+        const sortData = sortBy(initialRecords, sortStatus.columnAccessor);
+        setInitialRecords(sortStatus.direction === 'desc' ? sortData.reverse() : sortData);
         setPage(1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sortStatus]);
 
     const [page2, setPage2] = useState(1);
     const [pageSize2, setPageSize2] = useState(PAGE_SIZES[0]);
-    const [initialRecords2, setInitialRecords2] = useState(sortBy(rowData, 'firstName'));
+    const [initialRecords2, setInitialRecords2] = useState(sortBy(data, 'name'));
     const [recordsData2, setRecordsData2] = useState(initialRecords2);
 
     const [search2, setSearch2] = useState('');
     const [sortStatus2, setSortStatus2] = useState<DataTableSortStatus>({
-        columnAccessor: 'firstName',
+        columnAccessor: 'name',
         direction: 'asc',
     });
 
@@ -598,14 +597,13 @@ const MultipleTables = () => {
 
     useEffect(() => {
         setInitialRecords2(() => {
-            return rowData.filter((item: any) => {
+            return data.filter((item: any) => {
                 return (
-                    item.firstName.toLowerCase().includes(search2.toLowerCase()) ||
-                    item.company.toLowerCase().includes(search2.toLowerCase()) ||
-                    item.age.toString().toLowerCase().includes(search2.toLowerCase()) ||
-                    item.dob.toLowerCase().includes(search2.toLowerCase()) ||
+                    item.name.toLowerCase().includes(search2.toLowerCase()) ||
                     item.email.toLowerCase().includes(search2.toLowerCase()) ||
-                    item.phone.toLowerCase().includes(search2.toLowerCase())
+                    item.ownSponserId.toString().toLowerCase().includes(search2.toLowerCase()) ||
+                    item.earning.toLowerCase().includes(search2.toLowerCase()) ||
+                    item.userStatus.toLowerCase().includes(search2.toLowerCase())
                 );
             });
         });
@@ -665,26 +663,25 @@ const MultipleTables = () => {
                         records={recordsData}
                         columns={[
                             {
-                                accessor: 'firstName',
+                                accessor: 'name',
                                 title: 'Name',
                                 sortable: true,
-                                render: ({ firstName, lastName, id }) => (
+                                render: ({ name, email, earning }) => (
                                     <div className="flex items-center w-max">
                                         <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={`/assets/images/profile-${id}.jpeg`} alt="" />
-                                        <div>{firstName + ' ' + lastName}</div>
+                                        <div>{name + ' ' + email}</div>
                                     </div>
                                 ),
                             },
-                            { accessor: 'company', title: 'Company', sortable: true },
-                            { accessor: 'age', title: 'Age', sortable: true },
+                            { accessor: 'email', title: 'Email', sortable: true },
+                            { accessor: 'ownSponserId', title: 'Sponsor ID', sortable: true },
                             {
                                 accessor: 'dob',
                                 title: 'Start Date',
                                 sortable: true,
                                 render: ({ dob }) => <div>{formatDate(dob)}</div>,
                             },
-                            { accessor: 'email', title: 'Email', sortable: true },
-                            { accessor: 'phone', title: 'Phone No.', sortable: true },
+                            { accessor: 'ownSponserId', title: 'Sponsor ID', sortable: true },
                             {
                                 accessor: 'status',
                                 title: 'Status',

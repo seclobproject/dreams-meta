@@ -160,6 +160,19 @@ router.post(
   })
 );
 
+// GET: User details to that user
+router.get('/get-user-details', protect, asyncHandler(async(req,res) => {
+  const userId = req.user._id;
+
+  const user = await User.findById(userId);
+
+  if(user){
+    res.status(200).json(user);
+  }else{
+    res.status(400).json({sts: "00", msg: "Data fetching failed!"})
+  }
+}))
+
 // POST: User verification
 // After first/fresh user login
 // router.post(
@@ -657,7 +670,7 @@ router.get(
     const sponsors = user.children;
 
     if (user) {
-      res.status(200).json({ sts: "01", sponsors });
+      res.status(200).json(sponsors);
     } else {
       res.status(400).json({ sts: "00", msg: "Fetching data failed!" });
     }
