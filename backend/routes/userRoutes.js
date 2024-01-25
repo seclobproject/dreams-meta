@@ -160,6 +160,23 @@ router.post(
   })
 );
 
+// GET: User details to that user
+router.get(
+  "/get-user-details",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(400).json({ sts: "00", msg: "Data fetching failed!" });
+    }
+  })
+);
+
 // POST: User verification
 // After first/fresh user login
 // router.post(
@@ -600,8 +617,7 @@ router.put(
   "/edit-profile",
   protect,
   asyncHandler(async (req, res) => {
-
-    const user = await User.findById(req.body.userId);
+    const user = await User.findById(req.user._id);
 
     if (user) {
       user.name = req.body.name || user.name;
@@ -613,9 +629,32 @@ router.put(
 
       const updatedUser = await user.save();
 
-      res.json({
+      const token = jwt.sign(
+        { userId: user._id },
+        "secret_of_jwt_for_dreams-meta_5959",
+        {
+          expiresIn: "800d",
+        }
+      );
+
+      res.status(200).json({
         _id: updatedUser._id,
+        sponser: updatedUser.sponser,
         name: updatedUser.name,
+        email: updatedUser.email,
+        ownSponserId: updatedUser.ownSponserId,
+        earning: updatedUser.earning,
+        joiningAmount: updatedUser.joiningAmount,
+        autoPool: updatedUser.autoPool,
+        autoPoolPlan: updatedUser.autoPoolPlan,
+        autoPoolAmount: updatedUser.autoPoolAmount,
+        userStatus: updatedUser.userStatus,
+        isAdmin: updatedUser.isAdmin,
+        children: updatedUser.children,
+        token_type: "Bearer",
+        access_token: token,
+        sts: "01",
+        msg: "Login Success",
       });
     } else {
       res.status(404);
@@ -623,5 +662,95 @@ router.put(
     }
   })
 );
+
+// Get all users under you (sponsored users)
+router.get(
+  "/get-users",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate("children");
+    const sponsors = user.children;
+
+    if (user) {
+      res.status(200).json(sponsors);
+    } else {
+      res.status(400).json({ sts: "00", msg: "Fetching data failed!" });
+    }
+  })
+);
+
+// Get the first level of users (1st two in the tree)
+
+const getUserByLevel = async (userId, level) => {
+  const user = await User.findById(userId).populate("left").populate("right");
+
+  if (!user) {
+    return null;
+  }
+  
+  if (level === 1) {
+    const userIds = [user.left?._id, user.right?._id].filter(Boolean);
+    const level1Users = await User.find({ _id: { $in: userIds } });
+    return level1Users;
+  }
+
+  const leftUsers = await getUserByLevel(user.left?._id, level - 1);
+  const rightUsers = await getUserByLevel(user.right?._id, level - 1);
+
+  const levelUsers = [...leftUsers, ...rightUsers].filter(Boolean);
+  return levelUsers;
+};
+
+router.post(
+  "/get-users-by-level",
+  protect,
+  asyncHandler(async (req, res) => {
+    // const userId = req.user._id;
+    // const { level } = req.body;
+
+    // const user = await User.findById(userId).populate("left").populate("right");
+    // const levelTwoleftUsers = await User.findById(user.left._id).populate("left").populate("right");
+    // const levelTwoRightUsers = await User.findById(user.right._id).populate("left").populate("right");
+    // const levelThreeleftUsers = await User.findById(user.levelTwoleftUsers.left._id).populate("left").populate("right");
+    // const levelThreeRightUsers = await User.findById(user.levelTwoRightUsers.right._id).populate("left").populate("right");
+    // const levelFourleftUsers = await User.findById(user.levelThreeleftUsers.left._id).populate("left").populate("right");
+    // const levelFourRightUsers = await User.findById(user.levelThreeRightUsers.right._id).populate("left").populate("right");
+
+    // if (level == 1) {
+    //   if (user) {
+    //     const userIds = [user.left._id, user.right._id];
+    //     const level1Users = await User.find({ _id: { $in: userIds } });
+    //     res.status(200).json(level1Users);
+    //   } else {
+    //     res.status(400).json({ sts: "00", msg: "User not found" });
+    //   }
+    // } else if(level == 2) {
+
+    // } else if(level == 3) {
+
+    // } else if(level == 4) {
+
+    // }
+
+    const userId = req.user._id;
+    const { level } = req.body;
+
+    const levelUsers = await getUserByLevel(userId, level);
+
+    if (levelUsers) {
+      res.status(200).json(levelUsers);
+    } else {
+      res.status(400).json({ sts: "00", msg: "User not found" });
+    }
+  })
+);
+
+// Get the second level of users (2nd four in the tree)
+
+// Get the third level of users (3rd eight in the tree)
+
+// Get the fourth level of users (4th sixteen in the tree)
 
 export default router;

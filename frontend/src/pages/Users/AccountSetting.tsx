@@ -10,29 +10,51 @@ import IconLinkedin from '../../components/Icon/IconLinkedin';
 import IconTwitter from '../../components/Icon/IconTwitter';
 import IconFacebook from '../../components/Icon/IconFacebook';
 import IconGithub from '../../components/Icon/IconGithub';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { editUserProfile } from '../../store/userSlice';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 const AccountSetting = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    const MySwal = withReactContent(Swal);
+
+    const [userName, setUserName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const { userInfo } = useAppSelector((state: any) => state.authReducer);
+
     useEffect(() => {
         dispatch(setPageTitle('Account Setting'));
-    });
+    }, [userInfo]);
+
     const [tabs, setTabs] = useState<string>('home');
     const toggleTabs = (name: string) => {
         setTabs(name);
     };
 
+    const showMessage2 = () => {
+        MySwal.fire({
+            title: `Updated successfully.<br /> Please logout and login again to reflect the changes.`,
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 5000,
+            showCloseButton: true,
+        });
+    };
+
+    const profileEditHandler = (e: any) => {
+        e.preventDefault();
+        dispatch(editUserProfile({ userName, email, password }));
+        if (userInfo) {
+            showMessage2();
+        }
+    };
+
     return (
         <div>
-            {/* <ul className="flex space-x-2 rtl:space-x-reverse">
-                <li>
-                    <Link to="#" className="text-primary hover:underline">
-                        Users
-                    </Link>
-                </li>
-                <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                    <span>Account Settings</span>
-                </li>
-            </ul> */}
             <div className="pt-5">
                 <div className="flex items-center justify-between mb-5">
                     <h5 className="font-semibold text-lg dark:text-white-light">Settings</h5>
@@ -45,34 +67,16 @@ const AccountSetting = () => {
                                 className={`flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary ${tabs === 'home' ? '!border-primary text-primary' : ''}`}
                             >
                                 <IconHome />
-                                Home
+                                Profile settings
                             </button>
                         </li>
-                        <li className="inline-block">
+                        {/* <li className="inline-block">
                             <button
                                 onClick={() => toggleTabs('payment-details')}
                                 className={`flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary ${tabs === 'payment-details' ? '!border-primary text-primary' : ''}`}
                             >
                                 <IconDollarSignCircle />
                                 Payment Details
-                            </button>
-                        </li>
-                        {/* <li className="inline-block">
-                            <button
-                                onClick={() => toggleTabs('preferences')}
-                                className={`flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary ${tabs === 'preferences' ? '!border-primary text-primary' : ''}`}
-                            >
-                                <IconUser className="w-5 h-5" />
-                                Preferences
-                            </button>
-                        </li>
-                        <li className="inline-block">
-                            <button
-                                onClick={() => toggleTabs('danger-zone')}
-                                className={`flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary ${tabs === 'danger-zone' ? '!border-primary text-primary' : ''}`}
-                            >
-                                <IconPhone />
-                                Danger Zone
                             </button>
                         </li> */}
                     </ul>
@@ -88,18 +92,25 @@ const AccountSetting = () => {
                                 <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label htmlFor="name">Full Name</label>
-                                        <input id="name" type="text" placeholder="Jimmy Turner" className="form-input" />
+                                        <input
+                                            id="name"
+                                            type="text"
+                                            placeholder={userInfo && userInfo.name}
+                                            value={userName}
+                                            onChange={(e: any) => setUserName(e.target.value)}
+                                            className="form-input"
+                                        />
                                     </div>
                                     <div>
                                         <label htmlFor="email">Email</label>
-                                        <input id="email" type="email" placeholder="Jimmy@gmail.com" className="form-input" />
+                                        <input id="email" type="email" placeholder={userInfo && userInfo.email} value={email} onChange={(e: any) => setEmail(e.target.value)} className="form-input" />
                                     </div>
                                     <div>
-                                        <label htmlFor="web">Password</label>
-                                        <input id="web" type="text" placeholder="Enter URL" className="form-input" />
+                                        <label htmlFor="password">Password</label>
+                                        <input id="password" type="text" placeholder="Enter New Password" value={password} onChange={(e: any) => setPassword(e.target.value)} className="form-input" />
                                     </div>
                                     <div className="mt-6">
-                                        <button type="button" className="btn btn-primary">
+                                        <button onClick={profileEditHandler} type="button" className="btn btn-primary">
                                             Save
                                         </button>
                                     </div>
