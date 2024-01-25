@@ -668,7 +668,7 @@ const MultipleTables = () => {
                                 sortable: true,
                                 render: ({ name, email, earning }) => (
                                     <div className="flex items-center w-max">
-                                        <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={`/assets/images/profile-${id}.jpeg`} alt="" />
+                                        <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={`/assets/images/profile-1.jpeg`} alt="" />
                                         <div>{name + ' ' + email}</div>
                                     </div>
                                 ),
