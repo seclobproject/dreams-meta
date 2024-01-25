@@ -57,7 +57,7 @@ const Advanced = lazy(() => import('../pages/DataTables/Advanced'));
 const Skin = lazy(() => import('../pages/DataTables/Skin'));
 const OrderSorting = lazy(() => import('../pages/DataTables/OrderSorting'));
 const MultiColumn = lazy(() => import('../pages/DataTables/MultiColumn'));
-const MultipleTables = lazy(() => import('../pages/DataTables/MultipleTables'));
+// const MultipleTables = lazy(() => import('../pages/DataTables/MultipleTables'));
 const AltPagination = lazy(() => import('../pages/DataTables/AltPagination'));
 const Checkbox = lazy(() => import('../pages/DataTables/Checkbox'));
 const RangeSearch = lazy(() => import('../pages/DataTables/RangeSearch'));
@@ -354,10 +354,10 @@ const routes = [
         path: '/datatables/multi-column',
         element: <MultiColumn />,
     },
-    {
-        path: '/datatables/multiple-tables',
-        element: <MultipleTables />,
-    },
+    // {
+    //     path: '/datatables/multiple-tables',
+    //     element: <MultipleTables />,
+    // },
     {
         path: '/datatables/alt-pagination',
         element: <AltPagination />,
