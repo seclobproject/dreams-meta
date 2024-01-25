@@ -1,5 +1,6 @@
 import { lazy } from 'react';
 import RegisterWithReferral from '../pages/Authentication/RegisterWithReferral';
+import LevelTree from '../pages/DataTables/LevelTree';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -107,6 +108,11 @@ const routes = [
         path: '/',
         element: <LoginBoxed />, //Finance
     },
+    // Dashboard
+    {
+        path: '/dashboard',
+        element: <Finance />,
+    },
     // {
     //     path: '/index',
     //     element: <Index />,
@@ -116,10 +122,13 @@ const routes = [
         path: '/analytics',
         element: <Analytics />,
     },
-    // finance page
     {
-        path: '/finance',
-        element: <Finance />,
+        path: '/direct-sponsors',
+        element: <Skin />,
+    },
+    {
+        path: '/level-tree',
+        element: <LevelTree />,
     },
     // crypto page
     {
@@ -336,10 +345,6 @@ const routes = [
     {
         path: '/datatables/advanced',
         element: <Advanced />,
-    },
-    {
-        path: '/datatables/skin',
-        element: <Skin />,
     },
     {
         path: '/datatables/order-sorting',

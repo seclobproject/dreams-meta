@@ -27,6 +27,8 @@ import IconDribbble from '../components/Icon/IconDribbble';
 import IconGithub from '../components/Icon/IconGithub';
 import { getUserDetails } from '../store/userSlice';
 
+import Web3 from 'web3';
+
 const Finance = () => {
     const dispatch = useAppDispatch();
 
@@ -42,6 +44,7 @@ const Finance = () => {
         dispatch(setPageTitle('Finance'));
         dispatch(getUserDetails());
     }, [dispatch]);
+
     //bitcoinoption
     const bitcoin: any = {
         series: [
@@ -410,6 +413,92 @@ const Finance = () => {
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
+    // Replace with your Infura or Alchemy API key and network
+    // const infuraApiKey = '4562308714364168834eb5c7a4f84a50';
+    // const network = 'mainnet';
+
+    // const providerUrl = `https://${network}.infura.io/v3/${infuraApiKey}`;
+    // const web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
+
+    // const usdtContractAddress = '0xc2132D05D31c914a87C6611C10748AEb04B58e8F';
+    // const usdtContractABI = [
+    //     { inputs: [{ internalType: 'address', name: '_proxyTo', type: 'address' }], stateMutability: 'nonpayable', type: 'constructor' },
+    //     {
+    //         anonymous: false,
+    //         inputs: [
+    //             { indexed: false, internalType: 'address', name: '_new', type: 'address' },
+    //             { indexed: false, internalType: 'address', name: '_old', type: 'address' },
+    //         ],
+    //         name: 'ProxyOwnerUpdate',
+    //         type: 'event',
+    //     },
+    //     {
+    //         anonymous: false,
+    //         inputs: [
+    //             { indexed: true, internalType: 'address', name: '_new', type: 'address' },
+    //             { indexed: true, internalType: 'address', name: '_old', type: 'address' },
+    //         ],
+    //         name: 'ProxyUpdated',
+    //         type: 'event',
+    //     },
+    //     { stateMutability: 'payable', type: 'fallback' },
+    //     { inputs: [], name: 'implementation', outputs: [{ internalType: 'address', name: '', type: 'address' }], stateMutability: 'view', type: 'function' },
+    //     { inputs: [], name: 'proxyOwner', outputs: [{ internalType: 'address', name: '', type: 'address' }], stateMutability: 'view', type: 'function' },
+    //     { inputs: [], name: 'proxyType', outputs: [{ internalType: 'uint256', name: 'proxyTypeId', type: 'uint256' }], stateMutability: 'pure', type: 'function' },
+    //     { inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }], name: 'transferProxyOwnership', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+    //     {
+    //         inputs: [
+    //             { internalType: 'address', name: '_newProxyTo', type: 'address' },
+    //             { internalType: 'bytes', name: 'data', type: 'bytes' },
+    //         ],
+    //         name: 'updateAndCall',
+    //         outputs: [],
+    //         stateMutability: 'payable',
+    //         type: 'function',
+    //     },
+    //     { inputs: [{ internalType: 'address', name: '_newProxyTo', type: 'address' }], name: 'updateImplementation', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+    //     { stateMutability: 'payable', type: 'receive' },
+    // ];
+
+    // const usdtContract = new web3.eth.Contract(usdtContractABI, usdtContractAddress);
+
+
+
+    // async function sendUSDT(recipientAddress, amount) {
+    //     try {
+    //       // Convert amount to the smallest unit (wei)
+    //       const amountInWei = web3.utils.toBN(amount).mul(web3.utils.toBN(10 ** 6)); // Assuming 6 decimals for USDT
+      
+    //       // Replace with the sender's private key
+    //       const privateKey = 'YOUR_PRIVATE_KEY_HERE';
+    //       const senderAccount = web3.eth.accounts.privateKeyToAccount(privateKey);
+      
+    //       // Set the default account
+    //       web3.eth.defaultAccount = senderAccount.address;
+      
+    //       // Estimate gas for the transaction
+    //       const gasEstimate = await usdtContract.methods.transfer(recipientAddress, amountInWei.toString()).estimateGas();
+      
+    //       // Build the transaction object
+    //       const transactionObject = {
+    //         from: senderAccount.address,
+    //         to: usdtContractAddress,
+    //         gas: gasEstimate,
+    //         data: usdtContract.methods.transfer(recipientAddress, amountInWei.toString()).encodeABI(),
+    //       };
+      
+    //       // Sign the transaction
+    //       const signedTransaction = await web3.eth.accounts.signTransaction(transactionObject, privateKey);
+      
+    //       // Send the signed transaction
+    //       const transactionReceipt = await web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+      
+    //       console.log('Transaction successful:', transactionReceipt);
+    //     } catch (error) {
+    //       console.error('Error sending USDT:', error);
+    //     }
+    //   }
+
     return (
         <div>
             {/* <ul className="flex space-x-2 rtl:space-x-reverse">
@@ -449,9 +538,8 @@ const Finance = () => {
                             <div className="flex justify-between">
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Wallet Amount</div>
                             </div>
-                            <div className="flex items-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> ${userInfo && userInfo.earning} </div>
-                                {/* <div className="badge bg-white/30">+ 2.35% </div> */}
+                            <div className="flex flex-col justify-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.earning}</div>
                             </div>
                             {/* <div className="flex items-center font-semibold mt-5">
                             <IconEye className="ltr:mr-2 rtl:ml-2 shrink-0" />
@@ -479,7 +567,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Rejoining Wallet Amount</div>
                             </div>
                             <div className="flex items-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> ${userInfo && userInfo.joiningAmount} </div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.joiningAmount}</div>
                                 {/* {userInfo && userInfo.currentPlan >}
                                 <div className="badge bg-white/30"></div> */}
                             </div>

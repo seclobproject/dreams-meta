@@ -33,12 +33,16 @@ router.post(
         const ogSponser = user.sponser;
         if (ogSponser.userStatus === true) {
           sponser = user.sponser;
-          sponser.children.push(user._id);
+          if (!sponser.children.includes(user._id)) {
+            sponser.children.push(user._id);
+          }
           sponser.earning += 4;
         } else {
           sponser = admin;
           user.sponser = admin._id;
-          sponser.children.push(user._id);
+          if (!sponser.children.includes(user._id)) {
+            sponser.children.push(user._id);
+          }
         }
       }
 
@@ -127,7 +131,7 @@ router.get(
       await bfs(parentUser, userId, left, right);
     }
 
-    const updateAdmin = await admin.save()
+    const updateAdmin = await admin.save();
     const updateUser = await user.save();
     if (updateUser) {
       res.status(200).json({ msg: "Success" });

@@ -67,34 +67,16 @@ const AccountSetting = () => {
                                 className={`flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary ${tabs === 'home' ? '!border-primary text-primary' : ''}`}
                             >
                                 <IconHome />
-                                Home
+                                Profile settings
                             </button>
                         </li>
-                        <li className="inline-block">
+                        {/* <li className="inline-block">
                             <button
                                 onClick={() => toggleTabs('payment-details')}
                                 className={`flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary ${tabs === 'payment-details' ? '!border-primary text-primary' : ''}`}
                             >
                                 <IconDollarSignCircle />
                                 Payment Details
-                            </button>
-                        </li>
-                        {/* <li className="inline-block">
-                            <button
-                                onClick={() => toggleTabs('preferences')}
-                                className={`flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary ${tabs === 'preferences' ? '!border-primary text-primary' : ''}`}
-                            >
-                                <IconUser className="w-5 h-5" />
-                                Preferences
-                            </button>
-                        </li>
-                        <li className="inline-block">
-                            <button
-                                onClick={() => toggleTabs('danger-zone')}
-                                className={`flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary ${tabs === 'danger-zone' ? '!border-primary text-primary' : ''}`}
-                            >
-                                <IconPhone />
-                                Danger Zone
                             </button>
                         </li> */}
                     </ul>

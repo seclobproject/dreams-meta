@@ -57,11 +57,6 @@ const RegisterBoxed = () => {
         // if (userData) navigate('/');
     };
 
-    const logoutHandler = (e: any) => {
-        e.preventDefault();
-        dispatch(logout());
-    };
-
     return (
         <div>
             <div className="absolute inset-0">
@@ -227,18 +222,8 @@ const RegisterBoxed = () => {
                                 </button>
                             </form>
                             <div className="text-center mt-7 dark:text-white">
-                                {userData && (
-                                    <div>
-                                        Submitted successfully!&nbsp;
-                                        <Link to="/" onClick={logoutHandler} className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
-                                            Go to Home
-                                        </Link>
-                                    </div>
-                                )}
+                                {userData && <div>Submitted successfully!</div>}
                                 {error && <div className="text-red-600">{error}</div>}
-                            </div>
-                            <div onClick={logoutHandler} className="text-center mt-7 dark:text-white cursor-pointer">
-                                Logout
                             </div>
                             {/* <div className="relative my-7 text-center md:mb-9">
                                 <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>

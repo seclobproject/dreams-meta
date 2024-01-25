@@ -60,7 +60,7 @@ const Header = () => {
                 }
             }
         }
-        if(!userInfo){
+        if (!userInfo) {
             navigate('/signin');
         }
     }, [location, userInfo]);
@@ -202,7 +202,7 @@ const Header = () => {
                         </button>
                         <ul className="sub-menu">
                             <li>
-                                <NavLink to="/finance">{t('Home')}</NavLink>
+                                <NavLink to="/dashboard">{t('Home')}</NavLink>
                             </li>
                             <li>
                                 <NavLink to="/signup">{t('Add New Member')}</NavLink>
@@ -219,13 +219,18 @@ const Header = () => {
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuApps className="shrink-0" />
-                                <span className="px-1">{t('apps')}</span>
+                                <span className="px-1">{t('Portal')}</span>
                             </div>
                             <div className="right_arrow">
                                 <IconCaretDown />
                             </div>
                         </button>
                         <ul className="sub-menu">
+                            <li>
+                                <NavLink to="/users/user-account-settings">{t('Profile')}</NavLink>
+                            </li>
+                        </ul>
+                        {/* <ul className="sub-menu">
                             <li>
                                 <NavLink to="/apps/chat">{t('chat')}</NavLink>
                             </li>
@@ -269,9 +274,9 @@ const Header = () => {
                             <li>
                                 <NavLink to="/apps/calendar">{t('calendar')}</NavLink>
                             </li>
-                        </ul>
+                        </ul> */}
                     </li>
-                    <li className="menu nav-item relative">
+                    {/* <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuComponents className="shrink-0" />
@@ -325,8 +330,8 @@ const Header = () => {
                                 <NavLink to="/components/lightbox">{t('lightbox')}</NavLink>
                             </li>
                         </ul>
-                    </li>
-                    <li className="menu nav-item relative">
+                    </li> */}
+                    {/* <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuElements className="shrink-0" />
@@ -392,12 +397,12 @@ const Header = () => {
                                 <NavLink to="/elements/typography">{t('typography')}</NavLink>
                             </li>
                         </ul>
-                    </li>
+                    </li> */}
                     <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuDatatables className="shrink-0" />
-                                <span className="px-1">{t('tables')}</span>
+                                <span className="px-1">{t('Network')}</span>
                             </div>
                             <div className="right_arrow">
                                 <IconCaretDown />
@@ -405,9 +410,12 @@ const Header = () => {
                         </button>
                         <ul className="sub-menu">
                             <li>
-                                <NavLink to="/tables">{t('tables')}</NavLink>
+                                <NavLink to="/direct-sponsors">{t('Direct Sponsors')}</NavLink>
                             </li>
-                            <li className="relative">
+                            <li>
+                                <NavLink to="/level-tree">{t('Level Tree')}</NavLink>
+                            </li>
+                            {/* <li className="relative">
                                 <button type="button">
                                     {t('datatables')}
                                     <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-90 -rotate-90">
@@ -449,10 +457,10 @@ const Header = () => {
                                         <NavLink to="/datatables/column-chooser">{t('column_chooser')}</NavLink>
                                     </li>
                                 </ul>
-                            </li>
+                            </li> */}
                         </ul>
                     </li>
-                    <li className="menu nav-item relative">
+                    {/* <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuForms className="shrink-0" />
@@ -509,8 +517,8 @@ const Header = () => {
                                 <NavLink to="/forms/clipboard">{t('clipboard')}</NavLink>
                             </li>
                         </ul>
-                    </li>
-                    <li className="menu nav-item relative">
+                    </li> */}
+                    {/* <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuPages className="shrink-0" />
@@ -674,8 +682,8 @@ const Header = () => {
                                 </ul>
                             </li>
                         </ul>
-                    </li>
-                    <li className="menu nav-item relative">
+                    </li> */}
+                    {/* <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuMore className="shrink-0" />
@@ -704,7 +712,7 @@ const Header = () => {
                                 </NavLink>
                             </li>
                         </ul>
-                    </li>
+                    </li> */}
                 </ul>
             </div>
         </header>
