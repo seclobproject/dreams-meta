@@ -683,66 +683,55 @@ router.get(
 
 // Get the first level of users (1st two in the tree)
 
-const getUserByLevel = async (userId, level) => {
-  const user = await User.findById(userId).populate("left").populate("right");
-
+// Function to fetch users at a specific level for a given userId
+async function getUsersAtLevel(userId, level) {
+  const user = await User.findById(userId);
   if (!user) {
-    return null;
-  }
-  
-  if (level === 1) {
-    const userIds = [user.left?._id, user.right?._id].filter(Boolean);
-    const level1Users = await User.find({ _id: { $in: userIds } });
-    return level1Users;
+    return [];
   }
 
-  const leftUsers = await getUserByLevel(user.left?._id, level - 1);
-  const rightUsers = await getUserByLevel(user.right?._id, level - 1);
+  const usersAtLevel = [];
+  await findUsersAtLevel(user, level, 0, usersAtLevel);
+  return usersAtLevel;
+}
 
-  const levelUsers = [...leftUsers, ...rightUsers].filter(Boolean);
-  return levelUsers;
-};
+// Recursive function to traverse the binary tree and find users at a specific level
+async function findUsersAtLevel(user, targetLevel, currentLevel, result) {
+  if (!user || currentLevel > targetLevel) {
+    return;
+  }
+
+  if (currentLevel === targetLevel) {
+    result.push(user);
+    return;
+  }
+
+  try {
+    const leftUser = user.left ? await User.findById(user.left) : null;
+    const rightUser = user.right ? await User.findById(user.right) : null;
+
+    // Continue traversal
+    await findUsersAtLevel(leftUser, targetLevel, currentLevel + 1, result);
+    await findUsersAtLevel(rightUser, targetLevel, currentLevel + 1, result);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 router.post(
   "/get-users-by-level",
   protect,
   asyncHandler(async (req, res) => {
-    // const userId = req.user._id;
-    // const { level } = req.body;
-
-    // const user = await User.findById(userId).populate("left").populate("right");
-    // const levelTwoleftUsers = await User.findById(user.left._id).populate("left").populate("right");
-    // const levelTwoRightUsers = await User.findById(user.right._id).populate("left").populate("right");
-    // const levelThreeleftUsers = await User.findById(user.levelTwoleftUsers.left._id).populate("left").populate("right");
-    // const levelThreeRightUsers = await User.findById(user.levelTwoRightUsers.right._id).populate("left").populate("right");
-    // const levelFourleftUsers = await User.findById(user.levelThreeleftUsers.left._id).populate("left").populate("right");
-    // const levelFourRightUsers = await User.findById(user.levelThreeRightUsers.right._id).populate("left").populate("right");
-
-    // if (level == 1) {
-    //   if (user) {
-    //     const userIds = [user.left._id, user.right._id];
-    //     const level1Users = await User.find({ _id: { $in: userIds } });
-    //     res.status(200).json(level1Users);
-    //   } else {
-    //     res.status(400).json({ sts: "00", msg: "User not found" });
-    //   }
-    // } else if(level == 2) {
-
-    // } else if(level == 3) {
-
-    // } else if(level == 4) {
-
-    // }
-
     const userId = req.user._id;
     const { level } = req.body;
 
-    const levelUsers = await getUserByLevel(userId, level);
+    const users = await getUsersAtLevel(userId, level);
 
-    if (levelUsers) {
-      res.status(200).json(levelUsers);
+    if (users) {
+      res.json(users);
     } else {
-      res.status(400).json({ sts: "00", msg: "User not found" });
+      console.error(error);
+      res.status(500).json({ sts: "00", msg: "Some error occured!" });
     }
   })
 );
