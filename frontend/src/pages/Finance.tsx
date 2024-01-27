@@ -582,7 +582,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Refferal Link</div>
                             </div>
                             <div className="flex items-center my-5">
-                                <input type="text" value={url} className="form-input" />
+                                <input type="text" defaultValue={url} className="form-input" />
                                 <div className="referralBtn sm:flex sm:space-y-0 sm:space-x-2 rtl:space-x-reverse">
                                     <CopyToClipboard
                                         text={url}

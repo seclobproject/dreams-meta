@@ -691,17 +691,19 @@ async function getUsersAtLevel(userId, level) {
   }
 
   const usersAtLevel = [];
-  await findUsersAtLevel(user, level, 0, usersAtLevel);
+  await findUsersAtLevel(user, level, 1, usersAtLevel);
   return usersAtLevel;
 }
 
 // Recursive function to traverse the binary tree and find users at a specific level
 async function findUsersAtLevel(user, targetLevel, currentLevel, result) {
+
+
   if (!user || currentLevel > targetLevel) {
     return;
   }
 
-  if (currentLevel === targetLevel) {
+  if (currentLevel == targetLevel) {
     result.push(user);
     return;
   }
@@ -735,11 +737,5 @@ router.post(
     }
   })
 );
-
-// Get the second level of users (2nd four in the tree)
-
-// Get the third level of users (3rd eight in the tree)
-
-// Get the fourth level of users (4th sixteen in the tree)
 
 export default router;

@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
-import { getAllUsers } from '../../store/userSlice';
+import { getAllUsers, getUsersByLevel } from '../../store/userSlice';
+import LevelTreeComponent from '../Components/LevelTreeComponent';
 
 const LevelTree = () => {
     const dispatch = useAppDispatch();
@@ -11,10 +12,12 @@ const LevelTree = () => {
     const [activeTab, setActiveTab] = useState<any>(1);
 
     const { loading, data: rowData, error } = useAppSelector((state: any) => state.getAllUsersReducer);
-
+    const { loading:level2Loading, data:level2Data, error:level2Error } = useAppSelector((state: any) => state.getUsersByLevelReducer);
+    const { loading:level3Loading, data:level3Data, error:level3Error } = useAppSelector((state: any) => state.getUsersByLevelReducer);
+    
     useEffect(() => {
         dispatch(getAllUsers());
-    }, [dispatch]);
+    }, [dispatch, level2Data]);
 
     useEffect(() => {
         dispatch(setPageTitle('Skin Tables'));
@@ -26,8 +29,6 @@ const LevelTree = () => {
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(rowData || []);
     const [recordsData, setRecordsData] = useState(initialRecords);
-
-    recordsData && console.log(recordsData);
 
     const [search, setSearch] = useState('');
 
@@ -55,6 +56,20 @@ const LevelTree = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search, rowData]);
 
+    // Level 2 Data
+    const levelTwoHandler = () => {
+        setActiveTab(2)
+        dispatch(getUsersByLevel(2));
+    }
+    const levelThreeHandler = () => {
+        setActiveTab(3)
+        dispatch(getUsersByLevel(3));
+    }
+    const levelFourHandler = () => {
+        setActiveTab(4)
+        dispatch(getUsersByLevel(4));
+    }
+
     return (
         <div className="inline-block w-full">
             <ul className="mb-5 grid grid-cols-4 gap-2 text-center">
@@ -69,26 +84,26 @@ const LevelTree = () => {
                 </li>
 
                 <li>
-                    <div className={`${activeTab === 2 ? '!bg-primary text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`} onClick={() => setActiveTab(2)}>
+                    <div className={`${activeTab === 2 ? '!bg-primary text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`} onClick={levelTwoHandler}>
                         Level 2
                     </div>
                 </li>
 
                 <li>
-                    <div className={`${activeTab === 3 ? '!bg-primary text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`} onClick={() => setActiveTab(3)}>
+                    <div className={`${activeTab === 3 ? '!bg-primary text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`} onClick={levelThreeHandler}>
                         Level 3
                     </div>
                 </li>
 
                 <li>
-                    <div className={`${activeTab === 4 ? '!bg-primary text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`} onClick={() => setActiveTab(3)}>
+                    <div className={`${activeTab === 4 ? '!bg-primary text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`} onClick={levelFourHandler}>
                         Level 4
                     </div>
                 </li>
             </ul>
 
             <div>
-                <p className="mb-5">
+                <div className="mb-5">
                     {activeTab === 1 && (
                         <div className="space-y-6">
                             {/* Skin: Striped  */}
@@ -121,75 +136,22 @@ const LevelTree = () => {
                             </div>
                         </div>
                     )}
-                </p>
-                <p className="mb-5">
+                </div>
+                <div className="mb-5">
                     {activeTab === 2 && (
-                        <div className="space-y-6">
-                            {/* Skin: Striped  */}
-                            <div className="panel">
-                                <div className="flex items-center justify-between mb-5">
-                                    <h5 className="font-semibold text-lg dark:text-white-light">Members</h5>
-                                    <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
-                                </div>
-                                <div className="datatables">
-                                    <DataTable
-                                        striped
-                                        className="whitespace-nowrap table-striped"
-                                        records={recordsData}
-                                        columns={[
-                                            { accessor: 'name', title: 'Name' },
-                                            { accessor: 'email', title: 'Email' },
-                                            { accessor: 'ownSponserId', title: 'Sponsor ID' },
-                                            { accessor: 'userStatus', title: 'Status', render: (value) => (value ? 'Active' : 'Inactive') },
-                                        ]}
-                                        totalRecords={initialRecords ? initialRecords.length : 0}
-                                        recordsPerPage={pageSize}
-                                        page={page}
-                                        onPageChange={(p) => setPage(p)}
-                                        recordsPerPageOptions={PAGE_SIZES}
-                                        onRecordsPerPageChange={setPageSize}
-                                        minHeight={200}
-                                        paginationText={({ from, to, totalRecords }) => `Showing  ${from} to ${to} of ${totalRecords} entries`}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                        <LevelTreeComponent level={2} />
                     )}
-                </p>
-                <p className="mb-5">
+                </div>
+                <div className="mb-5">
                     {activeTab === 3 && (
-                        <div className="space-y-6">
-                            {/* Skin: Striped  */}
-                            <div className="panel">
-                                <div className="flex items-center justify-between mb-5">
-                                    <h5 className="font-semibold text-lg dark:text-white-light">Members</h5>
-                                    <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
-                                </div>
-                                <div className="datatables">
-                                    <DataTable
-                                        striped
-                                        className="whitespace-nowrap table-striped"
-                                        records={recordsData}
-                                        columns={[
-                                            { accessor: 'name', title: 'Name' },
-                                            { accessor: 'email', title: 'Email' },
-                                            { accessor: 'ownSponserId', title: 'Sponsor ID' },
-                                            { accessor: 'userStatus', title: 'Status', render: (value) => (value ? 'Active' : 'Inactive') },
-                                        ]}
-                                        totalRecords={initialRecords ? initialRecords.length : 0}
-                                        recordsPerPage={pageSize}
-                                        page={page}
-                                        onPageChange={(p) => setPage(p)}
-                                        recordsPerPageOptions={PAGE_SIZES}
-                                        onRecordsPerPageChange={setPageSize}
-                                        minHeight={200}
-                                        paginationText={({ from, to, totalRecords }) => `Showing  ${from} to ${to} of ${totalRecords} entries`}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                        <LevelTreeComponent level={3} />
                     )}
-                </p>
+                </div>
+                <div className="mb-5">
+                    {activeTab === 4 && (
+                        <LevelTreeComponent level={4} />
+                    )}
+                </div>
             </div>
             <div className="flex justify-between">
                 <button type="button" className={`btn btn-primary ${activeTab === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}>
