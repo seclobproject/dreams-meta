@@ -1,10 +1,16 @@
 import express from "express";
+import fs from "fs";
+const fs1 = fs.promises;
 const router = express.Router();
 
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { bfs } from "./supportingFunctions/TreeFunctions.js";
+
+import path from "path";
+import multer from "multer";
+import Reward from "../models/rewardModel.js";
 
 // Verify the user by admin and add the user to the proper position in the tree
 // after successful verification
@@ -145,10 +151,75 @@ router.get(
   protect,
   asyncHandler(async (req, res) => {
     const users = await User.find()
-      .populate("packageChosen")
       .populate("sponser");
 
-    res.json(users);
+    if (users) {
+      res.json(users);
+    }
+  })
+);
+
+// Upload reward image
+const storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e6);
+    const fileExtension = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Upload reward
+router.post(
+  "/upload-reward",
+  protect,
+  upload.single("image"),
+  asyncHandler(async (req, res) => {
+    if (!req.file) {
+      res.status(400).json({ msg: "No file uploaded" });
+    }
+
+    const existingFile = await Reward.findOne({ fixedValue: "ABC" });
+
+    let image;
+    if (existingFile) {
+      existingFile.imageName = req.file.filename;
+      image = await existingFile.save();
+    } else {
+      image = await Reward.create({
+        imageName: req.file.filename,
+      });
+    }
+
+    if (image) {
+      res.status(200).json({ msg: "Upload success" });
+    } else {
+      res.status(400).json({ msg: "File upload failed" });
+    }
+  })
+);
+
+// Delete a reward
+router.delete(
+  "/delete-reward",
+  protect,
+  asyncHandler(async (req, res) => {
+    const existingFile = await Reward.findOne();
+
+    if (existingFile.imageName) {
+      existingFile.imageName = null;
+      const image = await existingFile.save();
+
+      if (image) {
+        res.status(200).json({ msg: "Deleted successfully" });
+      } else {
+        res.status(400).json({ msg: "Internal server error occured!" });
+      }
+    } else {
+      res.status(400).json({ msg: "No rewards found" });
+    }
   })
 );
 

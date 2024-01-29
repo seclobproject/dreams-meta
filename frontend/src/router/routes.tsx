@@ -1,6 +1,9 @@
 import { lazy } from 'react';
 import RegisterWithReferral from '../pages/Authentication/RegisterWithReferral';
 import LevelTree from '../pages/DataTables/LevelTree';
+import ShowRewards from '../pages/Components/ShowRewards';
+import Support from '../pages/Pages/Support';
+import AllMembers from '../pages/DataTables/AllMembers';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -113,10 +116,7 @@ const routes = [
         path: '/dashboard',
         element: <Finance />,
     },
-    // {
-    //     path: '/index',
-    //     element: <Index />,
-    // },
+    
     // analytics page
     {
         path: '/analytics',
@@ -127,8 +127,20 @@ const routes = [
         element: <Skin />,
     },
     {
+        path: '/all-members',
+        element: <AllMembers />,
+    },
+    {
         path: '/level-tree',
         element: <LevelTree />,
+    },
+    {
+        path: '/show-rewards',
+        element: <ShowRewards />,
+    },
+    {
+        path: '/support',
+        element: <Support />,
     },
     // crypto page
     {

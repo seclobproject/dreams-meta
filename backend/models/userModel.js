@@ -130,6 +130,9 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    rewardImage: {
+      type: String,
+    },
   },
   {
     timestamps: true,
