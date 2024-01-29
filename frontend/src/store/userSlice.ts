@@ -230,7 +230,6 @@ export const getAllUsersSlice = createSlice({
     },
 });
 
-
 // Redux action to get the user details
 export const getUserDetails = createAsyncThunk('getUserDetails', async () => {
     const token: any = localStorage.getItem('userInfo');
@@ -274,13 +273,58 @@ export const getUserDetailsSlice = createSlice({
                 } else if (action.error.message === 'Request failed with status code 400') {
                     state.error = 'User not found!';
                 }
-
             });
     },
 });
 
+// Redux action to get user by level
+export const getUsersByLevel = createAsyncThunk('getUsersByLevel', async (level: any) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
 
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
 
+    const response = await axios.post(`${URL}/api/users/get-users-by-level`, { level }, config);
+
+    return response.data;
+});
+
+export const getUsersByLevelSlice = createSlice({
+    name: 'getUsersByLevelSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getUsersByLevel.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getUsersByLevel.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getUsersByLevel.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Some internal server error occured!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'User not found!';
+                }
+            });
+    },
+});
+
+export const getUsersByLevelReducer = getUsersByLevelSlice.reducer;
 export const addNewUserReducer = getAddNewUser.reducer;
 export const addNewUserByReferralReducer = addNewUserWithRefferalSlice.reducer;
 export const editUserReducer = editUserSlice.reducer;
