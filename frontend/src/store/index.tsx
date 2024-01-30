@@ -2,7 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import themeConfigSlice from './themeConfigSlice';
 import authReducer from './authSlice';
 import { addNewUserReducer, addNewUserByReferralReducer, editUserReducer, getAllUsersReducer, getUserDetailsReducer, getUsersByLevelReducer } from './userSlice';
-import { getAllUsersToAdminReducer } from './adminSlice';
+import { getAllUsersToAdminReducer, getUserDetailsToAdminReducer } from './adminSlice';
 
 import { TypedUseSelectorHook, useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -17,6 +17,7 @@ const rootReducer = combineReducers({
     getUserDetailsReducer,
     getUsersByLevelReducer,
     getAllUsersToAdminReducer,
+    getUserDetailsToAdminReducer
 });
 
 const store = configureStore({

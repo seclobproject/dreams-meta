@@ -4,6 +4,7 @@ import LevelTree from '../pages/DataTables/LevelTree';
 import ShowRewards from '../pages/Components/ShowRewards';
 import Support from '../pages/Pages/Support';
 import AllMembers from '../pages/DataTables/AllMembers';
+import EditUserByAdmin from '../pages/Users/EditUserByAdmin';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -398,6 +399,10 @@ const routes = [
     {
         path: '/users/user-account-settings',
         element: <AccountSetting />,
+    },
+    {
+        path: '/users/edit-user-by-admin/:id',
+        element: <EditUserByAdmin />,
     },
     // pages
     {

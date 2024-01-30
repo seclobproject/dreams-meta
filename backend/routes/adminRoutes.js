@@ -150,8 +150,7 @@ router.get(
   "/get-users",
   protect,
   asyncHandler(async (req, res) => {
-    const users = await User.find()
-      .populate("sponser");
+    const users = await User.find().populate("sponser");
 
     if (users) {
       res.json(users);
@@ -219,6 +218,125 @@ router.delete(
       }
     } else {
       res.status(400).json({ msg: "No rewards found" });
+    }
+  })
+);
+
+// PUT: Edit profile of any by admin
+router.put(
+  "/edit-profile",
+  protect,
+  asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+
+      const updatedUser = await user.save();
+
+      const token = jwt.sign(
+        { userId: user._id },
+        "secret_of_jwt_for_dreams-meta_5959",
+        {
+          expiresIn: "800d",
+        }
+      );
+
+      res.status(200).json({
+        _id: updatedUser._id,
+        sponser: updatedUser.sponser,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        ownSponserId: updatedUser.ownSponserId,
+        earning: updatedUser.earning,
+        joiningAmount: updatedUser.joiningAmount,
+        autoPool: updatedUser.autoPool,
+        autoPoolPlan: updatedUser.autoPoolPlan,
+        autoPoolAmount: updatedUser.autoPoolAmount,
+        userStatus: updatedUser.userStatus,
+        isAdmin: updatedUser.isAdmin,
+        children: updatedUser.children,
+        token_type: "Bearer",
+        access_token: token,
+        sts: "01",
+        msg: "Login Success",
+      });
+    } else {
+      res.status(404);
+      throw new Error("User not found");
+    }
+  })
+);
+
+// GET one user's details to admin by id
+router.post(
+  "/get-user-to-admin",
+  protect,
+  asyncHandler(async (req, res) => {
+    const { id } = req.body;
+
+    const user = await User.findById(id);
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ msg: "User not found!" });
+    }
+  })
+);
+
+// Get all users in autopool
+router.get(
+  "/get-autopool-users",
+  protect,
+  asyncHandler(async (req, res) => {
+    const users = await User.find({ autoPool: true });
+
+    if (users.length > 0) {
+      res.status(200).json(users);
+    } else {
+      res.status(400).json({ sts: "00", msg: "No users found!" });
+    }
+  })
+);
+
+// Split autopool bonus based on the level
+router.post(
+  "/split-autopool-income",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const admin = await User.findById(userId);
+
+    const users = await User.find({ autoPool: true });
+
+    if (users) {
+      const autoPoolBalance = admin.autoPoolBank;
+
+      if (autoPoolBalance > 0) {
+        const promoterUsers = users.filter((user) => {
+          user.currentPlan == "promoter";
+        });
+
+        if (promoterUsers.length > 0) {
+          const tenPercent = autoPoolBalance / 10;
+          for (const user of promoterUsers) {
+            user.autoPoolAmount += tenPercent;
+            await user.save();
+          }
+        }
+        
+      }
+    } else {
+      res.status(400).json({ sts: "00", msg: "No user found!" });
     }
   })
 );

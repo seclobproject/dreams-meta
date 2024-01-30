@@ -4,9 +4,11 @@ import { useAppDispatch, useAppSelector } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import { getAllUsersToAdmin } from '../../store/adminSlice';
+import { useNavigate } from 'react-router-dom';
 
 const AllMembers = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const { loading, data: rowData, error } = useAppSelector((state: any) => state.getAllUsersToAdminReducer);
 
     useEffect(() => {
@@ -23,8 +25,6 @@ const AllMembers = () => {
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(rowData || []);
     const [recordsData, setRecordsData] = useState(initialRecords);
-
-    recordsData && console.log(recordsData);
 
     const [search, setSearch] = useState('');
 
@@ -52,6 +52,10 @@ const AllMembers = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search, rowData]);
 
+    const editHandler = (id: any) => {
+        navigate(`/users/edit-user-by-admin/${id}`);
+    };
+
     return (
         <div className="space-y-6">
             {/* Skin: Striped  */}
@@ -70,8 +74,16 @@ const AllMembers = () => {
                             { accessor: 'email', title: 'Email' },
                             { accessor: 'ownSponserId', title: 'Own Sponsor ID' },
                             { accessor: 'sponser.ownSponserId', title: 'Sponsor' },
-                            // { accessor: (row) => row.userStatus.toString() as string, title: 'Status', id: 'userStatus' },
-                            { accessor: '', title: 'Edit', render: () => <button type="button" className="btn btn-info">Edit</button> },
+                            { accessor: 'userStatus', title: 'Status', render: () => <span>{}</span> },
+                            {
+                                accessor: 'Actions',
+                                title: 'Edit',
+                                render: (user: any) => (
+                                    <button type="button" onClick={() => editHandler(user._id)} className="btn btn-info">
+                                        Edit
+                                    </button>
+                                ),
+                            },
                         ]}
                         totalRecords={initialRecords ? initialRecords.length : 0}
                         recordsPerPage={pageSize}
