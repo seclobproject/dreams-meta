@@ -5,6 +5,8 @@ import ShowRewards from '../pages/Components/ShowRewards';
 import Support from '../pages/Pages/Support';
 import AllMembers from '../pages/DataTables/AllMembers';
 import EditUserByAdmin from '../pages/Users/EditUserByAdmin';
+import Autopool from '../pages/Autopool';
+import RejoiningWallet from '../pages/RejoiningWallet';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -117,11 +119,15 @@ const routes = [
         path: '/dashboard',
         element: <Finance />,
     },
-    
     // analytics page
     {
         path: '/analytics',
         element: <Analytics />,
+    },
+    // Autopool
+    {
+        path: '/autopool',
+        element: <Autopool />,
     },
     {
         path: '/direct-sponsors',
@@ -142,6 +148,10 @@ const routes = [
     {
         path: '/support',
         element: <Support />,
+    },
+    {
+        path: '/rejoining-wallet',
+        element: <RejoiningWallet />,
     },
     // crypto page
     {

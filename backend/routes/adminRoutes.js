@@ -100,41 +100,45 @@ router.get(
 
     if (user.joiningAmount >= 60 && user.currentPlan == "promoter") {
       user.joiningAmount -= 60;
+      admin.rejoiningWallet += 60;
       user.currentPlan = "royalAchiever";
 
       admin.autoPoolBank += 4;
 
-      const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
-      const left = "royalAchieverLeft";
-      const right = "royalAchieverRight";
-      await bfs(parentUser, userId, left, right);
+      // const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
+      // const left = "royalAchieverLeft";
+      // const right = "royalAchieverRight";
+      // await bfs(parentUser, userId, left, right);
     } else if (
       user.joiningAmount >= 100 &&
       user.currentPlan == "royalAchiever"
     ) {
       user.joiningAmount -= 100;
       user.currentPlan = "crownAchiever";
-
+      admin.rejoiningWallet += 100;
       admin.autoPoolBank += 7.5;
 
-      const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
+      // const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
 
-      const left = "crownAchieverLeft";
-      const right = "crownAchieverRight";
-      await bfs(parentUser, userId, left, right);
+      // const left = "crownAchieverLeft";
+      // const right = "crownAchieverRight";
+      // await bfs(parentUser, userId, left, right);
     } else if (
       user.joiningAmount >= 200 &&
       (user.currentPlan == "crownAchiever" || "diamondAchiever")
     ) {
       user.joiningAmount -= 200;
+      admin.rejoiningWallet += 200;
       user.currentPlan = "diamondAchiever";
 
       admin.autoPoolBank += 15;
 
-      const parentUser = await User.findOne({ currentPlan: "diamondAchiever" });
-      const left = "diamondAchieverLeft";
-      const right = "diamondAchieverRight";
-      await bfs(parentUser, userId, left, right);
+      // const parentUser = await User.findOne({ currentPlan: "diamondAchiever" });
+      // const left = "diamondAchieverLeft";
+      // const right = "diamondAchieverRight";
+      // await bfs(parentUser, userId, left, right);
+    } else {
+      res.status(400).json({msg: "User does not meet upgrade criteria"});
     }
 
     const updateAdmin = await admin.save();
@@ -308,7 +312,7 @@ router.get(
 );
 
 // Split autopool bonus based on the level
-router.post(
+router.get(
   "/split-autopool-income",
   protect,
   asyncHandler(async (req, res) => {
@@ -316,27 +320,138 @@ router.post(
 
     const admin = await User.findById(userId);
 
-    const users = await User.find({ autoPool: true });
+    const users = await User.find({
+      $and: [{ autoPool: true }, { isAdmin: false }],
+    });
 
     if (users) {
       const autoPoolBalance = admin.autoPoolBank;
+      let balancedUsed = 0;
 
       if (autoPoolBalance > 0) {
+        // Distribute 10% of autopool among promoter users
         const promoterUsers = users.filter((user) => {
-          user.currentPlan == "promoter";
+          return user.currentPlan === "promoter";
         });
 
         if (promoterUsers.length > 0) {
-          const tenPercent = autoPoolBalance / 10;
+          const tenPercent = autoPoolBalance * 0.1;
+          const amountPerUser = tenPercent / promoterUsers.length;
+
           for (const user of promoterUsers) {
-            user.autoPoolAmount += tenPercent;
+            user.autoPoolAmount += amountPerUser;
+            user.earning += amountPerUser;
             await user.save();
           }
+
+          balancedUsed += tenPercent;
         }
-        
+
+        // Distribute 20% of autoPoolBalance among royal achiever users
+        const royalAchieverUsers = users.filter((user) => {
+          return user.currentPlan == "royalAchiever";
+        });
+
+        if (royalAchieverUsers.length > 0) {
+          const twentyPercent = autoPoolBalance * 0.2;
+          const amountPerUser = twentyPercent / royalAchieverUsers.length;
+
+          for (const user of royalAchieverUsers) {
+            user.autoPoolAmount += amountPerUser;
+            user.earning += amountPerUser;
+            await user.save();
+          }
+
+          balancedUsed += twentyPercent;
+        }
+
+        // Distribute 30% of autoPoolBalance amoung crown achiever users
+        const crownAchieverUsers = users.filter((user) => {
+          return user.currentPlan == "crownAchiever";
+        });
+
+        if (crownAchieverUsers.length > 0) {
+          const thirtyPercent = autoPoolBalance * 0.3;
+          const amountPerUser = thirtyPercent / crownAchieverUsers.length;
+
+          for (const user of crownAchieverUsers) {
+            user.autoPoolAmount += amountPerUser;
+            user.earning += amountPerUser;
+            await user.save();
+          }
+
+          balancedUsed += thirtyPercent;
+        }
+
+        // Distribute 40% of autoPoolBalance amount diamond achiever users
+        const diamondAchieverUsers = users.filter((user) => {
+          return user.currentPlan == "diamondAchiever";
+        });
+
+        if (diamondAchieverUsers.length > 0) {
+          const fortyPercent = autoPoolBalance * 0.4;
+          const amountPerUser = fortyPercent / diamondAchieverUsers.length;
+
+          for (const user of diamondAchieverUsers) {
+            user.autoPoolAmount += amountPerUser;
+            user.earning += amountPerUser;
+            await user.save();
+          }
+
+          balancedUsed += fortyPercent;
+        }
+
+        admin.autoPoolBank -= balancedUsed;
+        await admin.save();
+
+        res
+          .status(200)
+          .json({ msg: "AutoPool bonus distributed successfully" });
+      } else {
+        res.status(400).json({
+          msg: "You don't have enough balance in autopool bank to distribute",
+        });
       }
     } else {
       res.status(400).json({ sts: "00", msg: "No user found!" });
+    }
+  })
+);
+
+// GET: Auto pool income
+router.get(
+  "/get-autopool-income",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const admin = await User.findById(userId);
+
+    if (admin) {
+      res.status(200).json({
+        autoPoolAmount: admin.autoPoolBank,
+      });
+    } else {
+      res.status(400).json({ sts: "00", msg: "No admin user found" });
+    }
+  })
+);
+
+// GET: Get the total amount received by admin to rejoining wallet
+router.get(
+  "/get-rejoining-wallet",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const admin = await User.findById(userId);
+
+    if (admin) {
+      res.status(200).json({
+        rejoiningWallet: admin.rejoiningWallet,
+      });
+    } else {
+      res.status(400).json({ sts: "00", msg: "No admin user found" });
     }
   })
 );

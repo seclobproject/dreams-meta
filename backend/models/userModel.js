@@ -133,6 +133,10 @@ const userSchema = new mongoose.Schema(
     rewardImage: {
       type: String,
     },
+    rejoiningWallet: {
+      type: Number,
+      default: 0
+    },
   },
   {
     timestamps: true,

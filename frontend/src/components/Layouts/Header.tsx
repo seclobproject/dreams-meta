@@ -336,10 +336,10 @@ const Header = () => {
                                 <NavLink to="/all-members">{t('All Members')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/components/modals">{t('Rejoining')}</NavLink>
+                                <NavLink to="/rejoining-wallet">{t('Rejoining Wallet')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/components/cards">{t('Autopool')}</NavLink>
+                                <NavLink to="/autopool">{t('Auto Pool')}</NavLink>
                             </li>
                         </ul>
                     </li>
