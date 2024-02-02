@@ -33,6 +33,7 @@ const RejoiningWallet = () => {
                             <h5 className="font-semibold text-lg">Total Rejoining Balance</h5>
                             <div className="relative text-xl whitespace-nowrap">$ {data && data.rejoiningWallet}</div>
                         </div>
+                        <h5 className='text-gray-100'>Your total rejoining wallet amount will be shown here!</h5>
                     </div>
                 </div>
             </div>

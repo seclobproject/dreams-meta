@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
 import path from "path";
+import { addCommissionToLine } from "./supportingFunctions/TreeFunctions.js";
 // import upload from "../middleware/fileUploadMiddleware.js";
 
 // Register new user
@@ -188,12 +189,24 @@ router.get(
 
     if (user) {
       if (user.currentPlan == "promoter") {
+
         if (user.joiningAmount >= 60) {
+
           user.currentPlan = "royalAchiever";
+
           user.joiningAmount -= 60;
+
           if (user.autoPool == true) {
             user.autoPoolPlan = "silverPossession";
           }
+
+          // Give $8 commission to sponsor as well as people above in the tree till 4 levels
+          const admin = await User.findById(user.sponser);
+          admin.earning += 8;
+          await admin.save();
+
+          await addCommissionToLine(user.nodeId, 4, sponserId, 8);
+          
           const updatedUser = await user.save();
 
           if (updatedUser) {
@@ -207,18 +220,29 @@ router.get(
               msg: "Updating user failed. Please try again!",
             });
           }
+
         } else {
           res.status(400).json({
             sts: "00",
             msg: "Insufficient amount to upgrade the plan!",
           });
         }
+
       } else if (currentPlan == "royalAchiever") {
+
         if (user.joiningAmount >= 100) {
           user.currentPlan = "crownAchiever";
           if (user.autoPool == true) {
             user.autoPoolPlan = "goldPossession";
           }
+
+          // Give $15 commission to sponsor as well as people above in the tree till 4 levels
+          const admin = await User.findById(user.sponser);
+          admin.earning += 15;
+          await admin.save();
+          
+          await addCommissionToLine(user.nodeId, 4, sponserId, 15);
+
           const updatedUser = await user.save();
 
           if (updatedUser) {
@@ -238,12 +262,22 @@ router.get(
             msg: "Insufficient amount to upgrade the plan!",
           });
         }
+
       } else if (currentPlan == "crownAchiever") {
+
         if (user.joiningAmount >= 200) {
           user.currentPlan = "diamondAchiever";
           if (user.autoPool == true) {
             user.autoPoolPlan = "diamondPossession";
           }
+
+          // Give $30 commission to sponsor as well as people above in the tree till 4 levels
+          const admin = await User.findById(user.sponser);
+          admin.earning += 30;
+          await admin.save();
+          
+          await addCommissionToLine(user.nodeId, 4, sponserId, 15);
+
           const updatedUser = await user.save();
 
           if (updatedUser) {

@@ -7,6 +7,7 @@ import AllMembers from '../pages/DataTables/AllMembers';
 import EditUserByAdmin from '../pages/Users/EditUserByAdmin';
 import Autopool from '../pages/Autopool';
 import RejoiningWallet from '../pages/RejoiningWallet';
+const ConnectWallet = lazy(() => import('../walletConfig/Web3Modal'));
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -152,6 +153,10 @@ const routes = [
     {
         path: '/rejoining-wallet',
         element: <RejoiningWallet />,
+    },
+    {
+        path: '/connect-wallet',
+        element: <ConnectWallet />,
     },
     // crypto page
     {

@@ -13,7 +13,7 @@ const LevelTree = () => {
 
     const { loading, data: rowData, error } = useAppSelector((state: any) => state.getAllUsersReducer);
     const { loading:level2Loading, data:level2Data, error:level2Error } = useAppSelector((state: any) => state.getUsersByLevelReducer);
-    const { loading:level3Loading, data:level3Data, error:level3Error } = useAppSelector((state: any) => state.getUsersByLevelReducer);
+    // const { loading:level3Loading, data:level3Data, error:level3Error } = useAppSelector((state: any) => state.getUsersByLevelReducer);
     
     useEffect(() => {
         dispatch(getAllUsers());

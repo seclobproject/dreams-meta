@@ -90,6 +90,7 @@ const Header = () => {
                                 <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo-dark.png" alt="logo" />
                             </div>
                         </Link>
+                        
                         <button
                             type="button"
                             className="collapse-icon flex-none dark:text-[#d0d2d6] hover:text-primary dark:hover:text-primary flex lg:hidden ltr:ml-2 rtl:mr-2 p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:bg-white-light/90 dark:hover:bg-dark/60"
