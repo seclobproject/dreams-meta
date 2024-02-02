@@ -34,6 +34,7 @@ import IconMenuPages from '../Icon/Menu/IconMenuPages';
 import IconMenuMore from '../Icon/Menu/IconMenuMore';
 import { logout } from '../../store/authSlice';
 import IconMenuInvoice from '../Icon/Menu/IconMenuInvoice';
+import WalletConnectButton from '../Button';
 
 const Header = () => {
     const location = useLocation();
@@ -90,7 +91,6 @@ const Header = () => {
                                 <img className="w-36 md:w-48 ml-[5px] flex-none" src="/assets/images/logo-dark.png" alt="logo" />
                             </div>
                         </Link>
-                        
                         <button
                             type="button"
                             className="collapse-icon flex-none dark:text-[#d0d2d6] hover:text-primary dark:hover:text-primary flex lg:hidden ltr:ml-2 rtl:mr-2 p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:bg-white-light/90 dark:hover:bg-dark/60"
@@ -283,10 +283,10 @@ const Header = () => {
                         </button>
                         <ul className="sub-menu">
                             <li>
-                                <NavLink to="/components/tabs">{t('Withdrawal')}</NavLink>
+                                <NavLink to="/withdraw">{t('Request Withdraw')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/components/accordions">{t('Withdrawal History')}</NavLink>
+                                <NavLink to="/">{t('Withdrawal History')}</NavLink>
                             </li>
                         </ul>
                     </li>

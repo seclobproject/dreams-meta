@@ -1,38 +1,64 @@
 import { Link } from 'react-router-dom';
 import Dropdown from '../components/Dropdown';
 import ReactApexChart from 'react-apexcharts';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { IRootState, useAppDispatch, useAppSelector } from '../store';
 import { setPageTitle } from '../store/themeConfigSlice';
-import { useEffect, useState } from 'react';
-import IconHorizontalDots from '../components/Icon/IconHorizontalDots';
-import IconEye from '../components/Icon/IconEye';
+import { useEffect } from 'react';
 import IconBitcoin from '../components/Icon/IconBitcoin';
 import IconEthereum from '../components/Icon/IconEthereum';
 import IconLitecoin from '../components/Icon/IconLitecoin';
 import IconBinance from '../components/Icon/IconBinance';
 import IconTether from '../components/Icon/IconTether';
 import IconSolana from '../components/Icon/IconSolana';
-import IconCircleCheck from '../components/Icon/IconCircleCheck';
-import IconInfoCircle from '../components/Icon/IconInfoCircle';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import IconPencilPaper from '../components/Icon/IconPencilPaper';
-import IconCoffee from '../components/Icon/IconCoffee';
-import IconCalendar from '../components/Icon/IconCalendar';
-import IconMapPin from '../components/Icon/IconMapPin';
-import IconMail from '../components/Icon/IconMail';
-import IconPhone from '../components/Icon/IconPhone';
-import IconTwitter from '../components/Icon/IconTwitter';
-import IconDribbble from '../components/Icon/IconDribbble';
-import IconGithub from '../components/Icon/IconGithub';
 import { getUserDetails } from '../store/userSlice';
 
-import Web3 from 'web3';
+import { useContractWrite, useBalance, useSendTransaction } from 'wagmi';
+import { abi } from '../abi';
+import WalletConnectButton from '../components/Button';
+import { useAccount } from 'wagmi';
+import { testUsdtAddr } from '../Constants';
+import { parseEther } from 'viem';
 
 const Finance = () => {
     const dispatch = useAppDispatch();
 
     const { data: userInfo } = useAppSelector((state: any) => state.getUserDetailsReducer);
+
+    const { address } = useAccount();
+
+    const result = useBalance({
+        address,
+        token: testUsdtAddr,
+    });
+
+    const { data, isLoading, isSuccess, write, isError } = useContractWrite({
+        address: testUsdtAddr,
+        abi,
+        functionName: 'transferFrom',
+        args: [address, '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e', 10000000000000000000],
+    });
+
+    console.log(data); // This will show the data of hash of the transaction
+
+    const { data: approvalData, write: approvalWrite } = useContractWrite({
+        address: testUsdtAddr,
+        abi,
+        functionName: 'approve',
+        args: [address, 10000000000000000000],
+        onError: (e: any) => {
+            console.log(e);
+        },
+        onSuccess: (tx: any) => {
+            setTimeout(() => {
+                write();
+            }, 5000);
+
+            // lodash: delay instead of timeout
+        },
+    });
 
     // const [url, setUrl] = useState(`https://dreamzmeta.com/signup/${userInfo._id}`);
     let url = '';
@@ -413,104 +439,8 @@ const Finance = () => {
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
-    // Replace with your Infura or Alchemy API key and network
-    // const infuraApiKey = '4562308714364168834eb5c7a4f84a50';
-    // const network = 'mainnet';
-
-    // const providerUrl = `https://${network}.infura.io/v3/${infuraApiKey}`;
-    // const web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
-
-    // const usdtContractAddress = '0xc2132D05D31c914a87C6611C10748AEb04B58e8F';
-    // const usdtContractABI = [
-    //     { inputs: [{ internalType: 'address', name: '_proxyTo', type: 'address' }], stateMutability: 'nonpayable', type: 'constructor' },
-    //     {
-    //         anonymous: false,
-    //         inputs: [
-    //             { indexed: false, internalType: 'address', name: '_new', type: 'address' },
-    //             { indexed: false, internalType: 'address', name: '_old', type: 'address' },
-    //         ],
-    //         name: 'ProxyOwnerUpdate',
-    //         type: 'event',
-    //     },
-    //     {
-    //         anonymous: false,
-    //         inputs: [
-    //             { indexed: true, internalType: 'address', name: '_new', type: 'address' },
-    //             { indexed: true, internalType: 'address', name: '_old', type: 'address' },
-    //         ],
-    //         name: 'ProxyUpdated',
-    //         type: 'event',
-    //     },
-    //     { stateMutability: 'payable', type: 'fallback' },
-    //     { inputs: [], name: 'implementation', outputs: [{ internalType: 'address', name: '', type: 'address' }], stateMutability: 'view', type: 'function' },
-    //     { inputs: [], name: 'proxyOwner', outputs: [{ internalType: 'address', name: '', type: 'address' }], stateMutability: 'view', type: 'function' },
-    //     { inputs: [], name: 'proxyType', outputs: [{ internalType: 'uint256', name: 'proxyTypeId', type: 'uint256' }], stateMutability: 'pure', type: 'function' },
-    //     { inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }], name: 'transferProxyOwnership', outputs: [], stateMutability: 'nonpayable', type: 'function' },
-    //     {
-    //         inputs: [
-    //             { internalType: 'address', name: '_newProxyTo', type: 'address' },
-    //             { internalType: 'bytes', name: 'data', type: 'bytes' },
-    //         ],
-    //         name: 'updateAndCall',
-    //         outputs: [],
-    //         stateMutability: 'payable',
-    //         type: 'function',
-    //     },
-    //     { inputs: [{ internalType: 'address', name: '_newProxyTo', type: 'address' }], name: 'updateImplementation', outputs: [], stateMutability: 'nonpayable', type: 'function' },
-    //     { stateMutability: 'payable', type: 'receive' },
-    // ];
-
-    // const usdtContract = new web3.eth.Contract(usdtContractABI, usdtContractAddress);
-
-
-
-    // async function sendUSDT(recipientAddress, amount) {
-    //     try {
-    //       // Convert amount to the smallest unit (wei)
-    //       const amountInWei = web3.utils.toBN(amount).mul(web3.utils.toBN(10 ** 6)); // Assuming 6 decimals for USDT
-      
-    //       // Replace with the sender's private key
-    //       const privateKey = 'YOUR_PRIVATE_KEY_HERE';
-    //       const senderAccount = web3.eth.accounts.privateKeyToAccount(privateKey);
-      
-    //       // Set the default account
-    //       web3.eth.defaultAccount = senderAccount.address;
-      
-    //       // Estimate gas for the transaction
-    //       const gasEstimate = await usdtContract.methods.transfer(recipientAddress, amountInWei.toString()).estimateGas();
-      
-    //       // Build the transaction object
-    //       const transactionObject = {
-    //         from: senderAccount.address,
-    //         to: usdtContractAddress,
-    //         gas: gasEstimate,
-    //         data: usdtContract.methods.transfer(recipientAddress, amountInWei.toString()).encodeABI(),
-    //       };
-      
-    //       // Sign the transaction
-    //       const signedTransaction = await web3.eth.accounts.signTransaction(transactionObject, privateKey);
-      
-    //       // Send the signed transaction
-    //       const transactionReceipt = await web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
-      
-    //       console.log('Transaction successful:', transactionReceipt);
-    //     } catch (error) {
-    //       console.error('Error sending USDT:', error);
-    //     }
-    //   }
-
     return (
         <div>
-            {/* <ul className="flex space-x-2 rtl:space-x-reverse">
-                <li>
-                    <Link to="#" className="text-primary hover:underline">
-                        Dashboard
-                    </Link>
-                </li>
-                <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                    <span>Finance</span>
-                </li>
-            </ul> */}
             <div className="pt-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 text-white">
                     <div className="panel">
@@ -529,6 +459,12 @@ const Finance = () => {
                                 <li className="flex items-center gap-2">Sponsor ID: ${userInfo && userInfo.ownSponserId}</li>
                                 <li>Account Status: {userInfo && userInfo.userStatus == 'true' ? <span className="text-green-600">Activated</span> : <span className="text-red-700">Pending</span>}</li>
                                 <li>Auto Pool: {userInfo && userInfo.autoPool == false ? <span className="text-red-700">Not Activated</span> : <span className="text-green-600">Activated</span>}</li>
+                                <WalletConnectButton />
+                                {address && (
+                                    <button type="button" onClick={async () => await approvalWrite()} className="btn btn-outline-success">
+                                        Send Token
+                                    </button>
+                                )}
                             </ul>
                         </div>
                     </div>
