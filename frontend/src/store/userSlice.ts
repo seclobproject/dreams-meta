@@ -324,6 +324,50 @@ export const getUsersByLevelSlice = createSlice({
     },
 });
 
+// Redux action to joining request
+export const sendJoiningRequest = createAsyncThunk('sendJoiningRequest', async (hash: any) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.post(`${URL}/api/users/join`, { hash }, config);
+
+    console.log(response.data);
+    
+    return response.data;
+});
+
+export const sendJoiningRequestSlice = createSlice({
+    name: 'sendJoiningRequestSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(sendJoiningRequest.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(sendJoiningRequest.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(sendJoiningRequest.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+export const sendJoiningRequestReducer = sendJoiningRequestSlice.reducer;
 export const getUsersByLevelReducer = getUsersByLevelSlice.reducer;
 export const addNewUserReducer = getAddNewUser.reducer;
 export const addNewUserByReferralReducer = addNewUserWithRefferalSlice.reducer;

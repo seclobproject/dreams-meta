@@ -8,6 +8,7 @@ import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
 import path from "path";
 import { addCommissionToLine } from "./supportingFunctions/TreeFunctions.js";
+import JoiningRequest from "../models/joinRequestModel.js";
 // import upload from "../middleware/fileUploadMiddleware.js";
 
 // Register new user
@@ -168,7 +169,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate("joiningRequest");
 
     if (user) {
       res.status(200).json(user);
@@ -177,7 +178,6 @@ router.get(
     }
   })
 );
-
 
 router.get(
   "/upgrade-plan",
@@ -189,9 +189,7 @@ router.get(
 
     if (user) {
       if (user.currentPlan == "promoter") {
-
         if (user.joiningAmount >= 60) {
-
           user.currentPlan = "royalAchiever";
 
           user.joiningAmount -= 60;
@@ -206,7 +204,7 @@ router.get(
           await admin.save();
 
           await addCommissionToLine(user.nodeId, 4, sponserId, 8);
-          
+
           const updatedUser = await user.save();
 
           if (updatedUser) {
@@ -220,16 +218,13 @@ router.get(
               msg: "Updating user failed. Please try again!",
             });
           }
-
         } else {
           res.status(400).json({
             sts: "00",
             msg: "Insufficient amount to upgrade the plan!",
           });
         }
-
       } else if (currentPlan == "royalAchiever") {
-
         if (user.joiningAmount >= 100) {
           user.currentPlan = "crownAchiever";
           if (user.autoPool == true) {
@@ -240,7 +235,7 @@ router.get(
           const admin = await User.findById(user.sponser);
           admin.earning += 15;
           await admin.save();
-          
+
           await addCommissionToLine(user.nodeId, 4, sponserId, 15);
 
           const updatedUser = await user.save();
@@ -262,9 +257,7 @@ router.get(
             msg: "Insufficient amount to upgrade the plan!",
           });
         }
-
       } else if (currentPlan == "crownAchiever") {
-
         if (user.joiningAmount >= 200) {
           user.currentPlan = "diamondAchiever";
           if (user.autoPool == true) {
@@ -275,7 +268,7 @@ router.get(
           const admin = await User.findById(user.sponser);
           admin.earning += 30;
           await admin.save();
-          
+
           await addCommissionToLine(user.nodeId, 4, sponserId, 15);
 
           const updatedUser = await user.save();
@@ -373,8 +366,6 @@ router.get(
   })
 );
 
-// Get the first level of users (1st two in the tree)
-
 // Function to fetch users at a specific level for a given userId
 async function getUsersAtLevel(userId, level) {
   const user = await User.findById(userId);
@@ -389,8 +380,6 @@ async function getUsersAtLevel(userId, level) {
 
 // Recursive function to traverse the binary tree and find users at a specific level
 async function findUsersAtLevel(user, targetLevel, currentLevel, result) {
-
-
   if (!user || currentLevel > targetLevel) {
     return;
   }
@@ -426,6 +415,71 @@ router.post(
     } else {
       console.error(error);
       res.status(500).json({ sts: "00", msg: "Some error occured!" });
+    }
+  })
+);
+
+// Receive joining $30 from user
+router.post(
+  "/join",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const { hash } = req.body;
+    const user = await User.findById(userId);
+
+    const joiningRequest = await JoiningRequest.create({
+      user: userId,
+      amount: 30,
+      hash: hash,
+      status: false,
+    });
+
+    if (joiningRequest) {
+      if (user) {
+        if (!user.joiningRequest) {
+          user.joiningRequest = {};
+        }
+
+        user.joiningRequest = joiningRequest._id;
+
+        const updateUser = await user.save();
+
+        if (updateUser) {
+          res.status(201).json({
+            sts: "01",
+            msg: "Your request has been sent successfully!",
+          });
+        }
+      } else {
+        res.status(400).json({
+          sts: "00",
+          msg: "User not found!",
+        });
+      }
+    } else {
+      res.status(400).json({
+        sts: "00",
+        msg: "Some error occured!",
+      });
+    }
+  })
+);
+
+// Get user's joining request to user
+router.get(
+  "/get-joining-request",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate("joiningRequest");
+
+    if (user) {
+      res.status(200).json(user.joiningRequest);
+    } else {
+      res.status(404).json({ sts: "00", msg: "User not found!" });
     }
   })
 );

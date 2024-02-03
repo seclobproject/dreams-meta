@@ -315,6 +315,49 @@ const getRejoiningWalletAmountSlice = createSlice({
     },
 });
 
+// Verify user by admin
+export const verifyUser = createAsyncThunk('verifyUser', async (userId: string) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.post(`${URL}/api/admin/verify-user-payment`, { userId }, config);
+
+    return response.data;
+});
+
+const verifyUserSlice = createSlice({
+    name: 'verifyUserSlice',
+    initialState: {
+        loading: false,
+        data: '',
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(verifyUser.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(verifyUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(verifyUser.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+                state.error = 'Something went wrong, please try again later';
+            });
+    },
+});
+
+export const verifyUserReducer = verifyUserSlice.reducer;
 export const getRejoiningWalletAmountReducer = getRejoiningWalletAmountSlice.reducer;
 export const getAutoPoolIncomeReducer = getAutoPoolIncomeSlice.reducer;
 export const splitAutoPoolAmountReducer = splitAutoPoolAmountSlice.reducer;

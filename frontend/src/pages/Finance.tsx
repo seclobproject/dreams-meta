@@ -4,7 +4,7 @@ import ReactApexChart from 'react-apexcharts';
 import { useSelector } from 'react-redux';
 import { IRootState, useAppDispatch, useAppSelector } from '../store';
 import { setPageTitle } from '../store/themeConfigSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import IconBitcoin from '../components/Icon/IconBitcoin';
 import IconEthereum from '../components/Icon/IconEthereum';
 import IconLitecoin from '../components/Icon/IconLitecoin';
@@ -13,7 +13,7 @@ import IconTether from '../components/Icon/IconTether';
 import IconSolana from '../components/Icon/IconSolana';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import IconPencilPaper from '../components/Icon/IconPencilPaper';
-import { getUserDetails } from '../store/userSlice';
+import { getUserDetails, sendJoiningRequest } from '../store/userSlice';
 
 import { useContractWrite, useBalance, useSendTransaction } from 'wagmi';
 import { abi } from '../abi';
@@ -26,6 +26,8 @@ const Finance = () => {
     const dispatch = useAppDispatch();
 
     const { data: userInfo } = useAppSelector((state: any) => state.getUserDetailsReducer);
+
+    const { loading: joiningLoading, data: joiningData, error: joiningError } = useAppSelector((state: any) => state.sendJoiningRequestReducer);
 
     const { address } = useAccount();
 
@@ -439,6 +441,12 @@ const Finance = () => {
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
+    useEffect(() => {
+        if (data) {
+            dispatch(sendJoiningRequest(data.hash));
+        }
+    }, [data]);
+
     return (
         <div>
             <div className="pt-5">
@@ -460,12 +468,16 @@ const Finance = () => {
                                 <li>Account Status: {userInfo && userInfo.userStatus == 'true' ? <span className="text-green-600">Activated</span> : <span className="text-red-700">Pending</span>}</li>
                                 <li>Auto Pool: {userInfo && userInfo.autoPool == false ? <span className="text-red-700">Not Activated</span> : <span className="text-green-600">Activated</span>}</li>
                                 <WalletConnectButton />
-                                {address && (
+                                {address && userInfo && userInfo.userStatus == false && (
                                     <button type="button" onClick={async () => await approvalWrite()} className="btn btn-outline-success">
-                                        Send Token
+                                        Activate account
                                     </button>
                                 )}
                             </ul>
+                            <div className="text-center mt-5">
+                                {userInfo && userInfo.joiningRequest && userInfo.joiningRequest.status == false && <>You are successfully sent your join request. You will be verified soon.</>}
+                                {userInfo && userInfo.joiningRequest && userInfo.joiningRequest.status == true && <>You are verified.</>}
+                            </div>
                         </div>
                     </div>
 

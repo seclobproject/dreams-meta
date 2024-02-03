@@ -135,7 +135,11 @@ const userSchema = new mongoose.Schema(
     },
     rejoiningWallet: {
       type: Number,
-      default: 0
+      default: 0,
+    },
+    joiningRequest: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "JoiningRequest",
     },
   },
   {

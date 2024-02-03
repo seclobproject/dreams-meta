@@ -17,7 +17,7 @@ const metadata = {
 
 const chains = [sepolia]
 // const chains = [mainnet]; // OG
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
+const wagmiConfig: any = defaultWagmiConfig({ chains, projectId, metadata });
 
 // 3. Create modal
 createWeb3Modal({ wagmiConfig, projectId, chains }); // 'defaultChain: mainnet' also has to added. Not checked after adding default chain

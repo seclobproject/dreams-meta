@@ -11,6 +11,7 @@ import { bfs } from "./supportingFunctions/TreeFunctions.js";
 import path from "path";
 import multer from "multer";
 import Reward from "../models/rewardModel.js";
+import JoiningRequest from "../models/joinRequestModel.js";
 
 // Verify the user by admin and add the user to the proper position in the tree
 // after successful verification
@@ -138,7 +139,7 @@ router.get(
       // const right = "diamondAchieverRight";
       // await bfs(parentUser, userId, left, right);
     } else {
-      res.status(400).json({msg: "User does not meet upgrade criteria"});
+      res.status(400).json({ msg: "User does not meet upgrade criteria" });
     }
 
     const updateAdmin = await admin.save();
@@ -154,7 +155,7 @@ router.get(
   "/get-users",
   protect,
   asyncHandler(async (req, res) => {
-    const users = await User.find().populate("sponser");
+    const users = await User.find().populate("sponser").populate("joiningRequest");
 
     if (users) {
       res.json(users);
@@ -452,6 +453,59 @@ router.get(
       });
     } else {
       res.status(400).json({ sts: "00", msg: "No admin user found" });
+    }
+  })
+);
+
+// GET all joining requests to admin
+router.get(
+  "/get-joining-requests",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const requests = await JoiningRequest.find().populate("user");
+
+    if (requests) {
+      res.status(200).json({
+        sts: "01",
+        msg: "Success",
+        requests,
+      });
+    } else {
+      res.status(400).json({ sts: "00", msg: "No requests found" });
+    }
+  })
+);
+
+// Post: Accept/Reject joining request
+router.post(
+  "/manage-user-request",
+  protect,
+  asyncHandler(async (req, res) => {
+    
+    const { requestId, action } = req.body;
+
+    const request = await JoiningRequest.findById(requestId);
+
+    if (request) {
+
+      request.status = action;
+      const updatedRequest = await request.save();
+
+      if (updatedRequest) {
+
+        res.status(200).json({
+          sts: "01",
+          msg: "Request updated successfully",
+        });
+
+      } else {
+        res.status(400).json({ sts: "00", msg: "Request not updated" });
+      }
+
+    } else {
+      res.status(400).json({ sts: "00", msg: "No request found" });
     }
   })
 );

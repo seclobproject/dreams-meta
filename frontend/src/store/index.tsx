@@ -1,14 +1,26 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import themeConfigSlice from './themeConfigSlice';
 import authReducer from './authSlice';
-import { addNewUserReducer, addNewUserByReferralReducer, editUserReducer, getAllUsersReducer, getUserDetailsReducer, getUsersByLevelReducer } from './userSlice';
+
+import {
+    addNewUserReducer,
+    addNewUserByReferralReducer,
+    editUserReducer,
+    getAllUsersReducer,
+    getUserDetailsReducer,
+    getUsersByLevelReducer,
+    sendJoiningRequestReducer
+} from './userSlice';
+
 import {
     getAllUsersToAdminReducer,
     getUserDetailsToAdminReducer,
     getAllUsersInAutoPoolReducer,
     splitAutoPoolAmountReducer,
     getAutoPoolIncomeReducer,
-    getRejoiningWalletAmountReducer } from './adminSlice';
+    getRejoiningWalletAmountReducer,
+    verifyUserReducer
+} from './adminSlice';
 
 import { TypedUseSelectorHook, useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -28,6 +40,8 @@ const rootReducer = combineReducers({
     splitAutoPoolAmountReducer,
     getAutoPoolIncomeReducer,
     getRejoiningWalletAmountReducer,
+    sendJoiningRequestReducer,
+    verifyUserReducer
 });
 
 const store = configureStore({
