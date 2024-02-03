@@ -4,6 +4,7 @@ import LevelTree from '../pages/DataTables/LevelTree';
 import ShowRewards from '../pages/Components/ShowRewards';
 import Support from '../pages/Pages/Support';
 import AllMembers from '../pages/DataTables/AllMembers';
+import WithdrawRequests from '../pages/DataTables/WithdrawRequests';
 import EditUserByAdmin from '../pages/Users/EditUserByAdmin';
 import Autopool from '../pages/Autopool';
 import RejoiningWallet from '../pages/RejoiningWallet';
@@ -157,6 +158,10 @@ const routes = [
     {
         path: '/withdraw',
         element: <Withdrawal />,
+    },
+    {
+        path: '/withdraw-requests',
+        element: <WithdrawRequests />,
     },
     // crypto page
     {

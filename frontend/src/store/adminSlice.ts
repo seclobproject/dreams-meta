@@ -357,6 +357,96 @@ const verifyUserSlice = createSlice({
     },
 });
 
+// Get withdraw requests
+export const getWithdrawRequests = createAsyncThunk('getWithdrawRequests', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/admin/get-withdrawal-requests`, config);
+
+    return response.data;
+});
+
+const getWithdrawRequestsSlice = createSlice({
+    name: 'getWithdrawRequestsSlice',
+    initialState: {
+        loading: false,
+        data: '',
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getWithdrawRequests.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getWithdrawRequests.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getWithdrawRequests.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+                state.error = 'Something went wrong, please try again later';
+            });
+    },
+});
+
+// Manage withdrawal request
+export const manageWithdrawRequests = createAsyncThunk('manageWithdrawRequests', async (data: any) => {
+    const { requestId, action, hash } = data;
+
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.post(`${URL}/api/admin/manage-withdrawal-request`, { requestId, action, hash }, config);
+
+    console.log(response.data);
+    
+    return response.data;
+});
+
+const manageWithdrawRequestsSlice = createSlice({
+    name: 'manageWithdrawRequestsSlice',
+    initialState: {
+        loading: false,
+        data: '',
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(manageWithdrawRequests.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(manageWithdrawRequests.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(manageWithdrawRequests.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+                state.error = 'Something went wrong, please try again later';
+            });
+    },
+});
+
+export const manageWithdrawRequestsReducer = manageWithdrawRequestsSlice.reducer;
+export const getWithdrawRequestsReducer = getWithdrawRequestsSlice.reducer;
 export const verifyUserReducer = verifyUserSlice.reducer;
 export const getRejoiningWalletAmountReducer = getRejoiningWalletAmountSlice.reducer;
 export const getAutoPoolIncomeReducer = getAutoPoolIncomeSlice.reducer;

@@ -12,6 +12,7 @@ import path from "path";
 import multer from "multer";
 import Reward from "../models/rewardModel.js";
 import JoiningRequest from "../models/joinRequestModel.js";
+import WithdrawRequest from "../models/withdrawalRequestModel.js";
 
 // Verify the user by admin and add the user to the proper position in the tree
 // after successful verification
@@ -155,7 +156,9 @@ router.get(
   "/get-users",
   protect,
   asyncHandler(async (req, res) => {
-    const users = await User.find().populate("sponser").populate("joiningRequest");
+    const users = await User.find()
+      .populate("sponser")
+      .populate("joiningRequest");
 
     if (users) {
       res.json(users);
@@ -479,31 +482,81 @@ router.get(
 );
 
 // Post: Accept/Reject joining request
-router.post(
-  "/manage-user-request",
+// router.post(
+//   "/manage-user-request",
+//   protect,
+//   asyncHandler(async (req, res) => {
+//     const { requestId, action } = req.body;
+
+//     const request = await JoiningRequest.findById(requestId);
+
+//     if (request) {
+//       request.status = action;
+//       const updatedRequest = await request.save();
+
+//       if (updatedRequest) {
+//         res.status(200).json({
+//           sts: "01",
+//           msg: "Request updated successfully",
+//         });
+//       } else {
+//         res.status(400).json({ sts: "00", msg: "Request not updated" });
+//       }
+//     } else {
+//       res.status(400).json({ sts: "00", msg: "No request found" });
+//     }
+//   })
+// );
+
+// Get all withdrawal requests
+router.get(
+  "/get-withdrawal-requests",
   protect,
   asyncHandler(async (req, res) => {
-    
-    const { requestId, action } = req.body;
+    const withdrawalRequests = await WithdrawRequest.find().populate("user");
 
-    const request = await JoiningRequest.findById(requestId);
+    if (withdrawalRequests) {
+      res.status(200).json(withdrawalRequests);
+    } else {
+      res.status(400).json({ sts: "00", msg: "No withdrawal requests found" });
+    }
+  })
+);
+
+// Post: Accept/Reject withdrawal request
+router.post(
+  "/manage-withdrawal-request",
+  protect,
+  asyncHandler(async (req, res) => {
+
+    const { requestId, action, hash } = req.body;
+
+    if (!requestId || !action) {
+      res
+        .status(400)
+        .json({ sts: "00", msg: "Please send request id and action" });
+    }
+
+    const request = await WithdrawRequest.findById(requestId);
+    const user = await User.findById(request.user);
 
     if (request) {
-
       request.status = action;
+      request.hash = hash;
+
+      user.earning -= request.amount;
+
       const updatedRequest = await request.save();
+      const updatedUser = await user.save();
 
-      if (updatedRequest) {
-
+      if (updatedRequest && updatedUser) {
         res.status(200).json({
           sts: "01",
           msg: "Request updated successfully",
         });
-
       } else {
         res.status(400).json({ sts: "00", msg: "Request not updated" });
       }
-
     } else {
       res.status(400).json({ sts: "00", msg: "No request found" });
     }

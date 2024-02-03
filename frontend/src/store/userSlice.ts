@@ -339,7 +339,7 @@ export const sendJoiningRequest = createAsyncThunk('sendJoiningRequest', async (
     const response = await axios.post(`${URL}/api/users/join`, { hash }, config);
 
     console.log(response.data);
-    
+
     return response.data;
 });
 
@@ -367,6 +367,54 @@ export const sendJoiningRequestSlice = createSlice({
     },
 });
 
+// Redux action to request withdrawal
+export const requestWithdrawal = createAsyncThunk('requestWithdrawal', async (data: any) => {
+
+    
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+    
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const { amount, walletAddress } = data;
+    
+    const response = await axios.post(`${URL}/api/users/request-withdrawal`, { amount, walletAddress }, config);
+
+    return response.data;
+
+});
+
+export const requestWithdrawalSlice = createSlice({
+    name: 'requestWithdrawalSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(requestWithdrawal.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(requestWithdrawal.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(requestWithdrawal.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+
+export const requestWithdrawalReducer = requestWithdrawalSlice.reducer;
 export const sendJoiningRequestReducer = sendJoiningRequestSlice.reducer;
 export const getUsersByLevelReducer = getUsersByLevelSlice.reducer;
 export const addNewUserReducer = getAddNewUser.reducer;

@@ -244,11 +244,11 @@ const Header = () => {
                             </div>
                         </button>
                         <ul className="sub-menu">
-                            <li>
+                            {/* <li>
                                 <NavLink to="/users/user-account-settings">{t('Add Fund')}</NavLink>
-                            </li>
+                            </li> */}
                             <li>
-                                <NavLink to="/users/user-account-settings">{t('History')}</NavLink>
+                                <NavLink to="/">{t('History')}</NavLink>
                             </li>
                         </ul>
                     </li>
@@ -322,28 +322,33 @@ const Header = () => {
                             </li>
                         </ul>
                     </li>
-                    <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuComponents className="shrink-0" />
-                                <span className="px-1">{t('Report')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li>
-                                <NavLink to="/all-members">{t('All Members')}</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/rejoining-wallet">{t('Rejoining Wallet')}</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/autopool">{t('Auto Pool')}</NavLink>
-                            </li>
-                        </ul>
-                    </li>
+                    {userInfo && userInfo.isAdmin && (
+                        <li className="menu nav-item relative">
+                            <button type="button" className="nav-link">
+                                <div className="flex items-center">
+                                    <IconMenuComponents className="shrink-0" />
+                                    <span className="px-1">{t('Report')}</span>
+                                </div>
+                                <div className="right_arrow">
+                                    <IconCaretDown />
+                                </div>
+                            </button>
+                            <ul className="sub-menu">
+                                <li>
+                                    <NavLink to="/all-members">{t('All Members')}</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink to="/withdraw-requests">{t('Manage Withdraw Requests')}</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink to="/rejoining-wallet">{t('Rejoining Wallet')}</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink to="/autopool">{t('Auto Pool')}</NavLink>
+                                </li>
+                            </ul>
+                        </li>
+                    )}
                     <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">

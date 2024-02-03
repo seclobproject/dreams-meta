@@ -141,6 +141,12 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "JoiningRequest",
     },
+    withdrawRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "WithdrawRequest",
+      },
+    ],
   },
   {
     timestamps: true,

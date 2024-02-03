@@ -9,7 +9,8 @@ import {
     getAllUsersReducer,
     getUserDetailsReducer,
     getUsersByLevelReducer,
-    sendJoiningRequestReducer
+    sendJoiningRequestReducer,
+    requestWithdrawalReducer,
 } from './userSlice';
 
 import {
@@ -19,7 +20,9 @@ import {
     splitAutoPoolAmountReducer,
     getAutoPoolIncomeReducer,
     getRejoiningWalletAmountReducer,
-    verifyUserReducer
+    verifyUserReducer,
+    getWithdrawRequestsReducer,
+    manageWithdrawRequestsReducer
 } from './adminSlice';
 
 import { TypedUseSelectorHook, useDispatch } from 'react-redux';
@@ -41,7 +44,10 @@ const rootReducer = combineReducers({
     getAutoPoolIncomeReducer,
     getRejoiningWalletAmountReducer,
     sendJoiningRequestReducer,
-    verifyUserReducer
+    verifyUserReducer,
+    requestWithdrawalReducer,
+    getWithdrawRequestsReducer,
+    manageWithdrawRequestsReducer
 });
 
 const store = configureStore({

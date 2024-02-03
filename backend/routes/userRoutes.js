@@ -9,6 +9,7 @@ import { protect } from "../middleware/authMiddleware.js";
 import path from "path";
 import { addCommissionToLine } from "./supportingFunctions/TreeFunctions.js";
 import JoiningRequest from "../models/joinRequestModel.js";
+import WithdrawRequest from "../models/withdrawalRequestModel.js";
 // import upload from "../middleware/fileUploadMiddleware.js";
 
 // Register new user
@@ -480,6 +481,70 @@ router.get(
       res.status(200).json(user.joiningRequest);
     } else {
       res.status(404).json({ sts: "00", msg: "User not found!" });
+    }
+  })
+);
+
+// Request for withdrawal
+router.post(
+  "/request-withdrawal",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const { amount, walletAddress } = req.body;
+
+    if (!amount || !walletAddress) {
+      res.status(400).json({
+        sts: "00",
+        msg: "Please provide amount and wallet address!",
+      });
+    }
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      if (user.earning >= amount) {
+        const withdrawalRequest = await WithdrawRequest.create({
+          user: userId,
+          amount: amount,
+          walletAddress: walletAddress,
+          status: false,
+          hash: "",
+        });
+
+        if (withdrawalRequest) {
+
+          const updatedUser = await user.save();
+
+          if (updatedUser) {
+            res.status(201).json({
+              sts: "01",
+              msg: "Your request has been sent successfully!",
+            });
+          } else {
+            res.status(400).json({
+              sts: "00",
+              msg: "Some error occured!",
+            });
+          }
+        } else {
+          res.status(400).json({
+            sts: "00",
+            msg: "Some error occured!",
+          });
+        }
+      } else {
+        res.status(400).json({
+          sts: "00",
+          msg: "You don't have enough balance!",
+        });
+      }
+    } else {
+      res.status(400).json({
+        sts: "00",
+        msg: "User not found!",
+      });
     }
   })
 );

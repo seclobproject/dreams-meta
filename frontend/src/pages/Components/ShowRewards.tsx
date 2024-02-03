@@ -6,13 +6,13 @@ import { setPageTitle } from '../../store/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import { useAppDispatch } from '../../store';
 
-const getItems = [
-    {
-        id: '1',
-        src: '/assets/images/lightbox1.jpg',
-        title: 'Rewards',
-        description: 'Photo: Samuel Rohl',
-    },
+const getItems: any[] = [
+    // {
+    //     id: '1',
+    //     src: '/assets/images/lightbox1.jpg',
+    //     title: 'Rewards',
+    //     description: 'Photo: Samuel Rohl',
+    // },
 ];
 
 const ShowRewards = () => {
