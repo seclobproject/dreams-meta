@@ -17,7 +17,7 @@ const WalletConnectButton = ({ size }: any) => {
 
     return (
         <Fragment>
-            <button type="button" className="btn btn-warning" onClick={() => open()}>
+            <button type="button" className="rounded-lg p-2 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white" onClick={() => open()}>
                 {address ? truncate(address, 8) : 'Connect Wallet'}
             </button>
         </Fragment>

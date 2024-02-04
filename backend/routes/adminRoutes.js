@@ -17,15 +17,24 @@ import WithdrawRequest from "../models/withdrawalRequestModel.js";
 // Verify the user by admin and add the user to the proper position in the tree
 // after successful verification
 // BFS function to assign the user to the tree
-router.post(
+router.get(
   "/verify-user-payment",
   protect,
   asyncHandler(async (req, res) => {
     // const sponserUserId = req.user._id;
 
-    const { userId } = req.body;
+    const userId = req.user._id;
+
     const user = await User.findById(userId).populate("sponser");
-    const admin = await User.findOne({ isAdmin: true });
+    const admin = await User.findOne({
+      isAdmin: true,
+      // email: "peringammalasajeebkhan@gmail.com",
+    });
+
+    if (user.userStatus === true) {
+      res.status(400);
+      throw new Error("User already verified!");
+    }
 
     if (user) {
       // Approve the user
@@ -38,13 +47,13 @@ router.post(
       // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
       let sponser;
       if (user.sponser) {
-        const ogSponser = user.sponser;
-        if (ogSponser.userStatus === true) {
+        // const ogSponser = user.sponser;
+        if (user.sponser.userStatus === true) {
           sponser = user.sponser;
           if (!sponser.children.includes(user._id)) {
             sponser.children.push(user._id);
           }
-          sponser.earning += 4;
+          // sponser.earning += 4;
         } else {
           sponser = admin;
           user.sponser = admin._id;
@@ -54,11 +63,7 @@ router.post(
         }
       }
 
-      if (
-        sponser.children.length >= 4 &&
-        sponser.currentPlan == "promoter" &&
-        sponser.autoPool == false
-      ) {
+      if (sponser.children.length >= 4 && sponser.autoPool == false) {
         sponser.autoPool = true;
         sponser.autoPoolPlan = "starPossession";
       }
@@ -88,65 +93,6 @@ router.post(
       throw new Error(
         "Can't find this user. Make sure you are registered properly!"
       );
-    }
-  })
-);
-
-// Get: upgrade the plan of user if he has enough balance in rejoining amount wallet
-router.get(
-  "/upgrade-level",
-  asyncHandler(async (req, res) => {
-    const { userId } = req.body;
-    const user = await User.findById(userId);
-    const admin = await User.findOne({ isAdmin: true });
-
-    if (user.joiningAmount >= 60 && user.currentPlan == "promoter") {
-      user.joiningAmount -= 60;
-      admin.rejoiningWallet += 60;
-      user.currentPlan = "royalAchiever";
-
-      admin.autoPoolBank += 4;
-
-      // const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
-      // const left = "royalAchieverLeft";
-      // const right = "royalAchieverRight";
-      // await bfs(parentUser, userId, left, right);
-    } else if (
-      user.joiningAmount >= 100 &&
-      user.currentPlan == "royalAchiever"
-    ) {
-      user.joiningAmount -= 100;
-      user.currentPlan = "crownAchiever";
-      admin.rejoiningWallet += 100;
-      admin.autoPoolBank += 7.5;
-
-      // const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
-
-      // const left = "crownAchieverLeft";
-      // const right = "crownAchieverRight";
-      // await bfs(parentUser, userId, left, right);
-    } else if (
-      user.joiningAmount >= 200 &&
-      (user.currentPlan == "crownAchiever" || "diamondAchiever")
-    ) {
-      user.joiningAmount -= 200;
-      admin.rejoiningWallet += 200;
-      user.currentPlan = "diamondAchiever";
-
-      admin.autoPoolBank += 15;
-
-      // const parentUser = await User.findOne({ currentPlan: "diamondAchiever" });
-      // const left = "diamondAchieverLeft";
-      // const right = "diamondAchieverRight";
-      // await bfs(parentUser, userId, left, right);
-    } else {
-      res.status(400).json({ msg: "User does not meet upgrade criteria" });
-    }
-
-    const updateAdmin = await admin.save();
-    const updateUser = await user.save();
-    if (updateUser) {
-      res.status(200).json({ msg: "Success" });
     }
   })
 );
@@ -528,7 +474,6 @@ router.post(
   "/manage-withdrawal-request",
   protect,
   asyncHandler(async (req, res) => {
-
     const { requestId, action, hash } = req.body;
 
     if (!requestId || !action) {

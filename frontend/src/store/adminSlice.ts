@@ -316,7 +316,7 @@ const getRejoiningWalletAmountSlice = createSlice({
 });
 
 // Verify user by admin
-export const verifyUser = createAsyncThunk('verifyUser', async (userId: string) => {
+export const verifyUser = createAsyncThunk('verifyUser', async () => {
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
 
@@ -327,7 +327,7 @@ export const verifyUser = createAsyncThunk('verifyUser', async (userId: string) 
         },
     };
 
-    const response = await axios.post(`${URL}/api/admin/verify-user-payment`, { userId }, config);
+    const response = await axios.get(`${URL}/api/admin/verify-user-payment`, config);
 
     return response.data;
 });

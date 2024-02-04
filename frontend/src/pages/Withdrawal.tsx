@@ -56,13 +56,13 @@ const Withdrawal = () => {
     return (
         <div>
             <div className="flex flex-col items-center">
-                <div className="bg-white p-4 rounded-xl flex items-center mb-5">
-                    <h2 className="text-xl text-red-600">Current wallet balance: {userInfo && userInfo.earning}</h2>
+                <div className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl flex items-center mb-5">
+                    <h2 className="text-lg font-semibold">Current wallet balance: {userInfo && userInfo.earning}</h2>
                 </div>
                 <form className="w-72 flex flex-col gap-3">
                     <input type="number" value={amount} onChange={(e: any) => setAmount(e.target.value)} placeholder="Enter the amount to withdraw" className="form-input" required />
                     <input type="text" value={walletAddress} onChange={(e: any) => setWalletAddress(e.target.value)} placeholder="Wallet Address" className="form-input" required />
-                    <button type="button" onClick={() => submitHandler(9)} className="btn btn-primary mt-6">
+                    <button type="button" onClick={() => submitHandler(9)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg mt-6">
                         Submit
                     </button>
                     {message && <div className="text-center">Submitted successfully!</div>}

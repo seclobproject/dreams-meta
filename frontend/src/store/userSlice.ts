@@ -413,7 +413,53 @@ export const requestWithdrawalSlice = createSlice({
     },
 });
 
+// Redux action to upgrade/rejoining
+export const upgradeUser = createAsyncThunk('upgradeUser', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
 
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/upgrade-level`, config);
+
+    console.log(response.data);
+
+    return response.data;
+
+})
+
+export const upgradeUserSlice = createSlice({
+    name: 'upgradeUserSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: false,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(upgradeUser.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(upgradeUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(upgradeUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = true;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+
+export const upgradeUserReducer = upgradeUserSlice.reducer;
 export const requestWithdrawalReducer = requestWithdrawalSlice.reducer;
 export const sendJoiningRequestReducer = sendJoiningRequestSlice.reducer;
 export const getUsersByLevelReducer = getUsersByLevelSlice.reducer;

@@ -11,6 +11,7 @@ import {
     getUsersByLevelReducer,
     sendJoiningRequestReducer,
     requestWithdrawalReducer,
+    upgradeUserReducer
 } from './userSlice';
 
 import {
@@ -47,7 +48,8 @@ const rootReducer = combineReducers({
     verifyUserReducer,
     requestWithdrawalReducer,
     getWithdrawRequestsReducer,
-    manageWithdrawRequestsReducer
+    manageWithdrawRequestsReducer,
+    upgradeUserReducer
 });
 
 const store = configureStore({

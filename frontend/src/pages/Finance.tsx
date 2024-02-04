@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Dropdown from '../components/Dropdown';
 import ReactApexChart from 'react-apexcharts';
 import { useSelector } from 'react-redux';
@@ -13,7 +13,7 @@ import IconTether from '../components/Icon/IconTether';
 import IconSolana from '../components/Icon/IconSolana';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import IconPencilPaper from '../components/Icon/IconPencilPaper';
-import { getUserDetails, sendJoiningRequest } from '../store/userSlice';
+import { getUserDetails, sendJoiningRequest, upgradeUser } from '../store/userSlice';
 
 import { useContractWrite, useBalance, useSendTransaction } from 'wagmi';
 import { abi } from '../abi';
@@ -21,13 +21,36 @@ import WalletConnectButton from '../components/Button';
 import { useAccount } from 'wagmi';
 import { testUsdtAddr } from '../Constants';
 import { parseEther } from 'viem';
+import TimerComponent from '../components/Timer';
+import { verifyUser } from '../store/adminSlice';
 
 const Finance = () => {
     const dispatch = useAppDispatch();
 
+    const navigate = useNavigate();
+
+    const [rejoinMessage, setRejoinMessage] = useState(0);
+
+    const currentDateTime = new Date();
+    const currentHour = currentDateTime.getHours();
+    const currentMinute = currentDateTime.getMinutes();
+    const currentTime = currentDateTime.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
+    const [showButton, setShowButton] = useState(false);
+
     const { data: userInfo } = useAppSelector((state: any) => state.getUserDetailsReducer);
 
     const { loading: joiningLoading, data: joiningData, error: joiningError } = useAppSelector((state: any) => state.sendJoiningRequestReducer);
+
+    const { data: upgradeInfo, error: upgradeError } = useAppSelector((state: any) => state.upgradeUserReducer);
+
+    useEffect(() => {
+        if (upgradeInfo) {
+            setRejoinMessage(1);
+            window.location.reload();
+        } else if (upgradeError) {
+            setRejoinMessage(2);
+        }
+    }, [upgradeInfo, upgradeError]);
 
     const { address } = useAccount();
 
@@ -74,378 +97,88 @@ const Finance = () => {
     }, [dispatch]);
 
     //bitcoinoption
-    const bitcoin: any = {
-        series: [
-            {
-                data: [21, 9, 36, 12, 44, 25, 59, 41, 25, 66],
-            },
-        ],
-        options: {
-            chart: {
-                height: 45,
-                type: 'line',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            stroke: {
-                width: 2,
-            },
-            markers: {
-                size: 0,
-            },
-            colors: ['#00ab55'],
-            grid: {
-                padding: {
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                },
-            },
-            tooltip: {
-                x: {
-                    show: false,
-                },
-                y: {
-                    title: {
-                        formatter: () => {
-                            return '';
-                        },
-                    },
-                },
-            },
-            responsive: [
-                {
-                    breakPoint: 576,
-                    options: {
-                        chart: {
-                            height: 95,
-                        },
-                        grid: {
-                            padding: {
-                                top: 45,
-                                bottom: 0,
-                                left: 0,
-                            },
-                        },
-                    },
-                },
-            ],
-        },
-    };
-
-    //ethereumoption
-    const ethereum: any = {
-        series: [
-            {
-                data: [44, 25, 59, 41, 66, 25, 21, 9, 36, 12],
-            },
-        ],
-        options: {
-            chart: {
-                height: 45,
-                type: 'line',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            stroke: {
-                width: 2,
-            },
-            markers: {
-                size: 0,
-            },
-            colors: ['#e7515a'],
-            grid: {
-                padding: {
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                },
-            },
-            tooltip: {
-                x: {
-                    show: false,
-                },
-                y: {
-                    title: {
-                        formatter: () => {
-                            return '';
-                        },
-                    },
-                },
-            },
-            responsive: [
-                {
-                    breakPoint: 576,
-                    options: {
-                        chart: {
-                            height: 95,
-                        },
-                        grid: {
-                            padding: {
-                                top: 45,
-                                bottom: 0,
-                                left: 0,
-                            },
-                        },
-                    },
-                },
-            ],
-        },
-    };
-
-    //litecoinoption
-    const litecoin: any = {
-        series: [
-            {
-                data: [9, 21, 36, 12, 66, 25, 44, 25, 41, 59],
-            },
-        ],
-        options: {
-            chart: {
-                height: 45,
-                type: 'line',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            stroke: {
-                width: 2,
-            },
-            markers: {
-                size: 0,
-            },
-            colors: ['#00ab55'],
-            grid: {
-                padding: {
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                },
-            },
-            tooltip: {
-                x: {
-                    show: false,
-                },
-                y: {
-                    title: {
-                        formatter: () => {
-                            return '';
-                        },
-                    },
-                },
-            },
-            responsive: [
-                {
-                    breakPoint: 576,
-                    options: {
-                        chart: {
-                            height: 95,
-                        },
-                        grid: {
-                            padding: {
-                                top: 45,
-                                bottom: 0,
-                                left: 0,
-                            },
-                        },
-                    },
-                },
-            ],
-        },
-    };
-
-    //binanceoption
-    const binance: any = {
-        series: [
-            {
-                data: [25, 44, 25, 59, 41, 21, 36, 12, 19, 9],
-            },
-        ],
-        options: {
-            chart: {
-                height: 45,
-                type: 'line',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            stroke: {
-                width: 2,
-            },
-            markers: {
-                size: 0,
-            },
-            colors: ['#e7515a'],
-            grid: {
-                padding: {
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                },
-            },
-            tooltip: {
-                x: {
-                    show: false,
-                },
-                y: {
-                    title: {
-                        formatter: () => {
-                            return '';
-                        },
-                    },
-                },
-            },
-            responsive: [
-                {
-                    breakPoint: 576,
-                    options: {
-                        chart: {
-                            height: 95,
-                        },
-                        grid: {
-                            padding: {
-                                top: 45,
-                                bottom: 0,
-                                left: 0,
-                            },
-                        },
-                    },
-                },
-            ],
-        },
-    };
-
-    //tetheroption
-    const tether: any = {
-        series: [
-            {
-                data: [21, 59, 41, 44, 25, 66, 9, 36, 25, 12],
-            },
-        ],
-        options: {
-            chart: {
-                height: 45,
-                type: 'line',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            stroke: {
-                width: 2,
-            },
-            markers: {
-                size: 0,
-            },
-            colors: ['#00ab55'],
-            grid: {
-                padding: {
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                },
-            },
-            tooltip: {
-                x: {
-                    show: false,
-                },
-                y: {
-                    title: {
-                        formatter: () => {
-                            return '';
-                        },
-                    },
-                },
-            },
-            responsive: [
-                {
-                    breakPoint: 576,
-                    options: {
-                        chart: {
-                            height: 95,
-                        },
-                        grid: {
-                            padding: {
-                                top: 45,
-                                bottom: 0,
-                                left: 0,
-                            },
-                        },
-                    },
-                },
-            ],
-        },
-    };
-
-    //solanaoption
-    const solana: any = {
-        series: [
-            {
-                data: [21, -9, 36, -12, 44, 25, 59, -41, 66, -25],
-            },
-        ],
-        options: {
-            chart: {
-                height: 45,
-                type: 'line',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            stroke: {
-                width: 2,
-            },
-            markers: {
-                size: 0,
-            },
-            colors: ['#e7515a'],
-            grid: {
-                padding: {
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                },
-            },
-            tooltip: {
-                x: {
-                    show: false,
-                },
-                y: {
-                    title: {
-                        formatter: () => {
-                            return '';
-                        },
-                    },
-                },
-            },
-            responsive: [
-                {
-                    breakPoint: 576,
-                    options: {
-                        chart: {
-                            height: 95,
-                        },
-                        grid: {
-                            padding: {
-                                top: 45,
-                                bottom: 0,
-                                left: 0,
-                            },
-                        },
-                    },
-                },
-            ],
-        },
-    };
+    // const bitcoin: any = {
+    //     series: [
+    //         {
+    //             data: [21, 9, 36, 12, 44, 25, 59, 41, 25, 66],
+    //         },
+    //     ],
+    //     options: {
+    //         chart: {
+    //             height: 45,
+    //             type: 'line',
+    //             sparkline: {
+    //                 enabled: true,
+    //             },
+    //         },
+    //         stroke: {
+    //             width: 2,
+    //         },
+    //         markers: {
+    //             size: 0,
+    //         },
+    //         colors: ['#00ab55'],
+    //         grid: {
+    //             padding: {
+    //                 top: 0,
+    //                 bottom: 0,
+    //                 left: 0,
+    //             },
+    //         },
+    //         tooltip: {
+    //             x: {
+    //                 show: false,
+    //             },
+    //             y: {
+    //                 title: {
+    //                     formatter: () => {
+    //                         return '';
+    //                     },
+    //                 },
+    //             },
+    //         },
+    //         responsive: [
+    //             {
+    //                 breakPoint: 576,
+    //                 options: {
+    //                     chart: {
+    //                         height: 95,
+    //                     },
+    //                     grid: {
+    //                         padding: {
+    //                             top: 45,
+    //                             bottom: 0,
+    //                             left: 0,
+    //                         },
+    //                     },
+    //                 },
+    //             },
+    //         ],
+    //     },
+    // };
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
     useEffect(() => {
         if (data) {
-            dispatch(sendJoiningRequest(data.hash));
+            dispatch(verifyUser());
         }
     }, [data]);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            const currentHour = currentDateTime.getHours();
+            const currentMinute = currentDateTime.getMinutes();
+            setShowButton(currentHour === 17 || (currentHour > 17 && currentHour < 21));
+        }, 1000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
+    const upgradeHandler = () => {
+        window.confirm('Are you sure you want to upgrade your plan?');
+        dispatch(upgradeUser());
+    };
 
     return (
         <div>
@@ -454,18 +187,33 @@ const Finance = () => {
                     <div className="panel">
                         <div className="flex items-center justify-between mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Profile</h5>
-                            <Link to="/users/user-account-settings" className="ltr:ml-auto rtl:mr-auto btn btn-primary p-2 rounded-full">
+                            <Link to="/users/user-account-settings" className="ltr:ml-auto rtl:mr-auto p-2 rounded-full bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
                                 <IconPencilPaper />
                             </Link>
                         </div>
                         <div className="">
                             <div className="flex flex-col justify-center items-center">
-                                <img src="/assets/images/user-silhouette.png" alt="img" className="w-16 h-16 rounded-full object-cover  mb-5" />
+                                {/* <img src="/assets/images/user-silhouette.png" alt="img" className="w-16 h-16 rounded-full object-cover  mb-5" /> */}
                                 <p className="font-semibold text-primary text-xl">{userInfo && userInfo.name}</p>
                             </div>
-                            <ul className="mt-5 flex flex-col max-w-[160px] m-auto space-y-4 font-semibold text-white-dark">
+                            <ul className="mt-5 flex flex-col items-center max-w-[170px] m-auto space-y-4 font-semibold text-white-dark">
                                 <li className="flex items-center gap-2">Sponsor ID: ${userInfo && userInfo.ownSponserId}</li>
-                                <li>Account Status: {userInfo && userInfo.userStatus == 'true' ? <span className="text-green-600">Activated</span> : <span className="text-red-700">Pending</span>}</li>
+                                <li className="flex items-center gap-2">
+                                    Rank:{' '}
+                                    {userInfo && userInfo.currentPlan == 'promoter'
+                                        ? `Promoter`
+                                        : userInfo && userInfo.currentPlan == 'royalAchiever'
+                                        ? 'Royal Achiever'
+                                        : userInfo && userInfo.currentPlan == 'crownAchiever'
+                                        ? 'Crown Achiever'
+                                        : userInfo && userInfo.currentPlan == 'diamondAchiever'
+                                        ? 'Diamond Achiever'
+                                        : 'Promoter'}
+                                </li>
+                                <li>
+                                    Account Status:{' '}
+                                    {userInfo && userInfo.userStatus === true ? <span className="text-green-600 text-sm">Activated</span> : <span className="text-red-700">Pending</span>}
+                                </li>
                                 <li>Auto Pool: {userInfo && userInfo.autoPool == false ? <span className="text-red-700">Not Activated</span> : <span className="text-green-600">Activated</span>}</li>
                                 <WalletConnectButton />
                                 {address && userInfo && userInfo.userStatus == false && (
@@ -482,21 +230,30 @@ const Finance = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="panel bg-gradient-to-r from-cyan-500 to-cyan-400">
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
                             <div className="flex justify-between">
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Wallet Amount</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
                                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.earning}</div>
                             </div>
-                            {/* <div className="flex items-center font-semibold mt-5">
-                            <IconEye className="ltr:mr-2 rtl:ml-2 shrink-0" />
-                            Last Week 44,700
-                        </div> */}
+                            {showButton && (
+                                <>
+                                    <button type="button" onClick={() => navigate('/withdraw')} className="btn rounded-lg p-2 mt-4 text-white">
+                                        Withdraw
+                                    </button>
+                                    <div className="mt-3">Amount will be credited to your account within 24 hours</div>
+                                </>
+                            )}
+                            {!showButton && (
+                                <div className="mt-2">
+                                    <TimerComponent />
+                                </div>
+                            )}
                         </div>
 
                         {/* Sessions */}
-                        <div className="panel bg-gradient-to-r from-violet-500 to-violet-400">
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
                             <div className="flex justify-between">
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Direct Refferals</div>
                             </div>
@@ -504,28 +261,23 @@ const Finance = () => {
                                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> {userInfo && userInfo.children.length} </div>
                                 {/* <div className="badge bg-white/30">- 2.35% </div> */}
                             </div>
-                            {/* <div className="flex items-center font-semibold mt-5">
-                            <IconEye className="ltr:mr-2 rtl:ml-2 shrink-0" />
-                            Last Week 84,709
-                        </div> */}
                         </div>
                         {/*  Time On-Site */}
-                        <div className="panel bg-gradient-to-r from-blue-500 to-blue-400">
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
                             <div className="flex justify-between">
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Rejoining Wallet Amount</div>
                             </div>
-                            <div className="flex items-center mt-5">
+                            <div className="flex items-center justify-between mt-5">
                                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.joiningAmount}</div>
-                                {/* {userInfo && userInfo.currentPlan >}
-                                <div className="badge bg-white/30"></div> */}
+                                <button type="button" onClick={upgradeHandler} className="btn rounded-lg p-2 mt-4 text-white">
+                                    Rejoin
+                                </button>
                             </div>
-                            {/* <div className="flex items-center font-semibold mt-5">
-                            <IconEye className="ltr:mr-2 rtl:ml-2 shrink-0" />
-                            Last Week 37,894
-                        </div> */}
+                            {rejoinMessage == 1 && <>You are successfully upgraded.</>}
+                            {rejoinMessage == 2 && <>You are not eligible for upgrade as of now</>}
                         </div>
                         {/* Bounce Rate */}
-                        <div className="panel bg-gradient-to-r from-fuchsia-500 to-fuchsia-400">
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
                             <div className="flex justify-between">
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Refferal Link</div>
                             </div>
@@ -540,7 +292,7 @@ const Finance = () => {
                                             }
                                         }}
                                     >
-                                        <button type="button" className="btn btn-primary ms-2">
+                                        <button type="button" className="btn rounded-lg p-2 ms-2 text-white">
                                             Copy
                                         </button>
                                     </CopyToClipboard>
@@ -549,125 +301,21 @@ const Finance = () => {
                         </div>
                     </div>
                 </div>
-
-                <div className="">
-                    {/*  Prices  */}
-                    <div>
-                        {/* <div className="flex items-center mb-5 font-bold">
-                            <span className="text-lg">Live Prices</span>
-                            <button type="button" className="ltr:ml-auto rtl:mr-auto text-primary hover:text-black dark:hover:text-white-dark">
-                                See All
-                            </button>
-                        </div> */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-6 mb-6">
-                            {/*  Binance */}
-                            <div className="panel">
-                                <div className="flex items-center font-semibold mb-5">
-                                    <div className="shrink-0 w-10 h-10 rounded-full grid place-content-center">
-                                        <IconBinance />
-                                    </div>
-                                    <div className="ltr:ml-2 rtl:mr-2">
-                                        <h6 className="text-dark dark:text-white-light">BNB</h6>
-                                        <p className="text-white-dark text-xs">Binance</p>
-                                    </div>
-                                </div>
-                                <div className="mb-5 overflow-hidden">
-                                    <ReactApexChart series={binance.series} options={binance.options} type="line" height={45} />
-                                </div>
-                                <div className="flex justify-between items-center font-bold text-base">
-                                    $21,000 <span className="text-danger font-normal text-sm">-1.25%</span>
-                                </div>
-                            </div>
-                            {/*  Tether  */}
-                            <div className="panel">
-                                <div className="flex items-center font-semibold mb-5">
-                                    <div className="shrink-0 w-10 h-10 rounded-full grid place-content-center">
-                                        <IconTether />
-                                    </div>
-                                    <div className="ltr:ml-2 rtl:mr-2">
-                                        <h6 className="text-dark dark:text-white-light">USDT</h6>
-                                        <p className="text-white-dark text-xs">Tether</p>
-                                    </div>
-                                </div>
-                                <div className="mb-5 overflow-hidden">
-                                    <ReactApexChart series={tether.series} options={tether.options} type="line" height={45} />
-                                </div>
-                                <div className="flex justify-between items-center font-bold text-base">
-                                    $20,000 <span className="text-success font-normal text-sm">+0.25%</span>
-                                </div>
-                            </div>
-                            {/*  Solana */}
-                            <div className="panel">
-                                <div className="flex items-center font-semibold mb-5">
-                                    <div className="shrink-0 w-10 h-10 bg-warning rounded-full p-2 grid place-content-center">
-                                        <IconSolana />
-                                    </div>
-                                    <div className="ltr:ml-2 rtl:mr-2">
-                                        <h6 className="text-dark dark:text-white-light">SOL</h6>
-                                        <p className="text-white-dark text-xs">Solana</p>
-                                    </div>
-                                </div>
-                                <div className="mb-5 overflow-hidden">
-                                    <ReactApexChart series={solana.series} options={solana.options} type="line" height={45} />
-                                </div>
-                                <div className="flex justify-between items-center font-bold text-base">
-                                    $21,000 <span className="text-danger font-normal text-sm">-1.25%</span>
-                                </div>
+                <div className="mb-5 flex items-center">
+                    <div className="w-full shadow-[4px_6px_10px_-3px_#bfc9d4] rounded border border-white-light dark:border-[#1b2e4b] panel p-0 dark:shadow-none">
+                        <div className="px-5 pt-5 flex justify-evenly items-center flex-col sm:flex-row">
+                            <div className="ltr:sm:pl-5 rtl:sm:pr-5 text-center sm:text-left">
+                                <h5 className="text-[#3b3f5c] text-[22px] md:text-[48px] font-semibold mb-2 dark:text-white-light">Digital Business Card</h5>
+                                <p className="mb-2 text-white-dark text-lg mt-5">Design your digital visiting card today</p>
+                                <p className="font-semibold text-white-dark mt-4 sm:mt-8">
+                                    <button type="button" className="rounded-lg py-2 px-5 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white">
+                                        Create Your Card Today
+                                    </button>
+                                </p>
                             </div>
 
-                            {/*  Bitcoin  */}
-                            <div className="panel">
-                                <div className="flex items-center font-semibold mb-5">
-                                    <div className="shrink-0 w-10 h-10 rounded-full grid place-content-center">
-                                        <IconBitcoin />
-                                    </div>
-                                    <div className="ltr:ml-2 rtl:mr-2">
-                                        <h6 className="text-dark dark:text-white-light">BTC</h6>
-                                        <p className="text-white-dark text-xs">Bitcoin</p>
-                                    </div>
-                                </div>
-                                <div className="mb-5 overflow-hidden">
-                                    <ReactApexChart series={bitcoin.series} options={bitcoin.options} type="line" height={45} />
-                                </div>
-                                <div className="flex justify-between items-center font-bold text-base">
-                                    $20,000 <span className="text-success font-normal text-sm">+0.25%</span>
-                                </div>
-                            </div>
-                            {/*  Ethereum*/}
-                            <div className="panel">
-                                <div className="flex items-center font-semibold mb-5">
-                                    <div className="shrink-0 w-10 h-10 bg-warning rounded-full grid place-content-center p-2">
-                                        <IconEthereum />
-                                    </div>
-                                    <div className="ltr:ml-2 rtl:mr-2">
-                                        <h6 className="text-dark dark:text-white-light">ETH</h6>
-                                        <p className="text-white-dark text-xs">Ethereum</p>
-                                    </div>
-                                </div>
-                                <div className="mb-5 overflow-hidden">
-                                    <ReactApexChart series={ethereum.series} options={ethereum.options} type="line" height={45} />
-                                </div>
-                                <div className="flex justify-between items-center font-bold text-base">
-                                    $21,000 <span className="text-danger font-normal text-sm">-1.25%</span>
-                                </div>
-                            </div>
-                            {/*  Litecoin*/}
-                            <div className="panel">
-                                <div className="flex items-center font-semibold mb-5">
-                                    <div className="shrink-0 w-10 h-10 rounded-full grid place-content-center">
-                                        <IconLitecoin />
-                                    </div>
-                                    <div className="ltr:ml-2 rtl:mr-2">
-                                        <h6 className="text-dark dark:text-white-light">LTC</h6>
-                                        <p className="text-white-dark text-xs">Litecoin</p>
-                                    </div>
-                                </div>
-                                <div className="mb-5 overflow-hidden">
-                                    <ReactApexChart series={litecoin.series} options={litecoin.options} type="line" height={45} />
-                                </div>
-                                <div className="flex justify-between items-center font-bold text-base">
-                                    $11,657 <span className="text-success font-normal text-sm">+0.25%</span>
-                                </div>
+                            <div className="overflow-hidden">
+                                <img src="/assets/images/digital-card.png" alt="profile" className="w-60 mt-5 object-cover" />
                             </div>
                         </div>
                     </div>

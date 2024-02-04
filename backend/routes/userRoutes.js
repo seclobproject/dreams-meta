@@ -129,7 +129,9 @@ router.post(
 
     const user = await User.findOne({ email });
 
-    if (user && (await user.matchPassword(password))) {
+
+    if (user && user.password == password) {
+    // if (user && (await user.matchPassword(password))) {
       const token = jwt.sign(
         { userId: user._id },
         "secret_of_jwt_for_dreams-meta_5959",
@@ -315,13 +317,13 @@ router.put(
 
       const updatedUser = await user.save();
 
-      const token = jwt.sign(
-        { userId: user._id },
-        "secret_of_jwt_for_dreams-meta_5959",
-        {
-          expiresIn: "800d",
-        }
-      );
+      // const token = jwt.sign(
+      //   { userId: user._id },
+      //   "secret_of_jwt_for_dreams-meta_5959",
+      //   {
+      //     expiresIn: "800d",
+      //   }
+      // );
 
       res.status(200).json({
         _id: updatedUser._id,
@@ -337,8 +339,8 @@ router.put(
         userStatus: updatedUser.userStatus,
         isAdmin: updatedUser.isAdmin,
         children: updatedUser.children,
-        token_type: "Bearer",
-        access_token: token,
+        // token_type: "Bearer",
+        // access_token: token,
         sts: "01",
         msg: "Login Success",
       });
@@ -514,7 +516,6 @@ router.post(
         });
 
         if (withdrawalRequest) {
-
           const updatedUser = await user.save();
 
           if (updatedUser) {
@@ -545,6 +546,67 @@ router.post(
         sts: "00",
         msg: "User not found!",
       });
+    }
+  })
+);
+
+// Get: upgrade the plan of user if he has enough balance in rejoining amount wallet
+router.get(
+  "/upgrade-level",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    const admin = await User.findOne({ isAdmin: true });
+
+    if (user.joiningAmount >= 60 && user.currentPlan == "promoter") {
+      user.joiningAmount -= 60;
+      admin.rejoiningWallet += 60;
+      user.currentPlan = "royalAchiever";
+
+      admin.autoPoolBank += 4;
+
+      // const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
+      // const left = "royalAchieverLeft";
+      // const right = "royalAchieverRight";
+      // await bfs(parentUser, userId, left, right);
+    } else if (
+      user.joiningAmount >= 100 &&
+      user.currentPlan == "royalAchiever"
+    ) {
+      user.joiningAmount -= 100;
+      user.currentPlan = "crownAchiever";
+      admin.rejoiningWallet += 100;
+      admin.autoPoolBank += 8;
+
+      // const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
+
+      // const left = "crownAchieverLeft";
+      // const right = "crownAchieverRight";
+      // await bfs(parentUser, userId, left, right);
+    } else if (
+      user.joiningAmount >= 200 &&
+      (user.currentPlan == "crownAchiever" || "diamondAchiever")
+    ) {
+      user.joiningAmount -= 200;
+      admin.rejoiningWallet += 200;
+      user.currentPlan = "diamondAchiever";
+
+      admin.autoPoolBank += 15;
+
+      // const parentUser = await User.findOne({ currentPlan: "diamondAchiever" });
+      // const left = "diamondAchieverLeft";
+      // const right = "diamondAchieverRight";
+      // await bfs(parentUser, userId, left, right);
+    } else {
+      res.status(400).json({ msg: "User does not meet upgrade criteria" });
+    }
+
+    const updateAdmin = await admin.save();
+    const updateUser = await user.save();
+    if (updateUser && updateAdmin) {
+      res.status(200).json({ msg: "Success" });
     }
   })
 );

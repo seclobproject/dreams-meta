@@ -73,24 +73,24 @@ const AllMembers = () => {
         navigate(`/users/edit-user-by-admin/${id}`);
     };
 
-    const verifyHandler = async (type: number, userId: string) => {
-        if (type === 9) {
-            Swal.fire({
-                title: 'Are you sure?',
-                showCloseButton: true,
-                showCancelButton: true,
-                focusConfirm: false,
-                confirmButtonText: 'Proceed',
-                cancelButtonText: 'Cancel',
-                padding: '1em',
-                customClass: 'sweet-alerts',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    dispatch(verifyUser(userId));
-                }
-            });
-        }
-    };
+    // const verifyHandler = async (type: number, userId: string) => {
+    //     if (type === 9) {
+    //         Swal.fire({
+    //             title: 'Are you sure?',
+    //             showCloseButton: true,
+    //             showCancelButton: true,
+    //             focusConfirm: false,
+    //             confirmButtonText: 'Proceed',
+    //             cancelButtonText: 'Cancel',
+    //             padding: '1em',
+    //             customClass: 'sweet-alerts',
+    //         }).then((result) => {
+    //             if (result.isConfirmed) {
+    //                 dispatch(verifyUser(userId));
+    //             }
+    //         });
+    //     }
+    // };
 
     return (
         <div className="space-y-6">
@@ -115,14 +115,14 @@ const AllMembers = () => {
                                 title: 'Actions',
                                 render: (user: any) => (
                                     <div className="flex space-x-2">
-                                        <button type="button" onClick={() => editHandler(user._id)} className="btn btn-info">
+                                        <button type="button" onClick={() => editHandler(user._id)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
                                             Edit
                                         </button>
-                                        {user.userStatus === 'Inactive' && (
-                                            <button type="button" onClick={() => verifyHandler(9, user._id)} className="btn btn-success">
+                                        {/* {user.userStatus === 'Inactive' && (
+                                            <button type="button" onClick={() => verifyHandler(9, user._id)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
                                                 Verify
                                             </button>
-                                        )}
+                                        )} */}
                                     </div>
                                 ),
                             },

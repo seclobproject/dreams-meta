@@ -61,15 +61,6 @@ const AccountSetting = () => {
                                 Profile settings
                             </button>
                         </li>
-                        {/* <li className="inline-block">
-                            <button
-                                onClick={() => toggleTabs('payment-details')}
-                                className={`flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary ${tabs === 'payment-details' ? '!border-primary text-primary' : ''}`}
-                            >
-                                <IconDollarSignCircle />
-                                Payment Details
-                            </button>
-                        </li> */}
                     </ul>
                 </div>
                 {tabs === 'home' ? (
@@ -101,7 +92,7 @@ const AccountSetting = () => {
                                         <input id="password" type="text" placeholder="Enter New Password" value={password} onChange={(e: any) => setPassword(e.target.value)} className="form-input" />
                                     </div>
                                     <div className="mt-6">
-                                        <button onClick={profileEditHandler} type="button" className="btn btn-primary">
+                                        <button onClick={profileEditHandler} type="button" className="rounded-lg p-2 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white">
                                             Save
                                         </button>
                                     </div>

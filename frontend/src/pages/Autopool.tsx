@@ -39,9 +39,9 @@ const Autopool = () => {
     return (
         <div>
             <div>
-                <div className="grid sm:grid-cols-2 xl:grid-cols-2 gap-6 mb-6">
+                <div className="grid sm:grid-cols-2 xl:grid-cols-1 gap-6 mb-6">
                     <div className="panel h-full p-0 border-0 overflow-hidden">
-                        <div className="p-6 bg-gradient-to-r from-[#4361ee] to-[#160f6b] min-h-[160px]">
+                        <div className="p-6 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 min-h-[160px]">
                             <div className="text-white flex justify-center items-center">
                                 <p className="text-xl">Auto Pool</p>
                             </div>
@@ -59,23 +59,12 @@ const Autopool = () => {
                                 <h5 className="font-semibold text-lg">Split Auto Pool Amount</h5>
                             </div>
 
-                            {/* <div className="mb-5 space-y-1">
-                                <div className="flex items-center justify-between">
-                                    <p className="text-[#515365] font-semibold">Netflix</p>
-                                    <p className="text-base">
-                                        <span>$</span> <span className="font-semibold">13.85</span>
-                                    </p>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-[#515365] font-semibold">BlueHost VPN</p>
-                                    <p className="text-base">
-                                        <span>$</span> <span className="font-semibold ">15.66</span>
-                                    </p>
-                                </div>
-                            </div> */}
-
                             <div className="text-center px-2 flex justify-around">
-                                <button onClick={() => setModal2(true)} type="button" className="btn btn-secondary ltr:mr-2 rtl:ml-2">
+                                <button
+                                    onClick={() => setModal2(true)}
+                                    type="button"
+                                    className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 py-2 px-3 rounded-lg text-white ltr:mr-2 rtl:ml-2"
+                                >
                                     Split Amount
                                 </button>
                             </div>
@@ -97,7 +86,17 @@ const Autopool = () => {
                                             <div className="px-3 flex flex-1 items-center">
                                                 <div>{user.name}</div>
                                             </div>
-                                            <span className="text-success text-base px-1 ltr:ml-auto rtl:mr-auto whitespace-pre flex items-center">{user.currentPlan}</span>
+                                            <span className="text-success text-base px-1 ltr:ml-auto rtl:mr-auto whitespace-pre flex items-center">
+                                                {user && user.currentPlan == 'promoter'
+                                                    ? `Promoter`
+                                                    : user && user.currentPlan == 'royalAchiever'
+                                                    ? 'Royal Achiever'
+                                                    : user && user.currentPlan == 'crownAchiever'
+                                                    ? 'Crown Achiever'
+                                                    : user && user.currentPlan == 'diamondAchiever'
+                                                    ? 'Diamond Achiever'
+                                                    : 'Promoter'}
+                                            </span>
                                         </div>
                                     </div>
                                 ))}
