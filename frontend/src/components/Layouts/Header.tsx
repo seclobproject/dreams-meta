@@ -267,7 +267,7 @@ const Header = () => {
                                 <NavLink to="/direct-sponsors">{t('Direct Team')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/level-tree">{t('Level Tree')}</NavLink>
+                                <NavLink to="/genealogy">{t('Genealogy')}</NavLink>
                             </li>
                         </ul>
                     </li>
@@ -353,7 +353,7 @@ const Header = () => {
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuForms className="shrink-0" />
-                                <span className="px-1">{t('Digital Visiting Card')}</span>
+                                <span className="px-1">{t('Card')}</span>
                             </div>
                             <div className="right_arrow">
                                 <IconCaretDown />

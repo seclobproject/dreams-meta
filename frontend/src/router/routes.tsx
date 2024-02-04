@@ -140,7 +140,7 @@ const routes = [
         element: <AllMembers />,
     },
     {
-        path: '/level-tree',
+        path: '/genealogy',
         element: <LevelTree />,
     },
     {
