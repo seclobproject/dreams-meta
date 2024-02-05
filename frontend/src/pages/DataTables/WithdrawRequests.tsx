@@ -7,7 +7,7 @@ import { getAllUsersToAdmin, getWithdrawRequests, manageWithdrawRequests, verify
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useAccount, useBalance, useContractWrite } from 'wagmi';
-import { testUsdtAddr } from '../../Constants';
+import { UsdtAddr } from '../../Constants';
 import { abi } from '../../abi';
 
 const WithdrawRequests = () => {
@@ -76,23 +76,23 @@ const WithdrawRequests = () => {
     const { address } = useAccount();
     const result = useBalance({
         address,
-        token: testUsdtAddr,
+        token: UsdtAddr,
     });
     
     const { data, isLoading, isSuccess, write, isError } = useContractWrite({
-        address: testUsdtAddr,
+        address: UsdtAddr,
         abi,
         functionName: 'transferFrom',
-        args: [address, walletAddress, amount*1000000000000000000],
+        args: [address, walletAddress, amount*1000000],
     });
 
     console.log(data); // This will show the data of hash of the transaction
 
     const { data: approvalData, write: approvalWrite } = useContractWrite({
-        address: testUsdtAddr,
+        address: UsdtAddr,
         abi,
         functionName: 'approve',
-        args: [address, amount*1000000000000000000],
+        args: [address, amount*1000000],
         onError: (e: any) => {
             console.log(e);
         },

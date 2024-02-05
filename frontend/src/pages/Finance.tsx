@@ -19,7 +19,7 @@ import { useContractWrite, useBalance, useSendTransaction } from 'wagmi';
 import { abi } from '../abi';
 import WalletConnectButton from '../components/Button';
 import { useAccount } from 'wagmi';
-import { testUsdtAddr } from '../Constants';
+import { UsdtAddr } from '../Constants';
 import { parseEther } from 'viem';
 import TimerComponent from '../components/Timer';
 import { verifyUser } from '../store/adminSlice';
@@ -56,23 +56,23 @@ const Finance = () => {
 
     const result = useBalance({
         address,
-        token: testUsdtAddr,
+        token: UsdtAddr,
     });
 
     const { data, isLoading, isSuccess, write, isError } = useContractWrite({
-        address: testUsdtAddr,
+        address: UsdtAddr,
         abi,
         functionName: 'transferFrom',
-        args: [address, '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e', 10000000000000000000],
+        args: [address, '0x5421f8d1956ECe9B028486Fe40f1A342BB5fC17E', 1000000],
     });
 
     console.log(data); // This will show the data of hash of the transaction
 
     const { data: approvalData, write: approvalWrite } = useContractWrite({
-        address: testUsdtAddr,
+        address: UsdtAddr,
         abi,
         functionName: 'approve',
-        args: [address, 10000000000000000000],
+        args: [address, 1000000],
         onError: (e: any) => {
             console.log(e);
         },
