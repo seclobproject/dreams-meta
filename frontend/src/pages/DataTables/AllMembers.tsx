@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
-import { getAllUsersToAdmin, verifyUser } from '../../store/adminSlice';
+import { getAllUsersToAdmin, verifyUserForAdmin } from '../../store/adminSlice';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
@@ -12,7 +12,7 @@ const AllMembers = () => {
     const navigate = useNavigate();
     const [userStatus, setUserStatus] = useState('Pending');
     const { loading, data: rowData, error } = useAppSelector((state: any) => state.getAllUsersToAdminReducer);
-    const { loading: verifiedUserLoading, data: verifiedUserData, error: verifiedUserError } = useAppSelector((state: any) => state.verifyUserReducer);
+    const { loading: verifiedUserLoading, data: verifiedUserData, error: verifiedUserError } = useAppSelector((state: any) => state.verifyUserForAdminReducer);
 
     let transformedData: any;
     if (rowData) {
@@ -63,34 +63,16 @@ const AllMembers = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search, rowData]);
 
-    // Sweet alert configurations
-    // const showAlert = async (type: number) => {
-
-    // };
-    // Sweet alert configurations
-
     const editHandler = (id: any) => {
         navigate(`/users/edit-user-by-admin/${id}`);
     };
 
-    // const verifyHandler = async (type: number, userId: string) => {
-    //     if (type === 9) {
-    //         Swal.fire({
-    //             title: 'Are you sure?',
-    //             showCloseButton: true,
-    //             showCancelButton: true,
-    //             focusConfirm: false,
-    //             confirmButtonText: 'Proceed',
-    //             cancelButtonText: 'Cancel',
-    //             padding: '1em',
-    //             customClass: 'sweet-alerts',
-    //         }).then((result) => {
-    //             if (result.isConfirmed) {
-    //                 dispatch(verifyUser(userId));
-    //             }
-    //         });
-    //     }
-    // };
+    const verifyHandler = (userId: any) => {
+        const confirming = confirm('Are you sure?');
+        if (confirming) {
+            dispatch(verifyUserForAdmin(userId));
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -118,11 +100,11 @@ const AllMembers = () => {
                                         <button type="button" onClick={() => editHandler(user._id)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
                                             Edit
                                         </button>
-                                        {/* {user.userStatus === 'Inactive' && (
-                                            <button type="button" onClick={() => verifyHandler(9, user._id)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
+                                        {user.userStatus === 'Inactive' && (
+                                            <button type="button" onClick={() => verifyHandler(user._id)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
                                                 Verify
                                             </button>
-                                        )} */}
+                                        )}
                                     </div>
                                 ),
                             },

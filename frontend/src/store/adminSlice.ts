@@ -315,7 +315,7 @@ const getRejoiningWalletAmountSlice = createSlice({
     },
 });
 
-// Verify user by admin
+// Verify user
 export const verifyUser = createAsyncThunk('verifyUser', async () => {
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
@@ -331,6 +331,7 @@ export const verifyUser = createAsyncThunk('verifyUser', async () => {
 
     return response.data;
 });
+
 
 const verifyUserSlice = createSlice({
     name: 'verifyUserSlice',
@@ -356,6 +357,51 @@ const verifyUserSlice = createSlice({
             });
     },
 });
+
+// Verify user by admin
+export const verifyUserForAdmin = createAsyncThunk('verifyUserForAdmin', async (userId: any) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.post(`${URL}/api/admin/verify-user-payment-by-admin`, {userId}, config);
+
+    return response.data;
+});
+
+const verifyUserForAdminSlice = createSlice({
+    name: 'verifyUserForAdminSlice',
+    initialState: {
+        loading: false,
+        data: '',
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(verifyUserForAdmin.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(verifyUserForAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(verifyUserForAdmin.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+                state.error = 'Something went wrong, please try again later';
+            });
+    },
+});
+
+
+
 
 // Get withdraw requests
 export const getWithdrawRequests = createAsyncThunk('getWithdrawRequests', async () => {
@@ -445,6 +491,7 @@ const manageWithdrawRequestsSlice = createSlice({
     },
 });
 
+export const verifyUserForAdminReducer = verifyUserForAdminSlice.reducer;
 export const manageWithdrawRequestsReducer = manageWithdrawRequestsSlice.reducer;
 export const getWithdrawRequestsReducer = getWithdrawRequestsSlice.reducer;
 export const verifyUserReducer = verifyUserSlice.reducer;

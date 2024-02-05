@@ -14,7 +14,7 @@ import Reward from "../models/rewardModel.js";
 import JoiningRequest from "../models/joinRequestModel.js";
 import WithdrawRequest from "../models/withdrawalRequestModel.js";
 
-// Verify the user by admin and add the user to the proper position in the tree
+// Verify the user and add the user to the proper position in the tree
 // after successful verification
 // BFS function to assign the user to the tree
 router.get(
@@ -24,6 +24,94 @@ router.get(
     // const sponserUserId = req.user._id;
 
     const userId = req.user._id;
+
+    const user = await User.findById(userId).populate("sponser");
+    const admin = await User.findOne({
+      isAdmin: true,
+      // email: "peringammalasajeebkhan@gmail.com",
+    });
+
+    if (user.userStatus === true) {
+      res.status(400);
+      throw new Error("User already verified!");
+    }
+
+    if (user) {
+      // Approve the user
+      user.userStatus = true;
+
+      // Add $2 to Auto Pool bank of admin
+      admin.autoPoolBank += 2;
+
+      if (admin.rewards) {
+        admin.rewards += 3;
+      } else {
+        admin.rewards = 3;
+      }
+
+      const updateAutoPoolBank = await admin.save();
+
+      // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
+      let sponser;
+
+      if (user.sponser) {
+        // const ogSponser = user.sponser;
+        if (user.sponser.userStatus === true) {
+          sponser = user.sponser;
+          if (!sponser.children.includes(user._id)) {
+            sponser.children.push(user._id);
+          }
+          // sponser.earning += 4;
+        } else {
+          sponser = admin;
+          user.sponser = admin._id;
+          if (!sponser.children.includes(user._id)) {
+            sponser.children.push(user._id);
+          }
+        }
+      }
+
+      if (sponser.children.length >= 4 && sponser.autoPool == false) {
+        sponser.autoPool = true;
+        sponser.autoPoolPlan = "starPossession";
+      }
+
+      await sponser.save();
+      await user.save();
+      const left = "left";
+      const right = "right";
+      const updateTree = await bfs(sponser, userId, left, right);
+
+      if (updateTree) {
+        const attachedNode = updateTree.currentNodeId;
+        user.nodeId = attachedNode;
+        const updatedUser = await user.save();
+        if (updatedUser) {
+          res.status(200).json({ sts: "01", message: "Success" });
+        } else {
+          res
+            .status(400)
+            .json({ sts: "00", msg: "Error occured while updating!" });
+        }
+      } else {
+        res.status(400).json({ msg: "Error assigning user to the tree" });
+      }
+    } else {
+      res.status(401);
+      throw new Error(
+        "Can't find this user. Make sure you are registered properly!"
+      );
+    }
+  })
+);
+
+router.post(
+  "/verify-user-payment-by-admin",
+  protect,
+  asyncHandler(async (req, res) => {
+    // const sponserUserId = req.user._id;
+
+    const { userId } = req.body;
 
     const user = await User.findById(userId).populate("sponser");
     const admin = await User.findOne({
