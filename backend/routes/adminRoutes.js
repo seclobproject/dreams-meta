@@ -42,10 +42,18 @@ router.get(
 
       // Add $2 to Auto Pool bank of admin
       admin.autoPoolBank += 2;
+
+      if (admin.rewards) {
+        admin.rewards += 3;
+      } else {
+        admin.rewards = 3;
+      }
+
       const updateAutoPoolBank = await admin.save();
 
       // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
       let sponser;
+
       if (user.sponser) {
         // const ogSponser = user.sponser;
         if (user.sponser.userStatus === true) {
@@ -426,33 +434,6 @@ router.get(
     }
   })
 );
-
-// Post: Accept/Reject joining request
-// router.post(
-//   "/manage-user-request",
-//   protect,
-//   asyncHandler(async (req, res) => {
-//     const { requestId, action } = req.body;
-
-//     const request = await JoiningRequest.findById(requestId);
-
-//     if (request) {
-//       request.status = action;
-//       const updatedRequest = await request.save();
-
-//       if (updatedRequest) {
-//         res.status(200).json({
-//           sts: "01",
-//           msg: "Request updated successfully",
-//         });
-//       } else {
-//         res.status(400).json({ sts: "00", msg: "Request not updated" });
-//       }
-//     } else {
-//       res.status(400).json({ sts: "00", msg: "No request found" });
-//     }
-//   })
-// );
 
 // Get all withdrawal requests
 router.get(

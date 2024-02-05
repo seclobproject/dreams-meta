@@ -129,9 +129,8 @@ router.post(
 
     const user = await User.findOne({ email });
 
-
     if (user && user.password == password) {
-    // if (user && (await user.matchPassword(password))) {
+      // if (user && (await user.matchPassword(password))) {
       const token = jwt.sign(
         { userId: user._id },
         "secret_of_jwt_for_dreams-meta_5959",
@@ -182,120 +181,227 @@ router.get(
   })
 );
 
+// router.get(
+//   "/upgrade-plan",
+//   protect,
+//   asyncHandler(async (req, res) => {
+//     const userId = req.user._id;
+
+//     const user = await User.findById(userId);
+
+//     if (user) {
+//       if (user.currentPlan == "promoter") {
+//         if (user.joiningAmount >= 60) {
+//           user.currentPlan = "royalAchiever";
+
+//           user.joiningAmount -= 60;
+
+//           if (user.autoPool == true) {
+//             user.autoPoolPlan = "silverPossession";
+//           }
+
+//           // Give $8 commission to sponsor as well as people above in the tree till 4 levels
+//           const admin = await User.findById(user.sponser);
+//           admin.earning += 8;
+//           await admin.save();
+
+//           await addCommissionToLine(user.nodeId, 4, sponserId, 8);
+
+//           const updatedUser = await user.save();
+
+//           if (updatedUser) {
+//             res.status(201).json({
+//               sts: "01",
+//               msg: "Your plan upgraded successfully.",
+//             });
+//           } else {
+//             res.status(400).json({
+//               sts: "00",
+//               msg: "Updating user failed. Please try again!",
+//             });
+//           }
+//         } else {
+//           res.status(400).json({
+//             sts: "00",
+//             msg: "Insufficient amount to upgrade the plan!",
+//           });
+//         }
+//       } else if (currentPlan == "royalAchiever") {
+//         if (user.joiningAmount >= 100) {
+//           user.currentPlan = "crownAchiever";
+//           if (user.autoPool == true) {
+//             user.autoPoolPlan = "goldPossession";
+//           }
+
+//           // Give $15 commission to sponsor as well as people above in the tree till 4 levels
+//           const admin = await User.findById(user.sponser);
+//           admin.earning += 15;
+//           await admin.save();
+
+//           await addCommissionToLine(user.nodeId, 4, sponserId, 15);
+
+//           const updatedUser = await user.save();
+
+//           if (updatedUser) {
+//             res.status(201).json({
+//               sts: "01",
+//               msg: "Your plan upgraded successfully.",
+//             });
+//           } else {
+//             res.status(400).json({
+//               sts: "00",
+//               msg: "Updating user failed. Please try again!",
+//             });
+//           }
+//         } else {
+//           res.status(400).json({
+//             sts: "00",
+//             msg: "Insufficient amount to upgrade the plan!",
+//           });
+//         }
+//       } else if (currentPlan == "crownAchiever") {
+//         if (user.joiningAmount >= 200) {
+//           user.currentPlan = "diamondAchiever";
+//           if (user.autoPool == true) {
+//             user.autoPoolPlan = "diamondPossession";
+//           }
+
+//           // Give $30 commission to sponsor as well as people above in the tree till 4 levels
+//           const admin = await User.findById(user.sponser);
+//           admin.earning += 30;
+//           await admin.save();
+
+//           await addCommissionToLine(user.nodeId, 4, sponserId, 15);
+
+//           const updatedUser = await user.save();
+
+//           if (updatedUser) {
+//             res.status(201).json({
+//               sts: "01",
+//               msg: "Your plan upgraded successfully.",
+//             });
+//           } else {
+//             res.status(400).json({
+//               sts: "00",
+//               msg: "Updating user failed. Please try again!",
+//             });
+//           }
+//         } else {
+//           res.status(400).json({
+//             sts: "00",
+//             msg: "Insufficient amount to upgrade the plan!",
+//           });
+//         }
+//       }
+//     } else {
+//       res.status(404).json({ sts: "00", msg: "User not found!" });
+//     }
+//   })
+// );
+
+// Get: upgrade the plan of user if he has enough balance in rejoining amount wallet
+
+
 router.get(
-  "/upgrade-plan",
+  "/upgrade-level",
   protect,
   asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
     const user = await User.findById(userId);
+    const admin = await User.findOne({ isAdmin: true });
 
-    if (user) {
-      if (user.currentPlan == "promoter") {
-        if (user.joiningAmount >= 60) {
-          user.currentPlan = "royalAchiever";
+    if (user.joiningAmount >= 60 && user.currentPlan == "promoter") {
 
-          user.joiningAmount -= 60;
+      user.joiningAmount -= 60;
+      admin.rejoiningWallet += 60;
+      user.currentPlan = "royalAchiever";
 
-          if (user.autoPool == true) {
-            user.autoPoolPlan = "silverPossession";
-          }
+      admin.autoPoolBank += 4;
 
-          // Give $8 commission to sponsor as well as people above in the tree till 4 levels
-          const admin = await User.findById(user.sponser);
-          admin.earning += 8;
-          await admin.save();
-
-          await addCommissionToLine(user.nodeId, 4, sponserId, 8);
-
-          const updatedUser = await user.save();
-
-          if (updatedUser) {
-            res.status(201).json({
-              sts: "01",
-              msg: "Your plan upgraded successfully.",
-            });
-          } else {
-            res.status(400).json({
-              sts: "00",
-              msg: "Updating user failed. Please try again!",
-            });
-          }
-        } else {
-          res.status(400).json({
-            sts: "00",
-            msg: "Insufficient amount to upgrade the plan!",
-          });
-        }
-      } else if (currentPlan == "royalAchiever") {
-        if (user.joiningAmount >= 100) {
-          user.currentPlan = "crownAchiever";
-          if (user.autoPool == true) {
-            user.autoPoolPlan = "goldPossession";
-          }
-
-          // Give $15 commission to sponsor as well as people above in the tree till 4 levels
-          const admin = await User.findById(user.sponser);
-          admin.earning += 15;
-          await admin.save();
-
-          await addCommissionToLine(user.nodeId, 4, sponserId, 15);
-
-          const updatedUser = await user.save();
-
-          if (updatedUser) {
-            res.status(201).json({
-              sts: "01",
-              msg: "Your plan upgraded successfully.",
-            });
-          } else {
-            res.status(400).json({
-              sts: "00",
-              msg: "Updating user failed. Please try again!",
-            });
-          }
-        } else {
-          res.status(400).json({
-            sts: "00",
-            msg: "Insufficient amount to upgrade the plan!",
-          });
-        }
-      } else if (currentPlan == "crownAchiever") {
-        if (user.joiningAmount >= 200) {
-          user.currentPlan = "diamondAchiever";
-          if (user.autoPool == true) {
-            user.autoPoolPlan = "diamondPossession";
-          }
-
-          // Give $30 commission to sponsor as well as people above in the tree till 4 levels
-          const admin = await User.findById(user.sponser);
-          admin.earning += 30;
-          await admin.save();
-
-          await addCommissionToLine(user.nodeId, 4, sponserId, 15);
-
-          const updatedUser = await user.save();
-
-          if (updatedUser) {
-            res.status(201).json({
-              sts: "01",
-              msg: "Your plan upgraded successfully.",
-            });
-          } else {
-            res.status(400).json({
-              sts: "00",
-              msg: "Updating user failed. Please try again!",
-            });
-          }
-        } else {
-          res.status(400).json({
-            sts: "00",
-            msg: "Insufficient amount to upgrade the plan!",
-          });
-        }
+      if (admin.rewards) {
+        admin.rewards += 6;
+      } else {
+        admin.rewards = 6;
       }
+
+      // const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
+      // const left = "royalAchieverLeft";
+      // const right = "royalAchieverRight";
+      // await bfs(parentUser, userId, left, right);
+
+      // Give $8 commission to sponsor as well as people above in the tree till 4 levels
+      const sponser = await User.findById(user.sponser);
+      sponser.earning += 8;
+
+      await sponser.save();
+
+      await addCommissionToLine(user.nodeId, 4, sponser._id, 8);
+
+    } else if (
+      user.joiningAmount >= 100 &&
+      user.currentPlan == "royalAchiever"
+    ) {
+      user.joiningAmount -= 100;
+      user.currentPlan = "crownAchiever";
+      admin.rejoiningWallet += 100;
+
+      admin.autoPoolBank += 8;
+
+      if (admin.rewards) {
+        admin.rewards += 7;
+      } else {
+        admin.rewards = 7;
+      }
+
+      // Give $15 commission to sponsor as well as people above in the tree till 4 levels
+      const sponser = await User.findById(user.sponser);
+      sponser.earning += 15;
+      await sponser.save();
+
+      await addCommissionToLine(user.nodeId, 4, sponser._id, 15);
+
+      // const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
+
+      // const left = "crownAchieverLeft";
+      // const right = "crownAchieverRight";
+      // await bfs(parentUser, userId, left, right);
+    } else if (
+      user.joiningAmount >= 200 &&
+      (user.currentPlan == "crownAchiever" || "diamondAchiever")
+    ) {
+      user.joiningAmount -= 200;
+      admin.rejoiningWallet += 200;
+      user.currentPlan = "diamondAchiever";
+
+      admin.autoPoolBank += 15;
+
+      if (admin.rewards) {
+        admin.rewards += 10;
+      } else {
+        admin.rewards = 10;
+      }
+
+      // Give $30 commission to sponsor as well as people above in the tree till 4 levels
+      const sponser = await User.findById(user.sponser);
+      sponser.earning += 30;
+      await sponser.save();
+
+      await addCommissionToLine(user.nodeId, 4, sponser._id, 30);
+
+      // const parentUser = await User.findOne({ currentPlan: "diamondAchiever" });
+      // const left = "diamondAchieverLeft";
+      // const right = "diamondAchieverRight";
+      // await bfs(parentUser, userId, left, right);
     } else {
-      res.status(404).json({ sts: "00", msg: "User not found!" });
+      res.status(400).json({ msg: "User does not meet upgrade criteria" });
+    }
+
+    const updateAdmin = await admin.save();
+    const updateUser = await user.save();
+
+    if (updateUser && updateAdmin) {
+      res.status(200).json({ msg: "Success" });
     }
   })
 );
@@ -546,67 +652,6 @@ router.post(
         sts: "00",
         msg: "User not found!",
       });
-    }
-  })
-);
-
-// Get: upgrade the plan of user if he has enough balance in rejoining amount wallet
-router.get(
-  "/upgrade-level",
-  protect,
-  asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-
-    const user = await User.findById(userId);
-    const admin = await User.findOne({ isAdmin: true });
-
-    if (user.joiningAmount >= 60 && user.currentPlan == "promoter") {
-      user.joiningAmount -= 60;
-      admin.rejoiningWallet += 60;
-      user.currentPlan = "royalAchiever";
-
-      admin.autoPoolBank += 4;
-
-      // const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
-      // const left = "royalAchieverLeft";
-      // const right = "royalAchieverRight";
-      // await bfs(parentUser, userId, left, right);
-    } else if (
-      user.joiningAmount >= 100 &&
-      user.currentPlan == "royalAchiever"
-    ) {
-      user.joiningAmount -= 100;
-      user.currentPlan = "crownAchiever";
-      admin.rejoiningWallet += 100;
-      admin.autoPoolBank += 8;
-
-      // const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
-
-      // const left = "crownAchieverLeft";
-      // const right = "crownAchieverRight";
-      // await bfs(parentUser, userId, left, right);
-    } else if (
-      user.joiningAmount >= 200 &&
-      (user.currentPlan == "crownAchiever" || "diamondAchiever")
-    ) {
-      user.joiningAmount -= 200;
-      admin.rejoiningWallet += 200;
-      user.currentPlan = "diamondAchiever";
-
-      admin.autoPoolBank += 15;
-
-      // const parentUser = await User.findOne({ currentPlan: "diamondAchiever" });
-      // const left = "diamondAchieverLeft";
-      // const right = "diamondAchieverRight";
-      // await bfs(parentUser, userId, left, right);
-    } else {
-      res.status(400).json({ msg: "User does not meet upgrade criteria" });
-    }
-
-    const updateAdmin = await admin.save();
-    const updateUser = await user.save();
-    if (updateUser && updateAdmin) {
-      res.status(200).json({ msg: "Success" });
     }
   })
 );

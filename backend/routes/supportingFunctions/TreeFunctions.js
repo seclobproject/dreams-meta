@@ -53,7 +53,6 @@ export const bfs = async (startingUser, newUserId, left, right) => {
       currentNodeId: currentNode._id,
       directionAdded: directionToAdd,
     };
-
   }
 
   throw new Error("Unable to assign user to the tree");
@@ -70,11 +69,18 @@ export const addCommissionToLine = async (
   let currentLevel = 0;
 
   while (currentUserId && currentLevel <= levelsAbove) {
+    if (!currentUserId) {
+      break;
+    }
     const currentUser = await User.findById(currentUserId);
 
-    if (!currentUser) {
-      break;
-    } else if (currentUser._id == sponserId) {
+    if (currentUserId.toString() === sponserId.toString()) {
+      console.log(
+        "User ID matches Sponsor ID or currentUserId is not defined. Breaking loop."
+      );
+      currentUserId = currentUser.nodeId;
+      currentLevel++;
+
       continue;
     }
 
@@ -125,6 +131,7 @@ export const addCommissionToLine = async (
     await currentUser.save();
 
     // Move to the parent of the current user
+
     currentUserId = currentUser.nodeId;
     currentLevel++;
   }
