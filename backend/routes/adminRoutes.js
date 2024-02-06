@@ -55,18 +55,55 @@ router.get(
       let sponser;
 
       if (user.sponser) {
-        // const ogSponser = user.sponser;
-        if (user.sponser.userStatus === true) {
+        const ogSponser = user.sponser;
+
+        if (ogSponser.userStatus === true) {
+          // 'sponser' is assigned as the original sponsor
           sponser = user.sponser;
+
+          // Pushing the user to the sponser's children array
           if (!sponser.children.includes(user._id)) {
             sponser.children.push(user._id);
           }
+          // Adding $4 to the sponsor's earning
           sponser.earning += 4;
         } else {
+          // If original sponsor is not verified, admin is assigned as the sponsor.
           sponser = admin;
           user.sponser = admin._id;
+          // Pushing the user to the sponser's children array
           if (!sponser.children.includes(user._id)) {
             sponser.children.push(user._id);
+          }
+          // Adding $4 to the sponsor's earning
+          // sponser.earning += 4;
+          if (sponser.earning < 30 && sponser.currentPlan == "promoter") {
+            const remainingEarningSpace = 30 - sponser.earning;
+            sponser.earning += Math.min(4, remainingEarningSpace);
+            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+          } else if (
+            sponser.earning < 60 &&
+            sponser.currentPlan == "royalAchiever"
+          ) {
+            const remainingEarningSpace = 60 - sponser.earning;
+            sponser.earning += Math.min(4, remainingEarningSpace);
+            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+          } else if (
+            sponser.earning < 100 &&
+            sponser.currentPlan == "crownAchiever"
+          ) {
+            const remainingEarningSpace = 100 - sponser.earning;
+            sponser.earning += Math.min(4, remainingEarningSpace);
+            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+          } else if (
+            sponser.earning < 200 &&
+            sponser.currentPlan == "diamondAchiever"
+          ) {
+            const remainingEarningSpace = 200 - sponser.earning;
+            sponser.earning += Math.min(4, remainingEarningSpace);
+            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+          } else {
+            sponser.joiningAmount += commissionToAdd;
           }
         }
       }
@@ -109,7 +146,6 @@ router.post(
   "/verify-user-payment-by-admin",
   protect,
   asyncHandler(async (req, res) => {
-
     // const sponserUserId = req.user._id;
 
     const { userId } = req.body;
@@ -165,7 +201,36 @@ router.post(
             sponser.children.push(user._id);
           }
           // Adding $4 to the sponsor's earning
-          sponser.earning += 4;
+          // sponser.earning += 4;
+
+          if (sponser.earning < 30 && sponser.currentPlan == "promoter") {
+            const remainingEarningSpace = 30 - sponser.earning;
+            sponser.earning += Math.min(4, remainingEarningSpace);
+            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+          } else if (
+            sponser.earning < 60 &&
+            sponser.currentPlan == "royalAchiever"
+          ) {
+            const remainingEarningSpace = 60 - sponser.earning;
+            sponser.earning += Math.min(4, remainingEarningSpace);
+            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+          } else if (
+            sponser.earning < 100 &&
+            sponser.currentPlan == "crownAchiever"
+          ) {
+            const remainingEarningSpace = 100 - sponser.earning;
+            sponser.earning += Math.min(4, remainingEarningSpace);
+            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+          } else if (
+            sponser.earning < 200 &&
+            sponser.currentPlan == "diamondAchiever"
+          ) {
+            const remainingEarningSpace = 200 - sponser.earning;
+            sponser.earning += Math.min(4, remainingEarningSpace);
+            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+          } else {
+            sponser.joiningAmount += commissionToAdd;
+          }
         }
       }
 
@@ -182,7 +247,7 @@ router.post(
       const left = "left";
       const right = "right";
       const updateTree = await bfs(sponser, userId, left, right);
-      
+
       if (updateTree) {
         const attachedNode = updateTree.currentNodeId;
         user.nodeId = attachedNode;
