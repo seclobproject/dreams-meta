@@ -26,7 +26,20 @@ const RegisterBoxed = () => {
     // const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Register new member'));
+    }, [userInfo]);
 
+    // Reset user data and error state after successful submission
+    useEffect(() => {
+        if (userData) {
+            setUserName('');
+            setEmail('');
+            setPassword('');
+            setReEnterPassword('');
+        }
+    }, [userData]);
+
+    // Redirect to signin page if user is not logged in
+    useEffect(() => {
         if (!userInfo) {
             navigate('/signin');
         }

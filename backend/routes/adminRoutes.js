@@ -61,7 +61,7 @@ router.get(
           if (!sponser.children.includes(user._id)) {
             sponser.children.push(user._id);
           }
-          // sponser.earning += 4;
+          sponser.earning += 4;
         } else {
           sponser = admin;
           user.sponser = admin._id;
@@ -109,6 +109,7 @@ router.post(
   "/verify-user-payment-by-admin",
   protect,
   asyncHandler(async (req, res) => {
+
     // const sponserUserId = req.user._id;
 
     const { userId } = req.body;
@@ -143,22 +144,32 @@ router.post(
       let sponser;
 
       if (user.sponser) {
-        // const ogSponser = user.sponser;
-        if (user.sponser.userStatus === true) {
+        const ogSponser = user.sponser;
+
+        if (ogSponser.userStatus === true) {
+          // 'sponser' is assigned as the original sponsor
           sponser = user.sponser;
+
+          // Pushing the user to the sponser's children array
           if (!sponser.children.includes(user._id)) {
             sponser.children.push(user._id);
           }
-          // sponser.earning += 4;
+          // Adding $4 to the sponsor's earning
+          sponser.earning += 4;
         } else {
+          // If original sponsor is not verified, admin is assigned as the sponsor.
           sponser = admin;
           user.sponser = admin._id;
+          // Pushing the user to the sponser's children array
           if (!sponser.children.includes(user._id)) {
             sponser.children.push(user._id);
           }
+          // Adding $4 to the sponsor's earning
+          sponser.earning += 4;
         }
       }
 
+      // If the sponsor attained 4 children, he should have auto-pool activated
       if (sponser.children.length >= 4 && sponser.autoPool == false) {
         sponser.autoPool = true;
         sponser.autoPoolPlan = "starPossession";
@@ -166,10 +177,12 @@ router.post(
 
       await sponser.save();
       await user.save();
+
+      // Now assign the user to the tree
       const left = "left";
       const right = "right";
       const updateTree = await bfs(sponser, userId, left, right);
-
+      
       if (updateTree) {
         const attachedNode = updateTree.currentNodeId;
         user.nodeId = attachedNode;

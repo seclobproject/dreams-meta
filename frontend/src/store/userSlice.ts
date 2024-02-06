@@ -40,9 +40,9 @@ export const addNewUser = createAsyncThunk('addNewUser', async (user: any) => {
     return response.data;
 });
 
-export const clearData = createAsyncThunk('logout', async () => {
-    localStorage.removeItem('userInfo');
-});
+// export const clearData = createAsyncThunk('logout', async () => {
+//     localStorage.removeItem('userInfo');
+// });
 
 export const getAddNewUser = createSlice({
     name: 'getAddNewUser',
@@ -60,8 +60,8 @@ export const getAddNewUser = createSlice({
             .addCase(addNewUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload;
-                localStorage.removeItem('userInfo');
-                localStorage.setItem('userInfo', JSON.stringify(action.payload));
+                // localStorage.removeItem('userInfo');
+                // localStorage.setItem('userInfo', JSON.stringify(action.payload));
             })
             .addCase(addNewUser.rejected, (state, action) => {
                 state.loading = false;
