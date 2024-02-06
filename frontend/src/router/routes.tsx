@@ -9,6 +9,7 @@ import EditUserByAdmin from '../pages/Users/EditUserByAdmin';
 import Autopool from '../pages/Autopool';
 import RejoiningWallet from '../pages/RejoiningWallet';
 import Withdrawal from '../pages/Withdrawal';
+import ManageReward from '../pages/Forms/ManageReward';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -387,10 +388,10 @@ const routes = [
         path: '/datatables/multi-column',
         element: <MultiColumn />,
     },
-    // {
-    //     path: '/datatables/multiple-tables',
-    //     element: <MultipleTables />,
-    // },
+    {
+        path: '/manage-reward',
+        element: <ManageReward />,
+    },
     {
         path: '/datatables/alt-pagination',
         element: <AltPagination />,
