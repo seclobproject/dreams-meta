@@ -40,9 +40,9 @@ export const addNewUser = createAsyncThunk('addNewUser', async (user: any) => {
     return response.data;
 });
 
-export const clearData = createAsyncThunk('logout', async () => {
-    localStorage.removeItem('userInfo');
-});
+// export const clearData = createAsyncThunk('logout', async () => {
+//     localStorage.removeItem('userInfo');
+// });
 
 export const getAddNewUser = createSlice({
     name: 'getAddNewUser',
@@ -60,8 +60,8 @@ export const getAddNewUser = createSlice({
             .addCase(addNewUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload;
-                localStorage.removeItem('userInfo');
-                localStorage.setItem('userInfo', JSON.stringify(action.payload));
+                // localStorage.removeItem('userInfo');
+                // localStorage.setItem('userInfo', JSON.stringify(action.payload));
             })
             .addCase(addNewUser.rejected, (state, action) => {
                 state.loading = false;
@@ -324,6 +324,144 @@ export const getUsersByLevelSlice = createSlice({
     },
 });
 
+// Redux action to joining request
+export const sendJoiningRequest = createAsyncThunk('sendJoiningRequest', async (hash: any) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.post(`${URL}/api/users/join`, { hash }, config);
+
+    console.log(response.data);
+
+    return response.data;
+});
+
+export const sendJoiningRequestSlice = createSlice({
+    name: 'sendJoiningRequestSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(sendJoiningRequest.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(sendJoiningRequest.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(sendJoiningRequest.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+// Redux action to request withdrawal
+export const requestWithdrawal = createAsyncThunk('requestWithdrawal', async (data: any) => {
+
+    
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+    
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const { amount, walletAddress } = data;
+    
+    const response = await axios.post(`${URL}/api/users/request-withdrawal`, { amount, walletAddress }, config);
+
+    return response.data;
+
+});
+
+export const requestWithdrawalSlice = createSlice({
+    name: 'requestWithdrawalSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(requestWithdrawal.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(requestWithdrawal.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(requestWithdrawal.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+// Redux action to upgrade/rejoining
+export const upgradeUser = createAsyncThunk('upgradeUser', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/upgrade-level`, config);
+
+    console.log(response.data);
+
+    return response.data;
+
+})
+
+export const upgradeUserSlice = createSlice({
+    name: 'upgradeUserSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: false,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(upgradeUser.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(upgradeUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(upgradeUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = true;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+
+export const upgradeUserReducer = upgradeUserSlice.reducer;
+export const requestWithdrawalReducer = requestWithdrawalSlice.reducer;
+export const sendJoiningRequestReducer = sendJoiningRequestSlice.reducer;
 export const getUsersByLevelReducer = getUsersByLevelSlice.reducer;
 export const addNewUserReducer = getAddNewUser.reducer;
 export const addNewUserByReferralReducer = addNewUserWithRefferalSlice.reducer;

@@ -1,6 +1,14 @@
 import { lazy } from 'react';
 import RegisterWithReferral from '../pages/Authentication/RegisterWithReferral';
 import LevelTree from '../pages/DataTables/LevelTree';
+import ShowRewards from '../pages/Components/ShowRewards';
+import Support from '../pages/Pages/Support';
+import AllMembers from '../pages/DataTables/AllMembers';
+import WithdrawRequests from '../pages/DataTables/WithdrawRequests';
+import EditUserByAdmin from '../pages/Users/EditUserByAdmin';
+import Autopool from '../pages/Autopool';
+import RejoiningWallet from '../pages/RejoiningWallet';
+import Withdrawal from '../pages/Withdrawal';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -113,22 +121,47 @@ const routes = [
         path: '/dashboard',
         element: <Finance />,
     },
-    // {
-    //     path: '/index',
-    //     element: <Index />,
-    // },
     // analytics page
     {
         path: '/analytics',
         element: <Analytics />,
+    },
+    // Autopool
+    {
+        path: '/autopool',
+        element: <Autopool />,
     },
     {
         path: '/direct-sponsors',
         element: <Skin />,
     },
     {
-        path: '/level-tree',
+        path: '/all-members',
+        element: <AllMembers />,
+    },
+    {
+        path: '/genealogy',
         element: <LevelTree />,
+    },
+    {
+        path: '/show-rewards',
+        element: <ShowRewards />,
+    },
+    {
+        path: '/support',
+        element: <Support />,
+    },
+    {
+        path: '/rejoining-wallet',
+        element: <RejoiningWallet />,
+    },
+    {
+        path: '/withdraw',
+        element: <Withdrawal />,
+    },
+    {
+        path: '/withdraw-requests',
+        element: <WithdrawRequests />,
     },
     // crypto page
     {
@@ -386,6 +419,10 @@ const routes = [
     {
         path: '/users/user-account-settings',
         element: <AccountSetting />,
+    },
+    {
+        path: '/users/edit-user-by-admin/:id',
+        element: <EditUserByAdmin />,
     },
     // pages
     {

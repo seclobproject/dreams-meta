@@ -20,8 +20,8 @@ app.use(express.json());
 
 // Uploads
 const __dirname = path.resolve();
-// app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
-app.use("/uploads", express.static("/var/www/seclob/dreamzmeta/uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+// app.use("/uploads", express.static("/var/www/seclob/dreamzmeta/uploads"));
 // Uploads
 
 const appDir = path.resolve(process.cwd());

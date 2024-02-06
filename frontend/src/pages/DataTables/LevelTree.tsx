@@ -12,15 +12,15 @@ const LevelTree = () => {
     const [activeTab, setActiveTab] = useState<any>(1);
 
     const { loading, data: rowData, error } = useAppSelector((state: any) => state.getAllUsersReducer);
-    const { loading:level2Loading, data:level2Data, error:level2Error } = useAppSelector((state: any) => state.getUsersByLevelReducer);
-    const { loading:level3Loading, data:level3Data, error:level3Error } = useAppSelector((state: any) => state.getUsersByLevelReducer);
-    
+    const { loading: level2Loading, data: level2Data, error: level2Error } = useAppSelector((state: any) => state.getUsersByLevelReducer);
+    // const { loading:level3Loading, data:level3Data, error:level3Error } = useAppSelector((state: any) => state.getUsersByLevelReducer);
+
     useEffect(() => {
         dispatch(getAllUsers());
     }, [dispatch, level2Data]);
 
     useEffect(() => {
-        dispatch(setPageTitle('Skin Tables'));
+        dispatch(setPageTitle('Genealogy'));
     });
     const PAGE_SIZES = [10, 20, 30, 50, 100];
 
@@ -58,24 +58,24 @@ const LevelTree = () => {
 
     // Level 2 Data
     const levelTwoHandler = () => {
-        setActiveTab(2)
-        dispatch(getUsersByLevel(2));
-    }
+        setActiveTab(2);
+        // dispatch(getUsersByLevel(2));
+    };
     const levelThreeHandler = () => {
-        setActiveTab(3)
-        dispatch(getUsersByLevel(3));
-    }
+        setActiveTab(3);
+        // dispatch(getUsersByLevel(3));
+    };
     const levelFourHandler = () => {
-        setActiveTab(4)
-        dispatch(getUsersByLevel(4));
-    }
+        setActiveTab(4);
+        // dispatch(getUsersByLevel(4));
+    };
 
     return (
         <div className="inline-block w-full">
             <ul className="mb-5 grid grid-cols-4 gap-2 text-center">
                 <li>
                     <div
-                        className={`${activeTab === 1 ? '!bg-primary text-white' : ''}
+                        className={`${activeTab === 1 ? 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white' : ''}
                 block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`}
                         onClick={() => setActiveTab(1)}
                     >
@@ -84,81 +84,53 @@ const LevelTree = () => {
                 </li>
 
                 <li>
-                    <div className={`${activeTab === 2 ? '!bg-primary text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`} onClick={levelTwoHandler}>
+                    <div
+                        className={`${activeTab === 2 ? 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`}
+                        onClick={levelTwoHandler}
+                    >
                         Level 2
                     </div>
                 </li>
 
                 <li>
-                    <div className={`${activeTab === 3 ? '!bg-primary text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`} onClick={levelThreeHandler}>
+                    <div
+                        className={`${activeTab === 3 ? 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`}
+                        onClick={levelThreeHandler}
+                    >
                         Level 3
                     </div>
                 </li>
 
                 <li>
-                    <div className={`${activeTab === 4 ? '!bg-primary text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`} onClick={levelFourHandler}>
+                    <div
+                        className={`${activeTab === 4 ? 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white' : ''} block rounded-full bg-[#f3f2ee] p-2.5 dark:bg-[#1b2e4b]`}
+                        onClick={levelFourHandler}
+                    >
                         Level 4
                     </div>
                 </li>
             </ul>
 
             <div>
-                <div className="mb-5">
-                    {activeTab === 1 && (
-                        <div className="space-y-6">
-                            {/* Skin: Striped  */}
-                            <div className="panel">
-                                <div className="flex items-center justify-between mb-5">
-                                    <h5 className="font-semibold text-lg dark:text-white-light">Members</h5>
-                                    <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
-                                </div>
-                                <div className="datatables">
-                                    <DataTable
-                                        striped
-                                        className="whitespace-nowrap table-striped"
-                                        records={recordsData}
-                                        columns={[
-                                            { accessor: 'name', title: 'Name' },
-                                            { accessor: 'email', title: 'Email' },
-                                            { accessor: 'ownSponserId', title: 'Sponsor ID' },
-                                            { accessor: 'userStatus', title: 'Status', render: (value) => (value ? 'Active' : 'Inactive') },
-                                        ]}
-                                        totalRecords={initialRecords ? initialRecords.length : 0}
-                                        recordsPerPage={pageSize}
-                                        page={page}
-                                        onPageChange={(p) => setPage(p)}
-                                        recordsPerPageOptions={PAGE_SIZES}
-                                        onRecordsPerPageChange={setPageSize}
-                                        minHeight={200}
-                                        paginationText={({ from, to, totalRecords }) => `Showing  ${from} to ${to} of ${totalRecords} entries`}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <div className="mb-5">
-                    {activeTab === 2 && (
-                        <LevelTreeComponent level={2} />
-                    )}
-                </div>
-                <div className="mb-5">
-                    {activeTab === 3 && (
-                        <LevelTreeComponent level={3} />
-                    )}
-                </div>
-                <div className="mb-5">
-                    {activeTab === 4 && (
-                        <LevelTreeComponent level={4} />
-                    )}
-                </div>
+                <div className="mb-5">{activeTab === 1 && <LevelTreeComponent level={2} />}</div>
+                <div className="mb-5">{activeTab === 2 && <LevelTreeComponent level={3} />}</div>
+                <div className="mb-5">{activeTab === 3 && <LevelTreeComponent level={4} />}</div>
+                <div className="mb-5">{activeTab === 4 && <LevelTreeComponent level={5} />}</div>
             </div>
             <div className="flex justify-between">
-                <button type="button" className={`btn btn-primary ${activeTab === 1 ? 'hidden' : ''}`} onClick={() => setActiveTab(activeTab === 3 ? 2 : 1)}>
+                <button
+                    type="button"
+                    className={`bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 rounded-lg px-5 py-3 text-white ${activeTab === 1 ? 'hidden' : ''}`}
+                    onClick={() => setActiveTab(activeTab === 4 ? 3 : activeTab === 3 ? 2 : activeTab === 2 ? 1 : 4)}
+                >
                     Back
                 </button>
-                <button type="button" className="btn btn-primary ltr:ml-auto rtl:mr-auto" onClick={() => setActiveTab(activeTab === 1 ? 2 : 3)}>
-                    {activeTab === 3 ? 'Finish' : 'Next'}
+                <button
+                    type="button"
+                    className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 rounded-lg px-5 py-3 text-white ltr:ml-auto rtl:mr-auto"
+                    onClick={() => setActiveTab(activeTab === 1 ? 2 : activeTab === 2 ? 3 : activeTab === 3 ? 4 : 1)}
+                >
+                    {activeTab === 4 ? 'Finish' : 'Next'}
                 </button>
             </div>
         </div>
