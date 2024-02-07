@@ -41,6 +41,7 @@ router.post(
     const joiningAmount = 0;
     const children = [];
     const currentPlan = "promoter";
+    const thirtyChecker = false;
 
     const user = await User.create({
       sponser,
@@ -52,6 +53,7 @@ router.post(
       joiningAmount,
       children,
       currentPlan,
+      thirtyChecker,
     });
 
     if (user) {
@@ -63,6 +65,7 @@ router.post(
         address: user.address,
         ownSponserId: user.ownSponserId,
         currentPlan: user.currentPlan,
+        thirtyChecker: user.thirtyChecker,
       });
     } else {
       res.status(400);
@@ -90,6 +93,7 @@ router.post(
     const children = [];
     const currentPlan = "promoter";
     const autoPool = false;
+    const thirtyChecker = false;
 
     const user = await User.create({
       sponser,
@@ -102,6 +106,7 @@ router.post(
       children,
       currentPlan,
       autoPool,
+      thirtyChecker,
     });
 
     if (user) {
@@ -113,6 +118,7 @@ router.post(
         address: user.address,
         ownSponserId: user.ownSponserId,
         currentPlan: user.currentPlan,
+        thirtyChecker: user.thirtyChecker,
       });
     } else {
       res.status(400);
@@ -216,44 +222,32 @@ router.get(
       // Give $8 commission to sponsor as well as people above in the tree till 4 levels
       const sponser = await User.findById(user.sponser);
       // sponser.earning += 8
-      
+
       if (sponser.earning < 30 && sponser.currentPlan == "promoter") {
         const remainingEarningSpace = 30 - sponser.earning;
         sponser.earning += Math.min(8, remainingEarningSpace);
-        sponser.joiningAmount += Math.max(
-          0,
-          8 - remainingEarningSpace
-        );
+        sponser.joiningAmount += Math.max(0, 8 - remainingEarningSpace);
       } else if (
         sponser.earning < 60 &&
         sponser.currentPlan == "royalAchiever"
       ) {
         const remainingEarningSpace = 60 - sponser.earning;
         sponser.earning += Math.min(8, remainingEarningSpace);
-        sponser.joiningAmount += Math.max(
-          0,
-          8 - remainingEarningSpace
-        );
+        sponser.joiningAmount += Math.max(0, 8 - remainingEarningSpace);
       } else if (
         sponser.earning < 100 &&
         sponser.currentPlan == "crownAchiever"
       ) {
         const remainingEarningSpace = 100 - sponser.earning;
         sponser.earning += Math.min(8, remainingEarningSpace);
-        sponser.joiningAmount += Math.max(
-          0,
-          8 - remainingEarningSpace
-        );
+        sponser.joiningAmount += Math.max(0, 8 - remainingEarningSpace);
       } else if (
         sponser.earning < 200 &&
         sponser.currentPlan == "diamondAchiever"
       ) {
         const remainingEarningSpace = 200 - sponser.earning;
         sponser.earning += Math.min(8, remainingEarningSpace);
-        sponser.joiningAmount += Math.max(
-          0,
-          8 - remainingEarningSpace
-        );
+        sponser.joiningAmount += Math.max(0, 8 - remainingEarningSpace);
       } else {
         sponser.joiningAmount += 8;
       }

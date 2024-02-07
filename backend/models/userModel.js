@@ -153,6 +153,10 @@ const userSchema = new mongoose.Schema(
         ref: "WithdrawRequest",
       },
     ],
+    thirtyChecker: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

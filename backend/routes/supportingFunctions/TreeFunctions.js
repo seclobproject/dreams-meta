@@ -89,15 +89,15 @@ export const addCommissionToLine = async (
 
     const sponsor = await User.findById(sponserId);
 
-    if (currentUserId.toString() === sponserId.toString() && !sponsor.isAdmin) {
-      console.log(
-        "User ID matches Sponsor ID or currentUserId is not defined. Breaking loop."
-      );
-      currentUserId = currentUser.nodeId;
-      currentLevel++;
+    // if (currentUserId.toString() === sponserId.toString() && !sponsor.isAdmin) {
+    //   console.log(
+    //     "User ID matches Sponsor ID or currentUserId is not defined. Breaking loop."
+    //   );
+    //   currentUserId = currentUser.nodeId;
+    //   currentLevel++;
 
-      continue;
-    }
+    //   continue;
+    // }
 
     const commissionToAdd = commissionAmount;
 
@@ -170,7 +170,8 @@ export const addCommissionToLineForUpgrade = async (
 
     const sponsor = await User.findById(sponserId);
 
-    if (currentUserId.toString() === sponserId.toString()) { //  && !sponsor.isAdmin
+    if (currentUserId.toString() === sponserId.toString()) {
+      //  && !sponsor.isAdmin
       console.log(
         "User ID matches Sponsor ID or currentUserId is not defined. Breaking loop."
       );
@@ -231,4 +232,42 @@ export const addCommissionToLineForUpgrade = async (
     currentUserId = currentUser.nodeId;
     currentLevel++;
   }
+};
+
+// Function to split the commission to user betweeen earning wallet and rejoining wallet
+export const splitter = async (number, sponser, checker) => {
+  const remainingEarningSpace = 30 - sponser.earning;
+  const remainingJoiningSpace = 60 - sponser.joining;
+
+  // Add to earning first
+  if (remainingEarningSpace > 0 && number > 0 && checker === false) {
+    const earningToAdd = Math.min(remainingEarningSpace, number);
+    sponser.earning += earningToAdd;
+    number -= earningToAdd;
+
+    if (sponser.earning >= 30) {
+      checker = true;
+    }
+  }
+
+  // Add to joining
+  if (remainingJoiningSpace > 0 && number > 0 && checker === true) {
+    const joiningToAdd = Math.min(remainingJoiningSpace, number);
+    sponser.joining += joiningToAdd;
+    number -= joiningToAdd;
+
+    if (sponser.joining >= 60) {
+      checker = false;
+    }
+  }
+
+  // Add remaining to earning
+  if (number > 0) {
+    sponser.earning += number;
+  }
+
+  await sponser.save();
+  console.log(
+    `Earning is ${sponser.earning} and joining is ${sponser.joining}`
+  );
 };
