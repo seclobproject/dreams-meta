@@ -191,8 +191,6 @@ router.get(
     const user = await User.findById(userId);
     const admin = await User.findOne({ isAdmin: true });
 
-    console.log(user.children);
-
     if (
       user.joiningAmount >= 60 &&
       user.currentPlan == "promoter" &&

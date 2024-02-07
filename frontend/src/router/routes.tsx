@@ -112,16 +112,21 @@ const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 
 const routes = [
-    // dashboard
     {
         path: '/',
-        element: <LoginBoxed />, //Finance
+        element: <ComingSoonBoxed />,
+        layout: 'blank',
     },
-    // Dashboard
+    // dashboard
     {
         path: '/dashboard',
         element: <Finance />,
     },
+    // Dashboard
+    // {
+    //     path: '/home',
+    //     element: <Finance />,
+    // },
     // analytics page
     {
         path: '/analytics',
@@ -477,7 +482,7 @@ const routes = [
     //Authentication
     //Edited
     {
-        path: '/signin',
+        path: '/signin-new', //signin
         element: <LoginBoxed />,
         layout: 'blank',
     },

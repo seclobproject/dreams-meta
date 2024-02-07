@@ -5,7 +5,7 @@ const users = [
     sponser: null,
     name: "Super Admin",
     email: "seclobclt@gmail.com",
-    password: bcrypt.hashSync("pass123", 10),
+    password: "pass123",
     isAdmin: true,
     ownSponserId: "7hhmKA1",
     earning: 0,
