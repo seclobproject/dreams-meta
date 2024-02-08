@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
 import path from "path";
-import { addCommissionToLineForUpgrade } from "./supportingFunctions/TreeFunctions.js";
+import { addCommissionToLineForUpgrade, splitterTest } from "./supportingFunctions/TreeFunctions.js";
 import JoiningRequest from "../models/joinRequestModel.js";
 import WithdrawRequest from "../models/withdrawalRequestModel.js";
 // import upload from "../middleware/fileUploadMiddleware.js";
@@ -214,47 +214,31 @@ router.get(
         admin.rewards = 6;
       }
 
-      // const parentUser = await User.findOne({ currentPlan: "royalAchiever" });
-      // const left = "royalAchieverLeft";
-      // const right = "royalAchieverRight";
-      // await bfs(parentUser, userId, left, right);
-
       // Give $8 commission to sponsor as well as people above in the tree till 4 levels
       const sponser = await User.findById(user.sponser);
-      // sponser.earning += 8
 
-      if (sponser.earning < 30 && sponser.currentPlan == "promoter") {
-        const remainingEarningSpace = 30 - sponser.earning;
-        sponser.earning += Math.min(8, remainingEarningSpace);
-        sponser.joiningAmount += Math.max(0, 8 - remainingEarningSpace);
-      } else if (
-        sponser.earning < 60 &&
-        sponser.currentPlan == "royalAchiever"
-      ) {
-        const remainingEarningSpace = 60 - sponser.earning;
-        sponser.earning += Math.min(8, remainingEarningSpace);
-        sponser.joiningAmount += Math.max(0, 8 - remainingEarningSpace);
-      } else if (
-        sponser.earning < 100 &&
-        sponser.currentPlan == "crownAchiever"
-      ) {
-        const remainingEarningSpace = 100 - sponser.earning;
-        sponser.earning += Math.min(8, remainingEarningSpace);
-        sponser.joiningAmount += Math.max(0, 8 - remainingEarningSpace);
-      } else if (
-        sponser.earning < 200 &&
-        sponser.currentPlan == "diamondAchiever"
-      ) {
-        const remainingEarningSpace = 200 - sponser.earning;
-        sponser.earning += Math.min(8, remainingEarningSpace);
-        sponser.joiningAmount += Math.max(0, 8 - remainingEarningSpace);
-      } else {
-        sponser.joiningAmount += 8;
+      // Code to add money to sponsor only
+      if (!sponser.thirtyChecker) {
+        sponser.thirtyChecker = false;
       }
 
-      await sponser.save();
+      const splitCommission = splitterTest(
+        8,
+        sponser,
+        sponser.thirtyChecker,
+        sponser.currentPlan
+      );
 
-      await addCommissionToLineForUpgrade(user.nodeId, 3, sponser._id, 8);
+      sponser.earning = splitCommission.earning;
+      sponser.joiningAmount = splitCommission.joining;
+      sponser.thirtyChecker = splitCommission.checker;
+
+      const updatedSponsor = await sponser.save();
+      // Code to add money to sponsor only end
+
+      if (updatedSponsor) {
+        await addCommissionToLineForUpgrade(user.nodeId, 3, 8);
+      }
     } else if (
       user.joiningAmount >= 100 &&
       user.currentPlan == "royalAchiever" &&
@@ -272,18 +256,31 @@ router.get(
         admin.rewards = 7;
       }
 
-      // Give $15 commission to sponsor as well as people above in the tree till 4 levels
+      // Give $15 commission to sponsor
       const sponser = await User.findById(user.sponser);
-      sponser.earning += 15;
-      await sponser.save();
 
-      await addCommissionToLineForUpgrade(user.nodeId, 3, sponser._id, 15);
+      // Code to add money to sponsor only
+      if (!sponser.thirtyChecker) {
+        sponser.thirtyChecker = false;
+      }
 
-      // const parentUser = await User.findOne({ currentPlan: "crownAchiever" });
+      const splitCommission = splitterTest(
+        15,
+        sponser,
+        sponser.thirtyChecker,
+        sponser.currentPlan
+      );
 
-      // const left = "crownAchieverLeft";
-      // const right = "crownAchieverRight";
-      // await bfs(parentUser, userId, left, right);
+      sponser.earning = splitCommission.earning;
+      sponser.joiningAmount = splitCommission.joining;
+      sponser.thirtyChecker = splitCommission.checker;
+
+      const updatedSponsor = await sponser.save();
+      // Code to add money to sponsor only end
+
+      if (updatedSponsor) {
+        await addCommissionToLineForUpgrade(user.nodeId, 3, 15);
+      }
     } else if (
       user.joiningAmount >= 200 &&
       (user.currentPlan == "crownAchiever" || "diamondAchiever") &&
@@ -301,17 +298,31 @@ router.get(
         admin.rewards = 10;
       }
 
-      // Give $30 commission to sponsor as well as people above in the tree till 4 levels
+      // Give $30 commission to sponsor
       const sponser = await User.findById(user.sponser);
-      sponser.earning += 30;
-      await sponser.save();
 
-      await addCommissionToLineForUpgrade(user.nodeId, 3, sponser._id, 30);
+      // Code to add money to sponsor only
+      if (!sponser.thirtyChecker) {
+        sponser.thirtyChecker = false;
+      }
 
-      // const parentUser = await User.findOne({ currentPlan: "diamondAchiever" });
-      // const left = "diamondAchieverLeft";
-      // const right = "diamondAchieverRight";
-      // await bfs(parentUser, userId, left, right);
+      const splitCommission = splitterTest(
+        30,
+        sponser,
+        sponser.thirtyChecker,
+        sponser.currentPlan
+      );
+
+      sponser.earning = splitCommission.earning;
+      sponser.joiningAmount = splitCommission.joining;
+      sponser.thirtyChecker = splitCommission.checker;
+
+      const updatedSponsor = await sponser.save();
+      // Code to add money to sponsor only end
+      if (updatedSponsor) {
+        await addCommissionToLineForUpgrade(user.nodeId, 3, 30);
+      }
+
     } else {
       res.status(400).json({ msg: "User does not meet upgrade criteria" });
     }

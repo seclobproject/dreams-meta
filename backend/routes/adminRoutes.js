@@ -6,7 +6,11 @@ const router = express.Router();
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
-import { bfs, splitter } from "./supportingFunctions/TreeFunctions.js";
+import {
+  bfs,
+  bfsNew,
+  splitterTest,
+} from "./supportingFunctions/TreeFunctions.js";
 
 import path from "path";
 import multer from "multer";
@@ -14,282 +18,30 @@ import Reward from "../models/rewardModel.js";
 import JoiningRequest from "../models/joinRequestModel.js";
 import WithdrawRequest from "../models/withdrawalRequestModel.js";
 
+
 // Verify the user and add the user to the proper position in the tree
 // after successful verification
 // BFS function to assign the user to the tree
-router.get(
-  "/verify-user-payment",
-  protect,
-  asyncHandler(async (req, res) => {
-    // const sponserUserId = req.user._id;
-
-    const userId = req.user._id;
-
-    const user = await User.findById(userId).populate("sponser");
-    const admin = await User.findOne({
-      isAdmin: true,
-      // email: "peringammalasajeebkhan@gmail.com",
-    });
-
-    if (user.userStatus === true) {
-      res.status(400);
-      throw new Error("User already verified!");
-    }
-
-    if (user) {
-      // Approve the user
-      user.userStatus = true;
-
-      // Add $2 to Auto Pool bank of admin
-      admin.autoPoolBank += 2;
-
-      if (admin.rewards) {
-        admin.rewards += 3;
-      } else {
-        admin.rewards = 3;
-      }
-
-      const updateAutoPoolBank = await admin.save();
-
-      // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
-      let sponser;
-
-      if (user.sponser) {
-        const ogSponser = user.sponser;
-
-        if (ogSponser.userStatus === true) {
-          // 'sponser' is assigned as the original sponsor
-          sponser = user.sponser;
-
-          // Pushing the user to the sponser's children array
-          if (!sponser.children.includes(user._id)) {
-            sponser.children.push(user._id);
-          }
-          // Adding $4 to the sponsor's earning
-          sponser.earning += 4;
-        } else {
-          // If original sponsor is not verified, admin is assigned as the sponsor.
-          sponser = admin;
-          user.sponser = admin._id;
-          // Pushing the user to the sponser's children array
-          if (!sponser.children.includes(user._id)) {
-            sponser.children.push(user._id);
-          }
-          // Adding $4 to the sponsor's earning
-          // sponser.earning += 4;
-          if (sponser.earning < 30 && sponser.currentPlan == "promoter") {
-            const remainingEarningSpace = 30 - sponser.earning;
-            sponser.earning += Math.min(4, remainingEarningSpace);
-            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
-          } else if (
-            sponser.earning < 60 &&
-            sponser.currentPlan == "royalAchiever"
-          ) {
-            const remainingEarningSpace = 60 - sponser.earning;
-            sponser.earning += Math.min(4, remainingEarningSpace);
-            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
-          } else if (
-            sponser.earning < 100 &&
-            sponser.currentPlan == "crownAchiever"
-          ) {
-            const remainingEarningSpace = 100 - sponser.earning;
-            sponser.earning += Math.min(4, remainingEarningSpace);
-            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
-          } else if (
-            sponser.earning < 200 &&
-            sponser.currentPlan == "diamondAchiever"
-          ) {
-            const remainingEarningSpace = 200 - sponser.earning;
-            sponser.earning += Math.min(4, remainingEarningSpace);
-            sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
-          } else {
-            sponser.joiningAmount += commissionToAdd;
-          }
-        }
-      }
-
-      if (sponser.children.length >= 4 && sponser.autoPool == false) {
-        sponser.autoPool = true;
-        sponser.autoPoolPlan = "starPossession";
-      }
-
-      await sponser.save();
-      await user.save();
-      const left = "left";
-      const right = "right";
-      const updateTree = await bfs(sponser, userId, left, right);
-
-      if (updateTree) {
-        const attachedNode = updateTree.currentNodeId;
-        user.nodeId = attachedNode;
-        const updatedUser = await user.save();
-        if (updatedUser) {
-          res.status(200).json({ sts: "01", message: "Success" });
-        } else {
-          res
-            .status(400)
-            .json({ sts: "00", msg: "Error occured while updating!" });
-        }
-      } else {
-        res.status(400).json({ msg: "Error assigning user to the tree" });
-      }
-    } else {
-      res.status(401);
-      throw new Error(
-        "Can't find this user. Make sure you are registered properly!"
-      );
-    }
-  })
-);
-
-// Verify user payment by admin
-router.post(
-  "/verify-user-payment-by-admin",
-  protect,
-  asyncHandler(async (req, res) => {
-    // const sponserUserId = req.user._id;
-
-    const { userId } = req.body;
-
-    const user = await User.findById(userId).populate("sponser");
-    const admin = await User.findOne({
-      isAdmin: true,
-      // email: "peringammalasajeebkhan@gmail.com",
-    });
-
-    if (user.userStatus === true) {
-      res.status(400);
-      throw new Error("User already verified!");
-    }
-
-    if (user) {
-      // Approve the user
-      user.userStatus = true;
-
-      // Add $2 to Auto Pool bank of admin
-      admin.autoPoolBank += 2;
-
-      if (admin.rewards) {
-        admin.rewards += 3;
-      } else {
-        admin.rewards = 3;
-      }
-
-      const updateAutoPoolBank = await admin.save();
-
-      // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
-      let sponser;
-
-      if (user.sponser) {
-        const ogSponser = user.sponser;
-
-        if (ogSponser.userStatus === true) {
-          // 'sponser' is assigned as the original sponsor
-          sponser = user.sponser;
-
-          // Pushing the user to the sponser's children array
-          if (!sponser.children.includes(user._id)) {
-            sponser.children.push(user._id);
-          }
-          // Adding $4 to the sponsor's earning
-          // sponser.earning += 4;
-          if (!sponser.thirtyChecker) {
-            sponser.thirtyChecker = false;
-          }
-
-          await splitter(4, sponser, sponser.thirtyChecker);
-
-          const firstSponsorUpdate = await sponser.save();
-          console.log(`firstSponsorUpdate: ${firstSponsorUpdate}`);
-
-        } else {
-          // If original sponsor is not verified, admin is assigned as the sponsor.
-          sponser = admin;
-          user.sponser = admin._id;
-          // Pushing the user to the sponser's children array
-          if (!sponser.children.includes(user._id)) {
-            sponser.children.push(user._id);
-          }
-          // Adding $4 to the sponsor's earning
-          // sponser.earning += 4;
-
-          if (!sponser.thirtyChecker) {
-            sponser.thirtyChecker = false;
-          }
-
-          // Add the commission to sponsor based on his rank and wallet type (earningWallet/joiningWallet)
-          await splitter(4, sponser, sponser.thirtyChecker);
-
-        }
-      }
-
-      // If the sponsor attained 4 children, he should have auto-pool activated
-      if (sponser.children.length >= 4 && sponser.autoPool == false) {
-        sponser.autoPool = true;
-        sponser.autoPoolPlan = "starPossession";
-      }
-
-      await sponser.save();
-      await user.save();
-
-      // Now assign the user to the tree
-      const left = "left";
-      const right = "right";
-      const updateTree = await bfs(sponser, userId, left, right);
-
-      if (updateTree) {
-        const attachedNode = updateTree.currentNodeId;
-        user.nodeId = attachedNode;
-        const updatedUser = await user.save();
-        if (updatedUser) {
-          res.status(200).json({ sts: "01", message: "Success" });
-        } else {
-          res
-            .status(400)
-            .json({ sts: "00", msg: "Error occured while updating!" });
-        }
-      } else {
-        res.status(400).json({ msg: "Error assigning user to the tree" });
-      }
-    } else {
-      res.status(401);
-      throw new Error(
-        "Can't find this user. Make sure you are registered properly!"
-      );
-    }
-  })
-);
-
-// Verify user payment by admin (Transactions wrapped)
-// router.post(
-//   "/verify-user-payment-by-admin",
+// router.get(
+//   "/verify-user-payment",
 //   protect,
 //   asyncHandler(async (req, res) => {
-    
-//     const session = await mongoose.startSession();
-//     session.startTransaction();
+//     // const sponserUserId = req.user._id;
 
-//     try {
-//       // const sponserUserId = req.user._id;
+//     const userId = req.user._id;
 
-//       const { userId } = req.body;
-      
-//       const user = await User.findById(userId).populate("sponser").session(session);
-//       const admin = await User.findOne({
-//         isAdmin: true,
-//         // email: "peringammalasajeebkhan@gmail.com",
-//       }).session(session);
+//     const user = await User.findById(userId).populate("sponser");
+//     const admin = await User.findOne({
+//       isAdmin: true,
+//       // email: "peringammalasajeebkhan@gmail.com",
+//     });
 
-//       if (user.userStatus === true) {
-//         res.status(400);
-//         throw new Error("User already verified!");
-//       }
+//     if (user.userStatus === true) {
+//       res.status(400);
+//       throw new Error("User already verified!");
+//     }
 
-//       if (!user) {
-//         res.status(401);
-//         throw new Error("Can't find this user. Make sure you are registered properly!");
-//       }
-
+//     if (user) {
 //       // Approve the user
 //       user.userStatus = true;
 
@@ -302,7 +54,7 @@ router.post(
 //         admin.rewards = 3;
 //       }
 
-//       await admin.save();
+//       const updateAutoPoolBank = await admin.save();
 
 //       // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
 //       let sponser;
@@ -330,48 +82,336 @@ router.post(
 //           }
 //           // Adding $4 to the sponsor's earning
 //           // sponser.earning += 4;
-
-//           if (!sponser.thirtyChecker) {
-//             sponser.thirtyChecker = false;
+//           if (sponser.earning < 30 && sponser.currentPlan == "promoter") {
+//             const remainingEarningSpace = 30 - sponser.earning;
+//             sponser.earning += Math.min(4, remainingEarningSpace);
+//             sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+//           } else if (
+//             sponser.earning < 60 &&
+//             sponser.currentPlan == "royalAchiever"
+//           ) {
+//             const remainingEarningSpace = 60 - sponser.earning;
+//             sponser.earning += Math.min(4, remainingEarningSpace);
+//             sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+//           } else if (
+//             sponser.earning < 100 &&
+//             sponser.currentPlan == "crownAchiever"
+//           ) {
+//             const remainingEarningSpace = 100 - sponser.earning;
+//             sponser.earning += Math.min(4, remainingEarningSpace);
+//             sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+//           } else if (
+//             sponser.earning < 200 &&
+//             sponser.currentPlan == "diamondAchiever"
+//           ) {
+//             const remainingEarningSpace = 200 - sponser.earning;
+//             sponser.earning += Math.min(4, remainingEarningSpace);
+//             sponser.joiningAmount += Math.max(0, 4 - remainingEarningSpace);
+//           } else {
+//             sponser.joiningAmount += commissionToAdd;
 //           }
-
-//           // Add the commission to sponsor based on his rank and wallet type (earningWallet/joiningWallet)
-//           await splitter(4, sponser, sponser.thirtyChecker);
-
 //         }
 //       }
 
-//       // If the sponsor attained 4 children, he should have auto-pool activated
 //       if (sponser.children.length >= 4 && sponser.autoPool == false) {
 //         sponser.autoPool = true;
 //         sponser.autoPoolPlan = "starPossession";
 //       }
 
 //       await sponser.save();
-
-//       // Now assign the user to the tree
+//       await user.save();
 //       const left = "left";
 //       const right = "right";
-//       const updateTree = await bfs(sponser, userId, left, right, session);
+//       const updateTree = await bfs(sponser, userId, left, right);
 
 //       if (updateTree) {
 //         const attachedNode = updateTree.currentNodeId;
 //         user.nodeId = attachedNode;
-//         await user.save();
-//         await session.commitTransaction();
-//         session.endSession();
-//         res.status(200).json({ sts: "01", message: "Success" });
+//         const updatedUser = await user.save();
+//         if (updatedUser) {
+//           res.status(200).json({ sts: "01", message: "Success" });
+//         } else {
+//           res
+//             .status(400)
+//             .json({ sts: "00", msg: "Error occured while updating!" });
+//         }
 //       } else {
 //         res.status(400).json({ msg: "Error assigning user to the tree" });
 //       }
-//     } catch (error) {
-//       await session.abortTransaction();
-//       session.endSession();
-//       res.status(500).json({ error: error.message });
+//     } else {
+//       res.status(401);
+//       throw new Error(
+//         "Can't find this user. Make sure you are registered properly!"
+//       );
 //     }
 //   })
 // );
 
+
+// Verify user payment by user
+router.post(
+  "/verify-user-payment",
+  protect,
+  asyncHandler(async (req, res) => {
+
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate("sponser");
+    const admin = await User.findOne({
+      isAdmin: true,
+      // email: "peringammalasajeebkhan@gmail.com",
+    });
+
+    if (user.userStatus === true) {
+      res.status(400);
+      throw new Error("User already verified!");
+    }
+
+    if (user) {
+      // Approve the user
+      user.userStatus = true;
+
+      // Add $2 to Auto Pool bank of admin
+      admin.autoPoolBank += 2;
+
+      if (admin.rewards) {
+        admin.rewards += 3;
+      } else {
+        admin.rewards = 3;
+      }
+
+      // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
+      let sponser;
+
+      if (user.sponser) {
+        const ogSponser = user.sponser;
+
+        if (ogSponser.userStatus === true) {
+          // 'sponser' is assigned as the original sponsor
+          sponser = user.sponser;
+
+          // Pushing the user to the sponser's children array
+          if (!sponser.children.includes(user._id)) {
+            sponser.children.push(user._id);
+          }
+          // Adding $4 to the sponsor's earning
+
+          let splitCommission;
+          if (!sponser.thirtyChecker) {
+            sponser.thirtyChecker = false;
+          }
+
+          splitCommission = splitterTest(
+            4,
+            sponser,
+            sponser.thirtyChecker,
+            sponser.currentPlan
+          );
+
+          sponser.earning = splitCommission.earning;
+          sponser.joiningAmount = splitCommission.joining;
+          sponser.thirtyChecker = splitCommission.checker;
+
+        } else {
+          // If original sponsor is not verified, admin is assigned as the sponsor.
+          sponser = admin;
+          user.sponser = admin._id;
+          // Pushing the user to the sponser's children array
+          if (!sponser.children.includes(user._id)) {
+            sponser.children.push(user._id);
+          }
+          // Adding $4 to the sponsor's earning
+          if (!sponser.thirtyChecker) {
+            sponser.thirtyChecker = false;
+          }
+
+          const splitCommission = splitterTest(
+            4,
+            sponser,
+            sponser.thirtyChecker,
+            sponser.currentPlan
+          );
+
+          sponser.earning = splitCommission.earning;
+          sponser.joiningAmount = splitCommission.joining;
+          sponser.thirtyChecker = splitCommission.checker;
+
+        }
+      }
+
+      const updateSponsor = await sponser.save();
+      // Assigning admin and giving direct referral amount finished
+
+      // If the sponsor attained 4 children, he should have auto-pool activated
+      if (sponser.children.length >= 4 && sponser.autoPool == false) {
+        sponser.autoPool = true;
+        sponser.autoPoolPlan = "starPossession";
+      }
+      // Auto pool finished
+
+      // Now assign the user to the tree
+      let updateTree;
+      if (updateSponsor) {
+        const left = "left";
+        const right = "right";
+        updateTree = await bfsNew(sponser, userId, left, right);
+      }
+      // Assign user to tree finished
+
+      if (updateTree) {
+        const attachedNode = updateTree.currentNodeId;
+        user.nodeId = attachedNode;
+
+        const updateSponsor = await sponser.save();
+        const updatedUser = await user.save();
+
+        if (updateSponsor && updatedUser) {
+          res.status(200).json({ sts: "01", message: "Success" });
+        } else {
+          res
+            .status(400)
+            .json({ sts: "00", msg: "Error occured while updating!" });
+        }
+      } else {
+        res.status(400).json({ msg: "Error assigning user to the tree" });
+      }
+    } else {
+      res.status(401).json({ msg: "User not found" });
+    }
+  })
+);
+
+// Verify user payment by admin (for testing)
+router.post(
+  "/verify-user-payment-by-admin",
+  protect,
+  asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+
+    const user = await User.findById(userId).populate("sponser");
+    const admin = await User.findOne({
+      isAdmin: true,
+      // email: "peringammalasajeebkhan@gmail.com",
+    });
+
+    if (user.userStatus === true) {
+      res.status(400);
+      throw new Error("User already verified!");
+    }
+
+    if (user) {
+      // Approve the user
+      user.userStatus = true;
+
+      // Add $2 to Auto Pool bank of admin
+      admin.autoPoolBank += 2;
+
+      if (admin.rewards) {
+        admin.rewards += 3;
+      } else {
+        admin.rewards = 3;
+      }
+
+      // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
+      let sponser;
+
+      if (user.sponser) {
+        const ogSponser = user.sponser;
+
+        if (ogSponser.userStatus === true) {
+          // 'sponser' is assigned as the original sponsor
+          sponser = user.sponser;
+
+          // Pushing the user to the sponser's children array
+          if (!sponser.children.includes(user._id)) {
+            sponser.children.push(user._id);
+          }
+          // Adding $4 to the sponsor's earning
+
+          let splitCommission;
+          if (!sponser.thirtyChecker) {
+            sponser.thirtyChecker = false;
+          }
+
+          splitCommission = splitterTest(
+            4,
+            sponser,
+            sponser.thirtyChecker,
+            sponser.currentPlan
+          );
+
+          sponser.earning = splitCommission.earning;
+          sponser.joiningAmount = splitCommission.joining;
+          sponser.thirtyChecker = splitCommission.checker;
+
+        } else {
+          // If original sponsor is not verified, admin is assigned as the sponsor.
+          sponser = admin;
+          user.sponser = admin._id;
+          // Pushing the user to the sponser's children array
+          if (!sponser.children.includes(user._id)) {
+            sponser.children.push(user._id);
+          }
+          // Adding $4 to the sponsor's earning
+          if (!sponser.thirtyChecker) {
+            sponser.thirtyChecker = false;
+          }
+
+          const splitCommission = splitterTest(
+            4,
+            sponser,
+            sponser.thirtyChecker,
+            sponser.currentPlan
+          );
+
+          sponser.earning = splitCommission.earning;
+          sponser.joiningAmount = splitCommission.joining;
+          sponser.thirtyChecker = splitCommission.checker;
+
+        }
+      }
+
+      const updateSponsor = await sponser.save();
+      // Assigning admin and giving direct referral amount finished
+
+      // If the sponsor attained 4 children, he should have auto-pool activated
+      if (sponser.children.length >= 4 && sponser.autoPool == false) {
+        sponser.autoPool = true;
+        sponser.autoPoolPlan = "starPossession";
+      }
+      // Auto pool finished
+
+      // Now assign the user to the tree
+      let updateTree;
+      if (updateSponsor) {
+        const left = "left";
+        const right = "right";
+        updateTree = await bfsNew(sponser, userId, left, right);
+      }
+      // Assign user to tree finished
+
+      if (updateTree) {
+        const attachedNode = updateTree.currentNodeId;
+        user.nodeId = attachedNode;
+
+        const updateSponsor = await sponser.save();
+        const updatedUser = await user.save();
+
+        if (updateSponsor && updatedUser) {
+          res.status(200).json({ sts: "01", message: "Success" });
+        } else {
+          res
+            .status(400)
+            .json({ sts: "00", msg: "Error occured while updating!" });
+        }
+      } else {
+        res.status(400).json({ msg: "Error assigning user to the tree" });
+      }
+    } else {
+      res.status(401).json({ msg: "User not found" });
+    }
+  })
+);
 
 // GET all users to admin
 router.get(
