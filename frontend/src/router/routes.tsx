@@ -114,8 +114,7 @@ const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 const routes = [
     {
         path: '/',
-        element: <ComingSoonBoxed />,
-        layout: 'blank',
+        element: <LoginBoxed />,
     },
     // dashboard
     {
@@ -482,7 +481,7 @@ const routes = [
     //Authentication
     //Edited
     {
-        path: '/signin-new', //signin
+        path: '/signin',
         element: <LoginBoxed />,
         layout: 'blank',
     },

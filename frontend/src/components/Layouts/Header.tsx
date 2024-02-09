@@ -63,7 +63,7 @@ const Header = () => {
             }
         }
         if (!userInfo) {
-            navigate('/signin-new');
+            navigate('/signin');
         }
     }, [location, userInfo]);
 
