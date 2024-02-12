@@ -157,6 +157,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    totalWallet: {
+      type: Number,
+      default: 0,
+    }
   },
   {
     timestamps: true,

@@ -18,7 +18,6 @@ import Reward from "../models/rewardModel.js";
 import JoiningRequest from "../models/joinRequestModel.js";
 import WithdrawRequest from "../models/withdrawalRequestModel.js";
 
-
 // Verify the user and add the user to the proper position in the tree
 // after successful verification
 // BFS function to assign the user to the tree
@@ -147,13 +146,11 @@ import WithdrawRequest from "../models/withdrawalRequestModel.js";
 //   })
 // );
 
-
 // Verify user payment by user
 router.post(
   "/verify-user-payment",
   protect,
   asyncHandler(async (req, res) => {
-
     const userId = req.user._id;
 
     const user = await User.findById(userId).populate("sponser");
@@ -194,11 +191,15 @@ router.post(
           if (!sponser.children.includes(user._id)) {
             sponser.children.push(user._id);
           }
-          // Adding $4 to the sponsor's earning
 
+          // Adding $4 to the sponsor's earning
           let splitCommission;
           if (!sponser.thirtyChecker) {
             sponser.thirtyChecker = false;
+          }
+
+          if (!sponser.totalWallet) {
+            sponser.totalWallet = 0;
           }
 
           splitCommission = splitterTest(
@@ -208,10 +209,20 @@ router.post(
             sponser.currentPlan
           );
 
+          const earningBeforeSplit = sponser.earning;
+          console.log("earningBeforeSplit", earningBeforeSplit);
+
           sponser.earning = splitCommission.earning;
           sponser.joiningAmount = splitCommission.joining;
           sponser.thirtyChecker = splitCommission.checker;
+          sponser.totalWallet =
+            sponser.totalWallet +
+            (splitCommission.earning - earningBeforeSplit);
 
+          console.log(
+            "totalWallet 1",
+            splitCommission.earning - earningBeforeSplit
+          );
         } else {
           // If original sponsor is not verified, admin is assigned as the sponsor.
           sponser = admin;
@@ -225,6 +236,10 @@ router.post(
             sponser.thirtyChecker = false;
           }
 
+          if (!sponser.totalWallet) {
+            sponser.totalWallet = 0;
+          }
+
           const splitCommission = splitterTest(
             4,
             sponser,
@@ -236,6 +251,28 @@ router.post(
           sponser.joiningAmount = splitCommission.joining;
           sponser.thirtyChecker = splitCommission.checker;
 
+          if (sponser.currentPlan == "promoter") {
+            sponser.totalWallet = Math.min(
+              30,
+              sponser.totalWallet + splitCommission.addToTotalWallet
+            );
+          } else if (sponser.currentPlan == "royalAchiever") {
+            sponser.totalWallet = Math.min(
+              90,
+              sponser.totalWallet + splitCommission.addToTotalWallet
+            );
+          } else if (sponser.currentPlan == "crownAchiever") {
+            sponser.totalWallet = Math.min(
+              90,
+              sponser.totalWallet + splitCommission.addToTotalWallet
+            );
+          } else if (sponser.currentPlan == "diamondAchiever") {
+            sponser.totalWallet = Math.min(
+              90,
+              sponser.totalWallet + splitCommission.addToTotalWallet
+            );
+          }
+          
         }
       }
 
@@ -326,11 +363,15 @@ router.post(
           if (!sponser.children.includes(user._id)) {
             sponser.children.push(user._id);
           }
-          // Adding $4 to the sponsor's earning
 
+          // Adding $4 to the sponsor's earning
           let splitCommission;
           if (!sponser.thirtyChecker) {
             sponser.thirtyChecker = false;
+          }
+
+          if (!sponser.totalWallet) {
+            sponser.totalWallet = 0;
           }
 
           splitCommission = splitterTest(
@@ -340,10 +381,20 @@ router.post(
             sponser.currentPlan
           );
 
+          const earningBeforeSplit = sponser.earning;
+          console.log("earningBeforeSplit", earningBeforeSplit);
+
           sponser.earning = splitCommission.earning;
           sponser.joiningAmount = splitCommission.joining;
           sponser.thirtyChecker = splitCommission.checker;
+          sponser.totalWallet =
+            sponser.totalWallet +
+            (splitCommission.earning - earningBeforeSplit);
 
+          console.log(
+            "totalWallet 1",
+            splitCommission.earning - earningBeforeSplit
+          );
         } else {
           // If original sponsor is not verified, admin is assigned as the sponsor.
           sponser = admin;
@@ -357,6 +408,10 @@ router.post(
             sponser.thirtyChecker = false;
           }
 
+          if (!sponser.totalWallet) {
+            sponser.totalWallet = 0;
+          }
+
           const splitCommission = splitterTest(
             4,
             sponser,
@@ -368,6 +423,28 @@ router.post(
           sponser.joiningAmount = splitCommission.joining;
           sponser.thirtyChecker = splitCommission.checker;
 
+          if (sponser.currentPlan == "promoter") {
+            sponser.totalWallet = Math.min(
+              30,
+              sponser.totalWallet + splitCommission.addToTotalWallet
+            );
+          } else if (sponser.currentPlan == "royalAchiever") {
+            sponser.totalWallet = Math.min(
+              90,
+              sponser.totalWallet + splitCommission.addToTotalWallet
+            );
+          } else if (sponser.currentPlan == "crownAchiever") {
+            sponser.totalWallet = Math.min(
+              90,
+              sponser.totalWallet + splitCommission.addToTotalWallet
+            );
+          } else if (sponser.currentPlan == "diamondAchiever") {
+            sponser.totalWallet = Math.min(
+              90,
+              sponser.totalWallet + splitCommission.addToTotalWallet
+            );
+          }
+          
         }
       }
 
