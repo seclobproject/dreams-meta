@@ -3,12 +3,8 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
-import { getAllUsersToAdmin, getWithdrawRequests, manageWithdrawRequests, verifyUser } from '../../store/adminSlice';
+import { getAllUsersToAdmin, getWithdrawRequests, managePaymentSend, verifyUser } from '../../store/adminSlice';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { useAccount, useBalance, useContractWrite } from 'wagmi';
-import { UsdtAddr } from '../../Constants';
-import { abi } from '../../abi';
 
 const WithdrawRequests = () => {
     const dispatch = useAppDispatch();
@@ -21,7 +17,7 @@ const WithdrawRequests = () => {
 
     // const { loading, data: rowData, error } = useAppSelector((state: any) => state.getAllUsersToAdminReducer);
     const { loading, data: rowData, error } = useAppSelector((state: any) => state.getWithdrawRequestsReducer);
-    const { loading: manageWithdrawLoading, data: manageWithdrawData, error: manageWithdrawError } = useAppSelector((state: any) => state.manageWithdrawRequestsReducer);
+    const { loading: manageWithdrawLoading, data: manageWithdrawData, error: manageWithdrawError } = useAppSelector((state: any) => state.managePaymentSendReducer);
 
     let transformedData: any;
     if (rowData) {
@@ -71,60 +67,12 @@ const WithdrawRequests = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search, rowData]);
 
-
-    // Wallet configurations
-    const { address } = useAccount();
-    const result = useBalance({
-        address,
-        token: UsdtAddr,
-    });
-    
-    const { data, isLoading, isSuccess, write, isError } = useContractWrite({
-        address: UsdtAddr,
-        abi,
-        functionName: 'transferFrom',
-        args: [address, walletAddress, amount*1000000],
-    });
-
-    console.log(data); // This will show the data of hash of the transaction
-
-    const { data: approvalData, write: approvalWrite } = useContractWrite({
-        address: UsdtAddr,
-        abi,
-        functionName: 'approve',
-        args: [address, amount*1000000],
-        onError: (e: any) => {
-            console.log(e);
-        },
-        onSuccess: (tx: any) => {
-            setTimeout(() => {
-                write();
-            }, 5000);
-
-            // lodash: delay instead of timeout
-        },
-    });
-
-    // Wallet configurations
-
-
-    const payHandler = async (requestId: string, amount: number, walletAddress: string) => {
-
-        setAmount(amount);
-        setWalletAddress(walletAddress);
-        setRequestId(requestId);
+    const payHandler = async (requestId: any) => {
         
-        await approvalWrite();
-    };
-
-    useEffect(() => {
-        if (data) {
-            const action = true;
-            const hash = data.hash;
-            dispatch(manageWithdrawRequests({requestId, action, hash}));
+        if(confirm('Are you sure you want to pay this user?')){
+            dispatch(managePaymentSend(requestId));
         }
-    }, [data]);
-    
+    }
 
     return (
         <div className="space-y-6">
@@ -150,8 +98,9 @@ const WithdrawRequests = () => {
                                 render: (requests: any) => (
                                     <div className="flex space-x-2">
                                         {requests.payStatus === 'Not Paid' && (
-                                            <button type="button" onClick={() => payHandler(requests._id, requests.amount, requests.walletAddress)} className="btn btn-success">
-                                                {isLoading ? 'Please Wait' ? isSuccess : 'Success' : 'Pay'}
+                                            <button type="button" onClick={() => payHandler(requests._id)} className="btn btn-success">
+                                                {/* {isLoading ? 'Please Wait' ? isSuccess : 'Success' : 'Pay'} */}
+                                                Pay
                                             </button>
                                         )}
                                     </div>

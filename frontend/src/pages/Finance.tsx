@@ -92,7 +92,7 @@ const Finance = () => {
     }
 
     useEffect(() => {
-        dispatch(setPageTitle('Finance'));
+        dispatch(setPageTitle('Dashboard'));
         dispatch(getUserDetails());
     }, [dispatch]);
 
@@ -197,7 +197,7 @@ const Finance = () => {
                                 <p className="font-semibold text-primary text-xl">{userInfo && userInfo.name}</p>
                             </div>
                             <ul className="mt-5 flex flex-col items-center max-w-[170px] m-auto space-y-4 font-semibold text-white-dark">
-                                <li className="flex items-center gap-2">Sponsor ID: ${userInfo && userInfo.ownSponserId}</li>
+                                <li className="flex items-center gap-2">User ID: {userInfo && userInfo.ownSponserId}</li>
                                 <li className="flex items-center gap-2">
                                     Rank:{' '}
                                     {userInfo && userInfo.currentPlan == 'promoter'

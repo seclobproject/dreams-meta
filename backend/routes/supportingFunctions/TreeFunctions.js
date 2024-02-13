@@ -213,6 +213,11 @@ export const addCommissionToLineForUpgrade = async (
     if (!currentUser.thirtyChecker) {
       currentUser.thirtyChecker = false;
     }
+
+    if (!currentUser.totalWallet) {
+      currentUser.totalWallet = 0;
+    }
+
     const levelIncome = splitterTest(
       commissionToAdd,
       currentUser,
@@ -222,6 +227,28 @@ export const addCommissionToLineForUpgrade = async (
     currentUser.earning = levelIncome.earning;
     currentUser.joiningAmount = levelIncome.joining;
     currentUser.thirtyChecker = levelIncome.checker;
+
+    if (currentUser.currentPlan == "promoter") {
+      currentUser.totalWallet = Math.min(
+        30,
+        currentUser.totalWallet + levelIncome.addToTotalWallet
+      );
+    } else if (currentUser.currentPlan == "royalAchiever") {
+      currentUser.totalWallet = Math.min(
+        90,
+        currentUser.totalWallet + levelIncome.addToTotalWallet
+      );
+    } else if (currentUser.currentPlan == "crownAchiever") {
+      currentUser.totalWallet = Math.min(
+        90,
+        currentUser.totalWallet + levelIncome.addToTotalWallet
+      );
+    } else if (currentUser.currentPlan == "diamondAchiever") {
+      currentUser.totalWallet = Math.min(
+        90,
+        currentUser.totalWallet + levelIncome.addToTotalWallet
+      );
+    }
 
     // Save the updated user to the database
     await currentUser.save();
@@ -233,6 +260,7 @@ export const addCommissionToLineForUpgrade = async (
 };
 
 export const splitterTest = (number, sponser, checker, plan) => {
+  
   let totalWallet = sponser.totalWallet;
 
   let addToTotalWallet = 0;

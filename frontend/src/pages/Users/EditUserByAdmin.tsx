@@ -6,24 +6,29 @@ import { editUserProfile } from '../../store/userSlice';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useParams } from 'react-router-dom';
-import { getUserDetailsToAdmin } from '../../store/adminSlice';
+import { editUserProfileByAdmin, getUserDetailsToAdmin } from '../../store/adminSlice';
 
 const EditUserByAdmin = () => {
+    const { id } = useParams();
 
     const dispatch = useAppDispatch();
-    const { id } = useParams();
     const MySwal = withReactContent(Swal);
 
-    
     const { data: userInfo } = useAppSelector((state) => state.getUserDetailsToAdminReducer);
-    
+
     const [userName, setUserName] = useState(userInfo?.name || '');
     const [email, setEmail] = useState(userInfo?.email || '');
     const [password, setPassword] = useState('');
-    
+
     useEffect(() => {
         dispatch(setPageTitle('Account Setting'));
     }, []);
+
+    // Update state when userInfo changes
+    useEffect(() => {
+        setUserName(userInfo?.name || '');
+        setEmail(userInfo?.email || '');
+    }, [userInfo]);
 
     const [tabs, setTabs] = useState<string>('home');
     const toggleTabs = (name: string) => {
@@ -43,11 +48,11 @@ const EditUserByAdmin = () => {
 
     useEffect(() => {
         dispatch(getUserDetailsToAdmin(id));
-    }, [dispatch]);
+    }, [dispatch, id]);
 
     const profileEditHandler = (e: any) => {
         e.preventDefault();
-        dispatch(editUserProfile({ userName, email, password }));
+        dispatch(editUserProfileByAdmin({ id, userName, email, password }));
         showMessage2();
     };
 
@@ -81,13 +86,7 @@ const EditUserByAdmin = () => {
                                 <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label htmlFor="name">Full Name</label>
-                                        <input
-                                            id="name"
-                                            type="text"
-                                            value={userName}
-                                            onChange={(e: any) => setUserName(e.target.value)}
-                                            className="form-input"
-                                        />
+                                        <input id="name" type="text" value={userName} onChange={(e: any) => setUserName(e.target.value)} className="form-input" />
                                     </div>
                                     <div>
                                         <label htmlFor="email">Email</label>

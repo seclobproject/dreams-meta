@@ -7,7 +7,10 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
 import path from "path";
-import { addCommissionToLineForUpgrade, splitterTest } from "./supportingFunctions/TreeFunctions.js";
+import {
+  addCommissionToLineForUpgrade,
+  splitterTest,
+} from "./supportingFunctions/TreeFunctions.js";
 import JoiningRequest from "../models/joinRequestModel.js";
 import WithdrawRequest from "../models/withdrawalRequestModel.js";
 // import upload from "../middleware/fileUploadMiddleware.js";
@@ -216,26 +219,51 @@ router.get(
 
       // Give $8 commission to sponsor as well as people above in the tree till 4 levels
       const sponser = await User.findById(user.sponser);
-
+      
       // Code to add money to sponsor only
       if (!sponser.thirtyChecker) {
         sponser.thirtyChecker = false;
       }
 
+      if (!sponser.totalWallet) {
+        sponser.totalWallet = 0;
+      }
+      
       const splitCommission = splitterTest(
         8,
         sponser,
         sponser.thirtyChecker,
         sponser.currentPlan
       );
-
+      
       sponser.earning = splitCommission.earning;
       sponser.joiningAmount = splitCommission.joining;
       sponser.thirtyChecker = splitCommission.checker;
 
+      if (sponser.currentPlan == "promoter") {
+        sponser.totalWallet = Math.min(
+          30,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      } else if (sponser.currentPlan == "royalAchiever") {
+        sponser.totalWallet = Math.min(
+          90,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      } else if (sponser.currentPlan == "crownAchiever") {
+        sponser.totalWallet = Math.min(
+          90,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      } else if (sponser.currentPlan == "diamondAchiever") {
+        sponser.totalWallet = Math.min(
+          90,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      }
+
       const updatedSponsor = await sponser.save();
       // Code to add money to sponsor only end
-
       if (updatedSponsor) {
         await addCommissionToLineForUpgrade(user.nodeId, 3, 8);
       }
@@ -264,6 +292,10 @@ router.get(
         sponser.thirtyChecker = false;
       }
 
+      if (!sponser.totalWallet) {
+        sponser.totalWallet = 0;
+      }
+
       const splitCommission = splitterTest(
         15,
         sponser,
@@ -274,6 +306,28 @@ router.get(
       sponser.earning = splitCommission.earning;
       sponser.joiningAmount = splitCommission.joining;
       sponser.thirtyChecker = splitCommission.checker;
+
+      if (sponser.currentPlan == "promoter") {
+        sponser.totalWallet = Math.min(
+          30,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      } else if (sponser.currentPlan == "royalAchiever") {
+        sponser.totalWallet = Math.min(
+          90,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      } else if (sponser.currentPlan == "crownAchiever") {
+        sponser.totalWallet = Math.min(
+          90,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      } else if (sponser.currentPlan == "diamondAchiever") {
+        sponser.totalWallet = Math.min(
+          90,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      }
 
       const updatedSponsor = await sponser.save();
       // Code to add money to sponsor only end
@@ -306,6 +360,10 @@ router.get(
         sponser.thirtyChecker = false;
       }
 
+      if (!sponser.totalWallet) {
+        sponser.totalWallet = 0;
+      }
+
       const splitCommission = splitterTest(
         30,
         sponser,
@@ -317,12 +375,33 @@ router.get(
       sponser.joiningAmount = splitCommission.joining;
       sponser.thirtyChecker = splitCommission.checker;
 
+      if (sponser.currentPlan == "promoter") {
+        sponser.totalWallet = Math.min(
+          30,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      } else if (sponser.currentPlan == "royalAchiever") {
+        sponser.totalWallet = Math.min(
+          90,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      } else if (sponser.currentPlan == "crownAchiever") {
+        sponser.totalWallet = Math.min(
+          90,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      } else if (sponser.currentPlan == "diamondAchiever") {
+        sponser.totalWallet = Math.min(
+          90,
+          sponser.totalWallet + splitCommission.addToTotalWallet
+        );
+      }
+
       const updatedSponsor = await sponser.save();
       // Code to add money to sponsor only end
       if (updatedSponsor) {
         await addCommissionToLineForUpgrade(user.nodeId, 3, 30);
       }
-
     } else {
       res.status(400).json({ msg: "User does not meet upgrade criteria" });
     }
@@ -352,6 +431,7 @@ router.put(
       }
 
       const updatedUser = await user.save();
+      console.log(updatedUser);
 
       // const token = jwt.sign(
       //   { userId: user._id },

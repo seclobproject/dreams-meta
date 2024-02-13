@@ -141,7 +141,7 @@ export const editUserProfile = createAsyncThunk('editUserProfile', async (user: 
     };
 
     const response = await axios.put(
-        `${URL}/api/users/edit-profile`,
+        `${URL}/api/admin/edit-profile`,
         {
             name: user.userName,
             email: user.email,

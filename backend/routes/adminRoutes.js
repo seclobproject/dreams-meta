@@ -147,6 +147,7 @@ import WithdrawRequest from "../models/withdrawalRequestModel.js";
 // );
 
 // Verify user payment by user
+
 router.post(
   "/verify-user-payment",
   protect,
@@ -210,7 +211,6 @@ router.post(
           );
 
           const earningBeforeSplit = sponser.earning;
-          console.log("earningBeforeSplit", earningBeforeSplit);
 
           sponser.earning = splitCommission.earning;
           sponser.joiningAmount = splitCommission.joining;
@@ -272,7 +272,6 @@ router.post(
               sponser.totalWallet + splitCommission.addToTotalWallet
             );
           }
-          
         }
       }
 
@@ -444,7 +443,6 @@ router.post(
               sponser.totalWallet + splitCommission.addToTotalWallet
             );
           }
-          
         }
       }
 
@@ -870,6 +868,89 @@ router.post(
       }
     } else {
       res.status(400).json({ sts: "00", msg: "No request found" });
+    }
+  })
+);
+
+// Manage payment send
+router.post(
+  "/manage-payment-send",
+  protect,
+  asyncHandler(async (req, res) => {
+    const { requestId } = req.body;
+
+    if (!requestId) {
+      res.status(400).json({ sts: "00", msg: "Please send request id" });
+    }
+
+    const request = await WithdrawRequest.findById(requestId).populate("user");
+
+    if (request) {
+      const getUser = request.user;
+      const userId = getUser._id;
+
+      const user = await User.findById(userId);
+
+      request.status = true;
+
+      user.earning -= request.amount;
+
+      const updatedRequest = await request.save();
+      const updatedUser = await user.save();
+      if (updatedRequest && updatedUser) {
+        res.status(200).json({
+          sts: "01",
+          msg: "Request updated successfully",
+        });
+      } else {
+        res.status(400).json({ sts: "00", msg: "Request not updated" });
+      }
+    } else {
+      res.status(400).json({ sts: "00", msg: "No request found" });
+    }
+  })
+);
+
+// Edit profile
+router.put(
+  "/edit-profile-by-admin",
+  protect,
+  asyncHandler(async (req, res) => {
+
+    const { id } = req.body;
+    const user = await User.findById(id);
+
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+
+      const updatedUser = await user.save();
+
+      res.status(200).json({
+        _id: updatedUser._id,
+        sponser: updatedUser.sponser,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        ownSponserId: updatedUser.ownSponserId,
+        earning: updatedUser.earning,
+        joiningAmount: updatedUser.joiningAmount,
+        autoPool: updatedUser.autoPool,
+        autoPoolPlan: updatedUser.autoPoolPlan,
+        autoPoolAmount: updatedUser.autoPoolAmount,
+        userStatus: updatedUser.userStatus,
+        isAdmin: updatedUser.isAdmin,
+        children: updatedUser.children,
+        sts: "01",
+        msg: "Login Success",
+      });
+      
+    } else {
+      res.status(404);
+      throw new Error("User not found");
     }
   })
 );

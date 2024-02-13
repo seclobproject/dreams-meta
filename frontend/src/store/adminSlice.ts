@@ -332,7 +332,6 @@ export const verifyUser = createAsyncThunk('verifyUser', async () => {
     return response.data;
 });
 
-
 const verifyUserSlice = createSlice({
     name: 'verifyUserSlice',
     initialState: {
@@ -370,7 +369,7 @@ export const verifyUserForAdmin = createAsyncThunk('verifyUserForAdmin', async (
         },
     };
 
-    const response = await axios.post(`${URL}/api/admin/verify-user-payment-by-admin`, {userId}, config);
+    const response = await axios.post(`${URL}/api/admin/verify-user-payment-by-admin`, { userId }, config);
 
     return response.data;
 });
@@ -399,9 +398,6 @@ const verifyUserForAdminSlice = createSlice({
             });
     },
 });
-
-
-
 
 // Get withdraw requests
 export const getWithdrawRequests = createAsyncThunk('getWithdrawRequests', async () => {
@@ -445,10 +441,9 @@ const getWithdrawRequestsSlice = createSlice({
     },
 });
 
-// Manage withdrawal request
-export const manageWithdrawRequests = createAsyncThunk('manageWithdrawRequests', async (data: any) => {
-    const { requestId, action, hash } = data;
-
+// Manage withdrawal request (Send payment)
+export const managePaymentSend = createAsyncThunk('managePaymentSend', async (requestId: any) => {
+    
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
 
@@ -459,15 +454,13 @@ export const manageWithdrawRequests = createAsyncThunk('manageWithdrawRequests',
         },
     };
 
-    const response = await axios.post(`${URL}/api/admin/manage-withdrawal-request`, { requestId, action, hash }, config);
+    const response = await axios.post(`${URL}/api/admin/manage-payment-send`, { requestId }, config);
 
-    console.log(response.data);
-    
     return response.data;
 });
 
-const manageWithdrawRequestsSlice = createSlice({
-    name: 'manageWithdrawRequestsSlice',
+const managePaymentSendSlice = createSlice({
+    name: 'managePaymentSendSlice',
     initialState: {
         loading: false,
         data: '',
@@ -476,14 +469,14 @@ const manageWithdrawRequestsSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(manageWithdrawRequests.pending, (state: any) => {
+            .addCase(managePaymentSend.pending, (state: any) => {
                 state.loading = true;
             })
-            .addCase(manageWithdrawRequests.fulfilled, (state, action) => {
+            .addCase(managePaymentSend.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload;
             })
-            .addCase(manageWithdrawRequests.rejected, (state, action) => {
+            .addCase(managePaymentSend.rejected, (state, action) => {
                 state.loading = false;
                 console.error('Error', action.payload);
                 state.error = 'Something went wrong, please try again later';
@@ -491,8 +484,65 @@ const manageWithdrawRequestsSlice = createSlice({
     },
 });
 
+// Redux action to edit user profile
+export const editUserProfileByAdmin = createAsyncThunk('editUserProfileByAdmin', async (user: any) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.put(
+        `${URL}/api/admin/edit-profile-by-admin`,
+        {
+            id: user.id,
+            name: user.userName,
+            email: user.email,
+            password: user.password,
+        },
+        config
+    );
+
+    return response.data;
+});
+
+export const editUserByAdminSlice = createSlice({
+    name: 'editUserByAdminSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(editUserProfileByAdmin.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(editUserProfileByAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(editUserProfileByAdmin.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Please make sure you filled all the above details!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'Email or Phone already used!';
+                }
+            });
+    },
+});
+
+export const editUserByAdminReducer = editUserByAdminSlice.reducer;
 export const verifyUserForAdminReducer = verifyUserForAdminSlice.reducer;
-export const manageWithdrawRequestsReducer = manageWithdrawRequestsSlice.reducer;
+export const managePaymentSendReducer = managePaymentSendSlice.reducer;
 export const getWithdrawRequestsReducer = getWithdrawRequestsSlice.reducer;
 export const verifyUserReducer = verifyUserSlice.reducer;
 export const getRejoiningWalletAmountReducer = getRejoiningWalletAmountSlice.reducer;
