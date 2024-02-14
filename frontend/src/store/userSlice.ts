@@ -458,7 +458,52 @@ export const upgradeUserSlice = createSlice({
     },
 });
 
+// Redux action to get withdraw history
+export const withdrawHistory = createAsyncThunk('withdrawHistory', async () => {
 
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/get-withdrawal-history`, config);
+
+    return response.data;
+
+})
+
+export const withdrawHistorySlice = createSlice({
+    name: 'withdrawHistorySlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: false,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(withdrawHistory.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(withdrawHistory.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(withdrawHistory.rejected, (state, action) => {
+                state.loading = false;
+                state.error = true;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+
+export const withdrawHistoryReducer = withdrawHistorySlice.reducer;
 export const upgradeUserReducer = upgradeUserSlice.reducer;
 export const requestWithdrawalReducer = requestWithdrawalSlice.reducer;
 export const sendJoiningRequestReducer = sendJoiningRequestSlice.reducer;

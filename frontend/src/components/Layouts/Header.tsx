@@ -286,7 +286,7 @@ const Header = () => {
                                 <NavLink to="/withdraw">{t('Request Withdraw')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/">{t('Withdrawal History')}</NavLink>
+                                <NavLink to="/withdraw-history">{t('Withdrawal History')}</NavLink>
                             </li>
                         </ul>
                     </li>

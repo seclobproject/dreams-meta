@@ -219,7 +219,7 @@ router.get(
 
       // Give $8 commission to sponsor as well as people above in the tree till 4 levels
       const sponser = await User.findById(user.sponser);
-      
+
       // Code to add money to sponsor only
       if (!sponser.thirtyChecker) {
         sponser.thirtyChecker = false;
@@ -228,14 +228,14 @@ router.get(
       if (!sponser.totalWallet) {
         sponser.totalWallet = 0;
       }
-      
+
       const splitCommission = splitterTest(
         8,
         sponser,
         sponser.thirtyChecker,
         sponser.currentPlan
       );
-      
+
       sponser.earning = splitCommission.earning;
       sponser.joiningAmount = splitCommission.joining;
       sponser.thirtyChecker = splitCommission.checker;
@@ -632,8 +632,8 @@ router.post(
         });
 
         if (withdrawalRequest) {
-          
           user.showWithdraw = false;
+
           const updatedUser = await user.save();
 
           if (updatedUser) {
@@ -665,6 +665,26 @@ router.post(
         msg: "User not found!",
       });
     }
+  })
+);
+
+router.get(
+  "/get-withdrawal-history",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const withdrawalRequests = await WithdrawRequest.find({ user: userId });
+
+    if (withdrawalRequests) {
+      res.status(200).json(withdrawalRequests);
+    } else {
+      res.status(400).json({
+        sts: "00",
+        msg: "No withdrawal requests found!",
+      });
+    }
+
   })
 );
 
