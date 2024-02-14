@@ -632,6 +632,8 @@ router.post(
         });
 
         if (withdrawalRequest) {
+          
+          user.showWithdraw = false;
           const updatedUser = await user.save();
 
           if (updatedUser) {

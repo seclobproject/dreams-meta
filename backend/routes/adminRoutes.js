@@ -657,13 +657,16 @@ router.get(
   "/split-autopool-income",
   protect,
   asyncHandler(async (req, res) => {
+
     const userId = req.user._id;
 
     const admin = await User.findById(userId);
 
-    const users = await User.find({
-      $and: [{ autoPool: true }, { isAdmin: false }],
-    });
+    // const users = await User.find({
+    //   $and: [{ autoPool: true }, { isAdmin: false }],
+    // });
+
+    const users = await User.find({ autoPool: true });
 
     if (users) {
       const autoPoolBalance = admin.autoPoolBank;
@@ -748,6 +751,7 @@ router.get(
         res
           .status(200)
           .json({ msg: "AutoPool bonus distributed successfully" });
+
       } else {
         res.status(400).json({
           msg: "You don't have enough balance in autopool bank to distribute",
@@ -894,6 +898,7 @@ router.post(
       request.status = true;
 
       user.earning -= request.amount;
+      user.showWithdraw = true;
 
       const updatedRequest = await request.save();
       const updatedUser = await user.save();

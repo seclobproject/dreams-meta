@@ -160,7 +160,11 @@ const userSchema = new mongoose.Schema(
     totalWallet: {
       type: Number,
       default: 0,
-    }
+    },
+    showWithdraw: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
