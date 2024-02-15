@@ -10,7 +10,7 @@ import IconGoogle from '../../components/Icon/IconGoogle';
 const ComingSoonBoxed = () => {
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setPageTitle('Coming Soon Boxed'));
+        dispatch(setPageTitle('Updation going on'));
     });
     const [demo1, setDemo1] = useState<any>({ days: null, hours: null, minutes: null, seconds: null });
     const [timer1, setTimer1] = useState<any>(null);
@@ -71,10 +71,10 @@ const ComingSoonBoxed = () => {
                     <div className="rounded-md bg-white/60 p-4 backdrop-blur-lg dark:bg-black/50 sm:p-6">
                         <div className="mx-auto mt-5 w-full max-w-[550px] md:mt-16">
                             <div className="mb-12">
-                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Coming Soon</h1>
+                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Updation going on</h1>
                                 <p className="text-base font-bold leading-normal text-white-dark">We will be here in a shortwhile.....</p>
                             </div>
-                            <div className="mb-16 flex items-center justify-center gap-2 text-xl font-bold leading-none text-primary sm:text-2xl md:mb-24 md:gap-4 md:text-[50px]">
+                            {/* <div className="mb-16 flex items-center justify-center gap-2 text-xl font-bold leading-none text-primary sm:text-2xl md:mb-24 md:gap-4 md:text-[50px]">
                                 <div className="relative inline-flex h-12 w-14 items-center justify-center rounded-md bg-primary-light p-2 sm:h-16 sm:w-16 md:h-24 md:min-w-[120px]">
                                     <div className="absolute inset-1 flex flex-col gap-1">
                                         <span className="h-full w-full rounded-md bg-primary/[12%]"></span>
@@ -106,8 +106,8 @@ const ComingSoonBoxed = () => {
                                     </div>
                                     <span className="relative">{demo1.seconds}</span>
                                 </div>
-                            </div>
-                            <div className="mb-20 md:mb-32">
+                            </div> */}
+                            {/* <div className="mb-20 md:mb-32">
                                 <h2 className="text-lg font-bold uppercase dark:text-white sm:text-xl">Subscribe to get notified!</h2>
                                 <div className="relative mb-10 mt-8">
                                     <input type="email" placeholder="mail@gmail.com" className="form-input mb-5 py-3.5 placeholder:text-base placeholder:text-white-dark sm:mb-0 sm:pe-32" />
@@ -157,8 +157,8 @@ const ComingSoonBoxed = () => {
                                         </Link>
                                     </li>
                                 </ul>
-                            </div>
-                            <p className="dark:text-white">© {new Date().getFullYear()}. VRISTO All Rights Reserved.</p>
+                            </div> */}
+                            <p className="dark:text-white">© {new Date().getFullYear()}. DREAMZMETA All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>

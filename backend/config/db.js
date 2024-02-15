@@ -4,6 +4,7 @@ const connectDB = async () => {
   try {
     const conn = await mongoose.connect(
       "mongodb://127.0.0.1:27017/dreams-meta"
+      // "mongodb+srv://dm-user:dreamz5959@cluster0.dcqhvoa.mongodb.net/?retryWrites=true&w=majority"
     );
     console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (error) {

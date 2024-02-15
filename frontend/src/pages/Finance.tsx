@@ -92,7 +92,7 @@ const Finance = () => {
     }
 
     useEffect(() => {
-        dispatch(setPageTitle('Finance'));
+        dispatch(setPageTitle('Dashboard'));
         dispatch(getUserDetails());
     }, [dispatch]);
 
@@ -197,7 +197,7 @@ const Finance = () => {
                                 <p className="font-semibold text-primary text-xl">{userInfo && userInfo.name}</p>
                             </div>
                             <ul className="mt-5 flex flex-col items-center max-w-[170px] m-auto space-y-4 font-semibold text-white-dark">
-                                <li className="flex items-center gap-2">Sponsor ID: ${userInfo && userInfo.ownSponserId}</li>
+                                <li className="flex items-center gap-2">User ID: {userInfo && userInfo.ownSponserId}</li>
                                 <li className="flex items-center gap-2">
                                     Rank:{' '}
                                     {userInfo && userInfo.currentPlan == 'promoter'
@@ -237,7 +237,7 @@ const Finance = () => {
                             <div className="flex flex-col justify-center mt-5">
                                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.earning}</div>
                             </div>
-                            {showButton && (
+                            {showButton && userInfo && userInfo.showWithdraw == true && (
                                 <>
                                     <button type="button" onClick={() => navigate('/withdraw')} className="btn rounded-lg p-2 mt-4 text-white">
                                         Withdraw

@@ -9,6 +9,8 @@ import EditUserByAdmin from '../pages/Users/EditUserByAdmin';
 import Autopool from '../pages/Autopool';
 import RejoiningWallet from '../pages/RejoiningWallet';
 import Withdrawal from '../pages/Withdrawal';
+import ManageReward from '../pages/Forms/ManageReward';
+import WithdrawHistory from '../pages/DataTables/WithdrawHistory';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -111,16 +113,24 @@ const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 
 const routes = [
-    // dashboard
     {
         path: '/',
-        element: <LoginBoxed />, //Finance
+        element: <LoginBoxed />,
     },
-    // Dashboard
+    // dashboard
     {
         path: '/dashboard',
         element: <Finance />,
     },
+    {
+        path: '/withdraw-history',
+        element: <WithdrawHistory />,
+    },
+    // Dashboard
+    // {
+    //     path: '/home',
+    //     element: <Finance />,
+    // },
     // analytics page
     {
         path: '/analytics',
@@ -387,10 +397,10 @@ const routes = [
         path: '/datatables/multi-column',
         element: <MultiColumn />,
     },
-    // {
-    //     path: '/datatables/multiple-tables',
-    //     element: <MultipleTables />,
-    // },
+    {
+        path: '/manage-reward',
+        element: <ManageReward />,
+    },
     {
         path: '/datatables/alt-pagination',
         element: <AltPagination />,

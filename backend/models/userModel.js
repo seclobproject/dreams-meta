@@ -14,10 +14,8 @@ const transactionSchema = new mongoose.Schema(
   }
 );
 
-const allTransactionSchema = new mongoose.Schema(
+const withdrawalSchema = new mongoose.Schema(
   {
-    sponserID: String,
-    name: String,
     amount: Number,
     status: String,
   },
@@ -68,7 +66,6 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     transactions: [transactionSchema],
-    allTransactions: [allTransactionSchema],
     children: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -153,6 +150,19 @@ const userSchema = new mongoose.Schema(
         ref: "WithdrawRequest",
       },
     ],
+    thirtyChecker: {
+      type: Boolean,
+      default: false,
+    },
+    totalWallet: {
+      type: Number,
+      default: 0,
+    },
+    showWithdraw: {
+      type: Boolean,
+      default: true,
+    },
+    withdrawalHistory: [withdrawalSchema],
   },
   {
     timestamps: true,

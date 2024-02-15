@@ -21,6 +21,7 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
     const { userInfo } = useAppSelector((state: any) => state.authReducer);
 
     useEffect(() => {
+        
         dispatch(setPageTitle('Login'));
         if (userInfo) navigate(`/dashboard`);
     }, [userInfo, navigate]);
@@ -40,6 +41,7 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
 
     const submitForm = (e: any) => {
         e.preventDefault();
+        console.log(email, password);
         dispatch(fetchUser({ email, password }));
         // if (userInfo) navigate('/');
     };

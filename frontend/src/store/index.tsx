@@ -12,6 +12,7 @@ import {
     sendJoiningRequestReducer,
     requestWithdrawalReducer,
     upgradeUserReducer,
+    withdrawHistoryReducer,
 } from './userSlice';
 
 import {
@@ -23,8 +24,9 @@ import {
     getRejoiningWalletAmountReducer,
     verifyUserReducer,
     getWithdrawRequestsReducer,
-    manageWithdrawRequestsReducer,
     verifyUserForAdminReducer,
+    managePaymentSendReducer,
+    editUserByAdminReducer,
 } from './adminSlice';
 
 import { TypedUseSelectorHook, useDispatch } from 'react-redux';
@@ -49,9 +51,11 @@ const rootReducer = combineReducers({
     verifyUserReducer,
     requestWithdrawalReducer,
     getWithdrawRequestsReducer,
-    manageWithdrawRequestsReducer,
+    managePaymentSendReducer,
     upgradeUserReducer,
     verifyUserForAdminReducer,
+    editUserByAdminReducer,
+    withdrawHistoryReducer,
 });
 
 const store = configureStore({
