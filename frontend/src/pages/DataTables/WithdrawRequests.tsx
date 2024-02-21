@@ -27,6 +27,9 @@ const WithdrawRequests = () => {
         }));
     }
 
+    console.log(rowData);
+    
+
     useEffect(() => {
         dispatch(getWithdrawRequests());
     }, [dispatch, manageWithdrawData]);

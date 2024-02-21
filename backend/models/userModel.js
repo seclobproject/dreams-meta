@@ -3,10 +3,11 @@ import bcrypt from "bcryptjs";
 
 const transactionSchema = new mongoose.Schema(
   {
-    referenceID: String,
     amount: Number,
-    TDSAmount: Number,
     lastAmount: Number,
+    category: String,
+    basedOnWho: String,
+    joinedLevel: String,
     status: String,
   },
   {
@@ -84,30 +85,6 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    royalAchieverLeft: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    royalAchieverRight: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    crownAchieverLeft: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    crownAchieverRight: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    diamondAchieverLeft: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    diamondAchieverRight: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
     autoPool: {
       type: Boolean,
       default: false,
@@ -133,10 +110,6 @@ const userSchema = new mongoose.Schema(
     rewards: {
       type: Number,
     },
-    rejoiningWallet: {
-      type: Number,
-      default: 0,
-    },
     hash: {
       type: String,
     },
@@ -158,11 +131,26 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    lastWallet: {
+      type: String,
+    },
     showWithdraw: {
       type: Boolean,
       default: true,
     },
     withdrawalHistory: [withdrawalSchema],
+    generationIncome: {
+      type: Number,
+      default: 0,
+    },
+    sponsorshipIncome: {
+      type: Number,
+      default: 0,
+    },
+    overallIncome: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

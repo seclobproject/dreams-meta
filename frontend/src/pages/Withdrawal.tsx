@@ -25,7 +25,6 @@ const Withdrawal = () => {
         if (withdrawInfo) {
             setMessage(true);
         }
-
     }, [dispatch, withdrawInfo]);
 
     setTimeout(() => {
@@ -62,9 +61,11 @@ const Withdrawal = () => {
                 <form className="w-72 flex flex-col gap-3">
                     <input type="number" value={amount} onChange={(e: any) => setAmount(e.target.value)} placeholder="Enter the amount to withdraw" className="form-input" required />
                     <input type="text" value={walletAddress} onChange={(e: any) => setWalletAddress(e.target.value)} placeholder="Wallet Address" className="form-input" required />
-                    <button type="button" onClick={() => submitHandler(9)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg mt-6">
-                        Submit
-                    </button>
+                    {userInfo && userInfo.showWithdraw && (
+                        <button type="button" onClick={() => submitHandler(9)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg mt-6">
+                            Submit
+                        </button>
+                    )}
                     {message && <div className="text-center">Submitted successfully!</div>}
                 </form>
             </div>

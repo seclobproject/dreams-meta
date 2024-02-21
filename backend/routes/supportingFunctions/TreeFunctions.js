@@ -1,71 +1,73 @@
 import User from "../../models/userModel.js";
+import { payUser } from "./payFunction.js";
 
-export const bfs = async (startingUser, newUserId, left, right) => {
-  // Check if startingUser is null. If so, we don't need to run this function any more. The user is placed on the tree.
-  if (!startingUser) {
-    return null;
-  }
+// export const bfs = async (startingUser, newUserId, left, right) => {
+//   // Check if startingUser is null. If so, we don't need to run this function any more. The user is placed on the tree.
+//   if (!startingUser) {
+//     return null;
+//   }
 
-  // Else, we will create a queue to store the users that need to be checked.
-  // The starting user at first will be the admin or the sponsor(if the sponsor is verified)
-  const queue = [startingUser];
+//   // Else, we will create a queue to store the users that need to be checked.
+//   // The starting user at first will be the admin or the sponsor(if the sponsor is verified)
+//   const queue = [startingUser];
 
-  while (queue.length > 0) {
-    // Get the first user in the queue (the user added to the array at first).
-    const currentNode = queue.shift();
+//   while (queue.length > 0) {
+//     // Get the first user in the queue (the user added to the array at first).
+//     const currentNode = queue.shift();
 
-    // Determine the direction to add the new user. We are adding users from left to right.
-    // So the first direction will be left.
-    let directionToAdd = left;
+//     // Determine the direction to add the new user. We are adding users from left to right.
+//     // So the first direction will be left.
+//     let directionToAdd = left;
 
-    // If the current node has no left, we will add the user to the left.
-    if (!currentNode.left) {
-      directionToAdd = left;
+//     // If the current node has no left, we will add the user to the left.
+//     if (!currentNode.left) {
+//       directionToAdd = left;
 
-      // If the current node has no right, we will add the user to the right.
-    } else if (!currentNode.right) {
-      directionToAdd = right;
+//       // If the current node has no right, we will add the user to the right.
+//     } else if (!currentNode.right) {
+//       directionToAdd = right;
 
-      // If the current node has both left and right filled, we will move to the next level.
-    } else {
-      if (currentNode.left) {
-        queue.push(await User.findById(currentNode.left));
-      }
-      if (currentNode.right) {
-        queue.push(await User.findById(currentNode.right));
-      }
-      continue;
-    }
+//       // If the current node has both left and right filled, we will move to the next level.
+//     } else {
+//       if (currentNode.left) {
+//         queue.push(await User.findById(currentNode.left));
+//       }
+//       if (currentNode.right) {
+//         queue.push(await User.findById(currentNode.right));
+//       }
+//       continue;
+//     }
 
-    // Try to add the new user in the determined direction.
-    // 'directionToAdd' will have either 'left' or 'right'.
-    await User.findByIdAndUpdate(currentNode._id, {
-      [directionToAdd]: newUserId,
-    });
+//     // Try to add the new user in the determined direction.
+//     // 'directionToAdd' will have either 'left' or 'right'.
+//     await User.findByIdAndUpdate(currentNode._id, {
+//       [directionToAdd]: newUserId,
+//     });
 
-    // Get sponsor ID to avoid from adding commission twice
-    const sponser = await User.findById(newUserId);
-    const sponserId = sponser.sponser;
+//     // Get sponsor ID to avoid from adding commission twice
+//     const sponser = await User.findById(newUserId);
+//     const sponserId = sponser.sponser;
 
-    // Add commission to everyone in line up to 4 levels above
-    if (currentNode.currentPlan == "promoter") {
-      await addCommissionToLine(currentNode._id, 3, sponserId, 4);
-    } else if (currentNode.currentPlan == "royalAchiever") {
-      await addCommissionToLine(currentNode._id, 3, sponserId, 8);
-    } else if (currentNode.currentPlan == "crownAchiever") {
-      await addCommissionToLine(currentNode._id, 3, sponserId, 15);
-    } else if (currentNode.currentPlan == "diamondAchiever") {
-      await addCommissionToLine(currentNode._id, 3, sponserId, 30);
-    }
+//     // Add commission to everyone in line up to 4 levels above
+//     if (currentNode.currentPlan == "promoter") {
+//       await addCommissionToLine(currentNode._id, 3, sponserId, 4);
+//     } else if (currentNode.currentPlan == "royalAchiever") {
+//       await addCommissionToLine(currentNode._id, 3, sponserId, 8);
+//     } else if (currentNode.currentPlan == "crownAchiever") {
+//       await addCommissionToLine(currentNode._id, 3, sponserId, 15);
+//     } else if (currentNode.currentPlan == "diamondAchiever") {
+//       await addCommissionToLine(currentNode._id, 3, sponserId, 30);
+//     }
 
-    return {
-      currentNodeId: currentNode._id,
-      directionAdded: directionToAdd,
-    };
-  }
+//     return {
+//       currentNodeId: currentNode._id,
+//       directionAdded: directionToAdd,
+//     };
+//   }
 
-  throw new Error("Unable to assign user to the tree");
-};
+//   throw new Error("Unable to assign user to the tree");
+// };
+
 export const bfsNew = async (startingUser, newUserId, left, right) => {
   // Check if startingUser is null. If so, we don't need to run this function any more. The user is placed on the tree.
   if (!startingUser) {
@@ -138,51 +140,56 @@ export const addCommissionToLine = async (
     if (!currentUserId) {
       break;
     }
+
     const currentUser = await User.findById(currentUserId);
 
     const commissionToAdd = commissionAmount;
 
-    if (!currentUser.thirtyChecker) {
-      currentUser.thirtyChecker = false;
-    }
+    let splitCommission;
+
+    // if (!currentUser.thirtyChecker) {
+    //   currentUser.thirtyChecker = false;
+    // }
 
     if (!currentUser.totalWallet) {
-      currentUser.totalWallet = 0;
+      currentUser.totalWallet = currentUser.earning || 0;
     }
 
-    const levelIncome = splitterTest(
+    if (!currentUser.joiningAmount) {
+      currentUser.joiningAmount = 0;
+    }
+
+    if (!currentUser.lastWallet) {
+      currentUser.lastWallet = "earning";
+    }
+
+    if (!currentUser.generationIncome) {
+      currentUser.generationIncome = 0;
+    }
+
+    if (!currentUser.overallIncome) {
+      currentUser.overallIncome = 0;
+    }
+    currentUser.overallIncome += 4;
+
+    // currentUser.transactions.push({
+    //   amount: 4,
+    //   category: "generation",
+    // });
+
+    // splitCommission = payUser(commissionToAdd, currentUser, currentUser.thirtyChecker);
+    splitCommission = payUser(
       commissionToAdd,
       currentUser,
-      currentUser.thirtyChecker,
-      currentUser.currentPlan
+      currentUser.lastWallet
     );
 
-    currentUser.earning = levelIncome.earning;
-    currentUser.joiningAmount = levelIncome.joining;
-    currentUser.thirtyChecker = levelIncome.checker;
-
-    if (currentUser.currentPlan == "promoter") {
-      currentUser.totalWallet = Math.min(
-        30,
-        currentUser.totalWallet + levelIncome.addToTotalWallet
-      );
-    }
-    if (currentUser.currentPlan == "royalAchiever") {
-      currentUser.totalWallet = Math.min(
-        90,
-        currentUser.totalWallet + levelIncome.addToTotalWallet
-      );
-    } else if (currentUser.currentPlan == "crownAchiever") {
-      currentUser.totalWallet = Math.min(
-        90,
-        currentUser.totalWallet + levelIncome.addToTotalWallet
-      );
-    } else if (currentUser.currentPlan == "diamondAchiever") {
-      currentUser.totalWallet = Math.min(
-        90,
-        currentUser.totalWallet + levelIncome.addToTotalWallet
-      );
-    }
+    currentUser.earning = splitCommission.earning;
+    currentUser.joiningAmount = splitCommission.joining;
+    // currentUser.thirtyChecker = splitCommission.checker;
+    currentUser.totalWallet += splitCommission.addToTotalWallet;
+    currentUser.lastWallet = splitCommission.currentWallet;
+    currentUser.generationIncome += splitCommission.variousIncome;
 
     // Save the updated user to the database
     await currentUser.save();
@@ -215,7 +222,7 @@ export const addCommissionToLineForUpgrade = async (
     }
 
     if (!currentUser.totalWallet) {
-      currentUser.totalWallet = 0;
+      currentUser.totalWallet = currentUser.earning || 0;
     }
 
     const levelIncome = splitterTest(
@@ -260,7 +267,6 @@ export const addCommissionToLineForUpgrade = async (
 };
 
 export const splitterTest = (number, sponser, checker, plan) => {
-  
   let totalWallet = sponser.totalWallet;
 
   let addToTotalWallet = 0;

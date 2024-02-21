@@ -17,9 +17,11 @@ interface AppState {
 
 // Redux action to get user
 export const fetchUser = createAsyncThunk('fetchUser', async (data: any) => {
-    const { email, password } = data;
-    
 
+    const { email, password } = data;
+    console.log(email, password);
+    
+    
     const config = {
         headers: { 'content-type': 'application/json' },
     };

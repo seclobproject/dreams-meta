@@ -10,15 +10,16 @@ const WithdrawHistory = () => {
     const navigate = useNavigate();
     const [userStatus, setUserStatus] = useState('Pending');
     const { loading, data: rowData, error } = useAppSelector((state: any) => state.withdrawHistoryReducer);
-    // const { loading: verifiedUserLoading, data: verifiedUserData, error: verifiedUserError } = useAppSelector((state: any) => state.verifyUserForAdminReducer);
+
+    let transformedData: any;
 
     console.log(rowData);
     
-    let transformedData: any;
+
     if (rowData) {
         transformedData = rowData.map((record: any) => ({
             ...record,
-            userStatus: record.userStatus ? 'Active' : 'Inactive',
+            payStatus: record.status ? 'Payment Completed' : 'Payment Pending',
         }));
     }
 
@@ -27,11 +28,11 @@ const WithdrawHistory = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        dispatch(setPageTitle('All Members'));
+        dispatch(setPageTitle('Withdrawal History'));
     });
+
     const PAGE_SIZES = [10, 20, 30, 50, 100];
 
-    //Skin: Striped
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(transformedData || []);
@@ -49,23 +50,9 @@ const WithdrawHistory = () => {
         setRecordsData([...initialRecords.slice(from, to)]);
     }, [page, pageSize, initialRecords]);
 
-    // useEffect(() => {
-    //     setInitialRecords(() => {
-    //         return (transformedData || []).filter((item: any) => {
-    //             return (
-    //                 item.name.toLowerCase().includes(search.toLowerCase()) ||
-    //                 item.email.toLowerCase().includes(search.toLowerCase()) ||
-    //                 item.ownSponserId.toLowerCase().includes(search.toLowerCase()) ||
-    //                 item.userStatus.toLowerCase().includes(search.toLowerCase())
-    //             );
-    //         });
-    //     });
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [search, rowData]);
-
     return (
         <div className="space-y-6">
-            {/* Skin: Striped  */}
+            
             <div className="panel">
                 <div className="flex items-center justify-between mb-5">
                     <h5 className="font-semibold text-lg dark:text-white-light">Members</h5>
@@ -78,7 +65,7 @@ const WithdrawHistory = () => {
                         records={recordsData}
                         columns={[
                             { accessor: 'amount', title: 'Amount' },
-                            { accessor: 'status', title: 'Status' },
+                            { accessor: 'payStatus', title: 'Status' },
                         ]}
                         totalRecords={initialRecords ? initialRecords.length : 0}
                         recordsPerPage={pageSize}

@@ -1,26 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom';
-import Dropdown from '../components/Dropdown';
-import ReactApexChart from 'react-apexcharts';
 import { useSelector } from 'react-redux';
 import { IRootState, useAppDispatch, useAppSelector } from '../store';
 import { setPageTitle } from '../store/themeConfigSlice';
 import { useEffect, useState } from 'react';
-import IconBitcoin from '../components/Icon/IconBitcoin';
-import IconEthereum from '../components/Icon/IconEthereum';
-import IconLitecoin from '../components/Icon/IconLitecoin';
-import IconBinance from '../components/Icon/IconBinance';
-import IconTether from '../components/Icon/IconTether';
-import IconSolana from '../components/Icon/IconSolana';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import IconPencilPaper from '../components/Icon/IconPencilPaper';
-import { getUserDetails, sendJoiningRequest, upgradeUser } from '../store/userSlice';
+import { getUserDetails, upgradeUser } from '../store/userSlice';
 
-import { useContractWrite, useBalance, useSendTransaction } from 'wagmi';
+import { useContractWrite, useBalance } from 'wagmi';
 import { abi } from '../abi';
 import WalletConnectButton from '../components/Button';
 import { useAccount } from 'wagmi';
 import { UsdtAddr } from '../Constants';
-import { parseEther } from 'viem';
 import TimerComponent from '../components/Timer';
 import { verifyUser } from '../store/adminSlice';
 
@@ -32,9 +23,9 @@ const Finance = () => {
     const [rejoinMessage, setRejoinMessage] = useState(0);
 
     const currentDateTime = new Date();
-    const currentHour = currentDateTime.getHours();
-    const currentMinute = currentDateTime.getMinutes();
-    const currentTime = currentDateTime.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
+    // const currentHour = currentDateTime.getHours();
+    // const currentMinute = currentDateTime.getMinutes();
+    // const currentTime = currentDateTime.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
     const [showButton, setShowButton] = useState(false);
 
     const { data: userInfo } = useAppSelector((state: any) => state.getUserDetailsReducer);
@@ -230,14 +221,25 @@ const Finance = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Total income generated */}
                         <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
                             <div className="flex justify-between">
-                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Wallet Amount</div>
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Amount</div>
+                            </div>
+                            <div className="flex flex-col justify-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.overallIncome}</div>
+                            </div>
+                        </div>
+
+                        {/* Wallet amount and withdrawal */}
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Wallet Amount</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
                                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.earning}</div>
                             </div>
-                            {showButton && userInfo && userInfo.showWithdraw == true && (
+                            {showButton && userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
                                 <>
                                     <button type="button" onClick={() => navigate('/withdraw')} className="btn rounded-lg p-2 mt-4 text-white">
                                         Withdraw
@@ -252,16 +254,6 @@ const Finance = () => {
                             )}
                         </div>
 
-                        {/* Sessions */}
-                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
-                            <div className="flex justify-between">
-                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Direct Refferals</div>
-                            </div>
-                            <div className="flex items-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> {userInfo && userInfo.children.length} </div>
-                                {/* <div className="badge bg-white/30">- 2.35% </div> */}
-                            </div>
-                        </div>
                         {/*  Time On-Site */}
                         <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
                             <div className="flex justify-between">
@@ -276,7 +268,59 @@ const Finance = () => {
                             {rejoinMessage == 1 && <>You are successfully upgraded.</>}
                             {rejoinMessage == 2 && <>You are not eligible for upgrade as of now</>}
                         </div>
-                        {/* Bounce Rate */}
+
+                        {/* Generation income (Level income) */}
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Generation Income</div>
+                            </div>
+                            <div className="flex flex-col justify-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.generationIncome}</div>
+                            </div>
+                        </div>
+
+                        {/* Sponsorship income (Direct refferal income) */}
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Sponsorship Income</div>
+                            </div>
+                            <div className="flex flex-col justify-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.sponsorshipIncome}</div>
+                            </div>
+                        </div>
+
+                        {/* Global autopool income */}
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Global Autopool Income</div>
+                            </div>
+                            <div className="flex flex-col justify-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">$</div>
+                            </div>
+                        </div>
+
+                        {/* Savings account */}
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Savings Account</div>
+                            </div>
+                            <div className="flex flex-col justify-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">$</div>
+                            </div>
+                        </div>
+
+                        {/* Total direct refferals */}
+                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                            <div className="flex justify-between">
+                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Direct Refferals</div>
+                            </div>
+                            <div className="flex items-center mt-5">
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> {userInfo && userInfo.children.length} </div>
+                                {/* <div className="badge bg-white/30">- 2.35% </div> */}
+                            </div>
+                        </div>
+
+                        {/* Copy refferal link */}
                         <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
                             <div className="flex justify-between">
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Refferal Link</div>
@@ -301,6 +345,41 @@ const Finance = () => {
                         </div>
                     </div>
                 </div>
+
+                <div className="mb-5 flex items-center">
+                    <div className="w-full shadow-[4px_6px_10px_-3px_#bfc9d4] rounded border border-white-light dark:border-[#1b2e4b] panel p-0 dark:shadow-none">
+                        <div className="px-5 py-5 flex justify-evenly items-center flex-col sm:flex-row">
+                            <div className="ltr:sm:pl-5 rtl:sm:pr-5 text-center sm:text-left">
+                                <p className="mb-2 text-white-dark text-lg mt-5">Download Plan PDF from below</p>
+                                <p className="font-semibold text-white-dark mt-4 sm:mt-8">
+                                    <button type="button" className="rounded-lg py-2 px-5 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white">
+                                        Download Now
+                                    </button>
+                                </p>
+                            </div>
+
+                            <div className="overflow-hidden">
+                                <img src="/assets/images/pdf-icon.png" alt="profile" className="w-16 mt-5 object-cover" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mb-5 flex items-center">
+                    <div className="w-full shadow-[4px_6px_10px_-3px_#bfc9d4] rounded border border-white-light dark:border-[#1b2e4b] panel p-0 dark:shadow-none">
+                        <div className="px-5 py-5 flex justify-evenly items-center flex-col sm:flex-row">
+                            <div className="ltr:sm:pl-5 rtl:sm:pr-5 text-center sm:text-left">
+                                <h5 className="text-[#3b3f5c] text-[22px] md:text-[48px] font-semibold mb-2 dark:text-white-light">Trade Now!!!</h5>
+                                <p className="mb-2 text-white-dark text-lg mt-5">Trading account will open shortly</p>
+                            </div>
+
+                            <div className="overflow-hidden">
+                                <img src="/assets/images/trade.png" alt="profile" className="w-60 mt-5 object-cover" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="mb-5 flex items-center">
                     <div className="w-full shadow-[4px_6px_10px_-3px_#bfc9d4] rounded border border-white-light dark:border-[#1b2e4b] panel p-0 dark:shadow-none">
                         <div className="px-5 pt-5 flex justify-evenly items-center flex-col sm:flex-row">

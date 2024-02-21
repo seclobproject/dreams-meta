@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { URL } from '../Constants';
 
-// Redux action to edit user profile
+// Redux action to get all users profile
 export const getAllUsersToAdmin = createAsyncThunk('getAllUsers', async () => {
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
@@ -188,6 +188,9 @@ export const splitAutopoolAmount = createAsyncThunk('splitAutopoolAmount', async
     };
 
     const response = await axios.get(`${URL}/api/admin/split-autopool-income`, config);
+
+    console.log(response.data);
+    
 
     return response.data;
 });
@@ -443,7 +446,6 @@ const getWithdrawRequestsSlice = createSlice({
 
 // Manage withdrawal request (Send payment)
 export const managePaymentSend = createAsyncThunk('managePaymentSend', async (requestId: any) => {
-    
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
 
@@ -512,6 +514,58 @@ export const editUserProfileByAdmin = createAsyncThunk('editUserProfileByAdmin',
 
 export const editUserByAdminSlice = createSlice({
     name: 'editUserByAdminSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(editUserProfileByAdmin.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(editUserProfileByAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(editUserProfileByAdmin.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Please make sure you filled all the above details!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'Email or Phone already used!';
+                }
+            });
+    },
+});
+
+// Redux action to upload image
+export const uploadImage = createAsyncThunk('uploadImage', async (file: File) => {
+    
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'multipart/form-data',
+        },
+    };
+
+    const response = await axios.post(`${URL}/api/admin/upload-reward`, formData, config);
+    
+    return response.data;
+    
+});
+
+export const uploadImageSlice = createSlice({
+    name: 'uploadImageSlice',
     initialState: {
         loading: false,
         data: null,
