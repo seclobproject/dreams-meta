@@ -167,8 +167,10 @@ const Finance = () => {
     }, []);
 
     const upgradeHandler = () => {
-        window.confirm('Are you sure you want to upgrade your plan?');
-        dispatch(upgradeUser());
+        const confirmed = window.confirm('Are you sure you want to upgrade your plan?');
+        if (confirmed) {
+            dispatch(upgradeUser());
+        }
     };
 
     return (
@@ -182,7 +184,7 @@ const Finance = () => {
                                 <IconPencilPaper />
                             </Link>
                         </div>
-                        <div className="">
+                        <div className="flex flex-col justify-center">
                             <div className="flex flex-col justify-center items-center">
                                 {/* <img src="/assets/images/user-silhouette.png" alt="img" className="w-16 h-16 rounded-full object-cover  mb-5" /> */}
                                 <p className="font-semibold text-primary text-xl">{userInfo && userInfo.name}</p>
@@ -216,6 +218,29 @@ const Finance = () => {
                             <div className="text-center mt-5">
                                 {userInfo && userInfo.joiningRequest && userInfo.joiningRequest.status == false && <>You are successfully sent your join request. You will be verified soon.</>}
                                 {userInfo && userInfo.joiningRequest && userInfo.joiningRequest.status == true && <>You are verified.</>}
+                            </div>
+                            {/* Copy refferal link */}
+                            <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                                <div className="flex justify-between">
+                                    <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Refferal Link</div>
+                                </div>
+                                <div className="flex items-center my-5">
+                                    <input type="text" defaultValue={url} className="form-input" />
+                                    <div className="referralBtn sm:flex sm:space-y-0 sm:space-x-2 rtl:space-x-reverse">
+                                        <CopyToClipboard
+                                            text={url}
+                                            onCopy={(text, result) => {
+                                                if (result) {
+                                                    alert('Refferal link copied successfully!');
+                                                }
+                                            }}
+                                        >
+                                            <button type="button" className="btn rounded-lg p-2 ms-2 text-white">
+                                                Copy
+                                            </button>
+                                        </CopyToClipboard>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -295,7 +320,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Global Autopool Income</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">$</div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.autoPoolAmount}</div>
                             </div>
                         </div>
 
@@ -305,7 +330,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Savings Account</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">$</div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.savingsIncome}</div>
                             </div>
                         </div>
 
@@ -317,30 +342,6 @@ const Finance = () => {
                             <div className="flex items-center mt-5">
                                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> {userInfo && userInfo.children.length} </div>
                                 {/* <div className="badge bg-white/30">- 2.35% </div> */}
-                            </div>
-                        </div>
-
-                        {/* Copy refferal link */}
-                        <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
-                            <div className="flex justify-between">
-                                <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Refferal Link</div>
-                            </div>
-                            <div className="flex items-center my-5">
-                                <input type="text" defaultValue={url} className="form-input" />
-                                <div className="referralBtn sm:flex sm:space-y-0 sm:space-x-2 rtl:space-x-reverse">
-                                    <CopyToClipboard
-                                        text={url}
-                                        onCopy={(text, result) => {
-                                            if (result) {
-                                                alert('Refferal link copied successfully!');
-                                            }
-                                        }}
-                                    >
-                                        <button type="button" className="btn rounded-lg p-2 ms-2 text-white">
-                                            Copy
-                                        </button>
-                                    </CopyToClipboard>
-                                </div>
                             </div>
                         </div>
                     </div>

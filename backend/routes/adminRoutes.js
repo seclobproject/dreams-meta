@@ -231,7 +231,6 @@ router.get(
 
           sponser.earning = splitCommission.earning;
           sponser.joiningAmount = splitCommission.joining;
-          // sponser.thirtyChecker = splitCommission.checker;
           sponser.totalWallet += splitCommission.addToTotalWallet;
           sponser.lastWallet += splitCommission.currentWallet;
 
@@ -457,7 +456,7 @@ router.post(
           //   category: "sponsorship",
           //   basedOnWho: user.name,
           // });
-          
+
           // splitCommission = payUser(4, sponser, sponser.thirtyChecker);
           splitCommission = payUser(4, sponser, sponser.lastWallet);
 
@@ -694,43 +693,102 @@ router.get(
 
     if (users) {
       const autoPoolBalance = admin.autoPoolBank;
-      let balancedUsed = 0;
+      let balanceUsed = 0;
 
       if (autoPoolBalance > 0) {
-        // Distribute 10% of autopool among promoter users
+        // Distribute 40% of autopool among promoter users
         const promoterUsers = users.filter((user) => {
           return user.currentPlan === "promoter";
         });
 
         if (promoterUsers.length > 0) {
-          const tenPercent = autoPoolBalance * 0.1;
-          const amountPerUser = tenPercent / promoterUsers.length;
+          const fourtyPercent = autoPoolBalance * 0.4;
+          const amountPerUser = fourtyPercent / promoterUsers.length;
 
           for (const user of promoterUsers) {
             user.autoPoolAmount += amountPerUser;
-            user.earning += amountPerUser;
+            user.overallIncome += amountPerUser;
+
+            // Add amount to each user start
+            const splitCommission = payUser(
+              amountPerUser,
+              user,
+              user.lastWallet
+            );
+
+            user.earning = splitCommission.earning;
+            user.joiningAmount = splitCommission.joining;
+            user.totalWallet += splitCommission.addToTotalWallet;
+            user.lastWallet += splitCommission.currentWallet;
+            user.sponsorshipIncome += splitCommission.variousIncome;
+            // Add amount to each user end
+
+            if (!user.transactions) {
+              user.transactions = [
+                {
+                  category: "autoPool",
+                  amount: amountPerUser,
+                },
+              ];
+            } else {
+              user.transactions.push({
+                category: "autoPool",
+                amount: amountPerUser,
+              });
+            }
+
             await user.save();
           }
 
-          balancedUsed += tenPercent;
+          balanceUsed += fourtyPercent;
         }
 
-        // Distribute 20% of autoPoolBalance among royal achiever users
+        // Distribute 30% of autoPoolBalance among royal achiever users
         const royalAchieverUsers = users.filter((user) => {
           return user.currentPlan == "royalAchiever";
         });
 
         if (royalAchieverUsers.length > 0) {
-          const twentyPercent = autoPoolBalance * 0.2;
-          const amountPerUser = twentyPercent / royalAchieverUsers.length;
+          const thirtyPercent = autoPoolBalance * 0.3;
+          const amountPerUser = thirtyPercent / royalAchieverUsers.length;
 
           for (const user of royalAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
-            user.earning += amountPerUser;
+            user.overallIncome += amountPerUser;
+
+            // Add amount to each user start
+            const splitCommission = payUser(
+              amountPerUser,
+              user,
+              user.lastWallet
+            );
+
+            user.earning = splitCommission.earning;
+            user.joiningAmount = splitCommission.joining;
+            user.totalWallet += splitCommission.addToTotalWallet;
+            user.lastWallet += splitCommission.currentWallet;
+
+            user.sponsorshipIncome += splitCommission.variousIncome;
+            // Add amount to each user end
+
+            if (!user.transactions) {
+              user.transactions = [
+                {
+                  category: "autoPool",
+                  amount: amountPerUser,
+                },
+              ];
+            } else {
+              user.transactions.push({
+                category: "autoPool",
+                amount: amountPerUser,
+              });
+            }
+
             await user.save();
           }
 
-          balancedUsed += twentyPercent;
+          balanceUsed += thirtyPercent;
         }
 
         // Distribute 30% of autoPoolBalance amoung crown achiever users
@@ -739,16 +797,46 @@ router.get(
         });
 
         if (crownAchieverUsers.length > 0) {
-          const thirtyPercent = autoPoolBalance * 0.3;
-          const amountPerUser = thirtyPercent / crownAchieverUsers.length;
+          const twentyPercent = autoPoolBalance * 0.2;
+          const amountPerUser = twentyPercent / crownAchieverUsers.length;
 
           for (const user of crownAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
-            user.earning += amountPerUser;
+            user.overallIncome += amountPerUser;
+
+            // Add amount to each user start
+            const splitCommission = payUser(
+              amountPerUser,
+              user,
+              user.lastWallet
+            );
+
+            user.earning = splitCommission.earning;
+            user.joiningAmount = splitCommission.joining;
+            user.totalWallet += splitCommission.addToTotalWallet;
+            user.lastWallet += splitCommission.currentWallet;
+
+            user.sponsorshipIncome += splitCommission.variousIncome;
+            // Add amount to each user end
+
+            if (!user.transactions) {
+              user.transactions = [
+                {
+                  category: "autoPool",
+                  amount: amountPerUser,
+                },
+              ];
+            } else {
+              user.transactions.push({
+                category: "autoPool",
+                amount: amountPerUser,
+              });
+            }
+
             await user.save();
           }
 
-          balancedUsed += thirtyPercent;
+          balanceUsed += twentyPercent;
         }
 
         // Distribute 40% of autoPoolBalance amount diamond achiever users
@@ -757,24 +845,64 @@ router.get(
         });
 
         if (diamondAchieverUsers.length > 0) {
-          const fortyPercent = autoPoolBalance * 0.4;
-          const amountPerUser = fortyPercent / diamondAchieverUsers.length;
+          const tenPercent = autoPoolBalance * 0.1;
+          const amountPerUser = tenPercent / diamondAchieverUsers.length;
 
           for (const user of diamondAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
-            user.earning += amountPerUser;
+            user.overallIncome += amountPerUser;
+
+            // Add amount to each user start
+            const splitCommission = payUser(
+              amountPerUser,
+              user,
+              user.lastWallet
+            );
+
+            user.earning = splitCommission.earning;
+            user.joiningAmount = splitCommission.joining;
+            user.totalWallet += splitCommission.addToTotalWallet;
+            user.lastWallet += splitCommission.currentWallet;
+
+            user.sponsorshipIncome += splitCommission.variousIncome;
+            // Add amount to each user end
+
+            if (!user.transactions) {
+              user.transactions = [
+                {
+                  category: "autoPool",
+                  amount: amountPerUser,
+                },
+              ];
+            } else {
+              user.transactions.push({
+                category: "autoPool",
+                amount: amountPerUser,
+              });
+            }
+
             await user.save();
           }
 
-          balancedUsed += fortyPercent;
+          balanceUsed += tenPercent;
         }
 
-        admin.autoPoolBank -= balancedUsed;
-        await admin.save();
+        admin.autoPoolBank -= balanceUsed;
+        if (admin.autoPoolBank > 0) {
+          admin.autoPoolBank = 0;
+        }
 
-        res
-          .status(200)
-          .json({ msg: "AutoPool bonus distributed successfully" });
+        const updatedUser = await admin.save();
+
+        if (updatedUser) {
+          res
+            .status(200)
+            .json({ msg: "AutoPool bonus distributed successfully" });
+        } else {
+          res
+            .status(400)
+            .json({ sts: "00", msg: "Error distributing autopool" });
+        }
       } else {
         res.status(400).json({
           msg: "You don't have enough balance in autopool bank to distribute",
@@ -912,24 +1040,56 @@ router.post(
 
     const request = await WithdrawRequest.findById(requestId).populate("user");
 
+    const admin = await User.findById(req.user._id);
+
     if (request) {
       const getUser = request.user;
       const userId = getUser._id;
 
       const user = await User.findById(userId);
 
+      const amount = request.amount;
+      const withdrawable = amount - amount * 0.15;
+
+      // Add 10% to user's savings income
+      if (!user.savingsIncome) {
+        user.savingsIncome = amount * 0.1;
+      } else {
+        user.savingsIncome += amount * 0.1;
+      }
+
+      if (!admin.transactions) {
+        admin.transactions = [
+          {
+            category: "adminCharge",
+            amount: amount * 0.05,
+            basedOnWho: user.name,
+          },
+        ];
+      } else {
+        admin.transactions.push({
+          category: "adminCharge",
+          amount: amount * 0.05,
+          basedOnWho: user.name,
+        });
+      }
+
       request.status = true;
 
-      user.earning -= request.amount;
+      user.earning -= amount;
       user.showWithdraw = true;
 
       const updatedRequest = await request.save();
       const updatedUser = await user.save();
-      if (updatedRequest && updatedUser) {
+      const updatedAdmin = await admin.save();
+
+      if (updatedRequest && updatedUser && updatedAdmin) {
+
         res.status(200).json({
           sts: "01",
           msg: "Request updated successfully",
         });
+
       } else {
         res.status(400).json({ sts: "00", msg: "Request not updated" });
       }

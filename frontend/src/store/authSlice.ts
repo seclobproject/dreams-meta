@@ -19,8 +19,6 @@ interface AppState {
 export const fetchUser = createAsyncThunk('fetchUser', async (data: any) => {
 
     const { email, password } = data;
-    console.log(email, password);
-    
     
     const config = {
         headers: { 'content-type': 'application/json' },

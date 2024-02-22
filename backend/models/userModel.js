@@ -14,7 +14,6 @@ const transactionSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
 const withdrawalSchema = new mongoose.Schema(
   {
     amount: Number,
@@ -56,6 +55,10 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
     joiningAmount: {
+      type: Number,
+      default: 0,
+    },
+    rejoiningWallet: {
       type: Number,
       default: 0,
     },
@@ -148,6 +151,10 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
     overallIncome: {
+      type: Number,
+      default: 0,
+    },
+    savingsIncome: {
       type: Number,
       default: 0,
     },
