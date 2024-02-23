@@ -195,9 +195,9 @@ router.get(
           }
 
           // Adding $4 to the sponsor's earning
-          if (!sponser.thirtyChecker) {
-            sponser.thirtyChecker = false;
-          }
+          // if (!sponser.thirtyChecker) {
+          //   sponser.thirtyChecker = false;
+          // }
 
           if (!sponser.joiningAmount) {
             sponser.joiningAmount = 0;
@@ -219,6 +219,10 @@ router.get(
             sponser.overallIncome = 0;
           }
           sponser.overallIncome += 4;
+
+          // if (!sponser.transactions) {
+          //   sponser.transactions = [];
+          // }
 
           // sponser.transactions.push({
           //   amount: 4,
@@ -245,9 +249,9 @@ router.get(
           }
 
           // Adding $4 to the sponsor's earning
-          if (!sponser.thirtyChecker) {
-            sponser.thirtyChecker = false;
-          }
+          // if (!sponser.thirtyChecker) {
+          //   sponser.thirtyChecker = false;
+          // }
 
           if (!sponser.totalWallet) {
             sponser.totalWallet = sponser.earning || 0;
@@ -266,6 +270,10 @@ router.get(
           }
           sponser.overallIncome += 4;
 
+          // if (!sponser.transactions) {
+          //   sponser.transactions = [];
+          // }
+          
           // sponser.transactions.push({
           //   amount: 4,
           //   category: "sponsorship",
@@ -376,10 +384,6 @@ router.post(
 
           // Adding $4 to the sponsor's earning
 
-          // if (!sponser.thirtyChecker) {
-          //   sponser.thirtyChecker = false;
-          // }
-
           if (!sponser.joiningAmount) {
             sponser.joiningAmount = 0;
           }
@@ -401,6 +405,10 @@ router.post(
           }
           sponser.overallIncome += 4;
 
+          // if (!sponser.transactions) {
+          //   sponser.transactions = [];
+          // }
+          
           // sponser.transactions.push({
           //   amount: 4,
           //   category: "sponsorship",
@@ -451,6 +459,10 @@ router.post(
           }
           sponser.overallIncome += 4;
 
+          // if (!sponser.transactions) {
+          //   sponser.transactions = [];
+          // }
+          
           // sponser.transactions.push({
           //   amount: 4,
           //   category: "sponsorship",
@@ -481,6 +493,7 @@ router.post(
       // Auto pool finished
 
       // Now assign the user to the tree
+
       let updateTree;
       if (updateSponsor) {
         const left = "left";
@@ -1084,12 +1097,10 @@ router.post(
       const updatedAdmin = await admin.save();
 
       if (updatedRequest && updatedUser && updatedAdmin) {
-
         res.status(200).json({
           sts: "01",
           msg: "Request updated successfully",
         });
-
       } else {
         res.status(400).json({ sts: "00", msg: "Request not updated" });
       }

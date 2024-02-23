@@ -153,20 +153,20 @@ const Withdrawal = () => {
                     <div className="text-center">{amount && `Withdrawable amount to wallet: ${amount - amount * 0.15}`}</div>
                     <div className="text-center">{amount && `Addable amount to savings: ${amount - amount * 0.05}`}</div>
                     {userInfo && userInfo.showWithdraw && (
-                        <div className="flex flex-row justify-center gap-3">
+                        <div className="flex flex-row items-center justify-center gap-3">
                             {showButton && userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
                                 <>
-                                    <button type="button" onClick={() => submitHandlerToWallet(9)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg mt-6">
+                                    <button type="button" onClick={() => submitHandlerToWallet(9)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
                                         Withdraw to Wallet
                                     </button>
                                 </>
                             )}
                             {!showButton && (
-                                <div className="mt-2">
+                                <div className="">
                                     <TimerComponent />
                                 </div>
                             )}
-                            <button type="button" onClick={() => submitHandlerToSavings(10)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg mt-6">
+                            <button type="button" onClick={() => submitHandlerToSavings(10)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
                                 Add to Savings
                             </button>
                         </div>

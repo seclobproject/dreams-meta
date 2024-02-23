@@ -1,21 +1,15 @@
 import express from "express";
 const router = express.Router();
-import Randomstring from "randomstring";
 
 import asyncHandler from "../middleware/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
-import path from "path";
-import {
-  addCommissionToLine,
-  addCommissionToLineForUpgrade,
-  splitterTest,
-} from "./supportingFunctions/TreeFunctions.js";
+import { addCommissionToLine } from "./supportingFunctions/TreeFunctions.js";
 import JoiningRequest from "../models/joinRequestModel.js";
 import WithdrawRequest from "../models/withdrawalRequestModel.js";
 import { payUser } from "./supportingFunctions/payFunction.js";
-import { log } from "console";
+
 // import upload from "../middleware/fileUploadMiddleware.js";
 
 // Register new user
@@ -569,7 +563,6 @@ router.post(
     const user = await User.findById(req.user._id);
 
     if (amount && user) {
-
       const withdrawable = amount - amount * 0.05;
 
       // Add 10% to user's savings income
@@ -610,7 +603,6 @@ router.post(
       } else {
         res.status(400).json({ sts: "00", msg: "Savings not updated" });
       }
-
     } else {
       res.status(400).json({ sts: "00", msg: "No user or amount found" });
     }

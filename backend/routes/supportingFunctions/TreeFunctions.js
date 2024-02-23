@@ -105,9 +105,14 @@ export const addCommissionToLine = async (
     }
     currentUser.overallIncome += 4;
 
+    // Add to transactions history
+
+    // if (!currentUser.transactions) {
+    //   currentUser.transactions = [];
+    // }
     // currentUser.transactions.push({
     //   amount: 4,
-    //   category: "generation",
+    //   category: "sponsorship",
     // });
 
     // splitCommission = payUser(commissionToAdd, currentUser, currentUser.thirtyChecker);
@@ -134,149 +139,149 @@ export const addCommissionToLine = async (
 };
 
 // Function to add commission to everyone in line up while level upgrade
-export const addCommissionToLineForUpgrade = async (
-  startingUserId,
-  levelsAbove,
-  commissionAmount
-) => {
-  let currentUserId = startingUserId;
-  let currentLevel = 0;
+// export const addCommissionToLineForUpgrade = async (
+//   startingUserId,
+//   levelsAbove,
+//   commissionAmount
+// ) => {
+//   let currentUserId = startingUserId;
+//   let currentLevel = 0;
 
-  while (currentUserId && currentLevel <= levelsAbove) {
-    if (!currentUserId) {
-      break;
-    }
-    const currentUser = await User.findById(currentUserId);
+//   while (currentUserId && currentLevel <= levelsAbove) {
+//     if (!currentUserId) {
+//       break;
+//     }
+//     const currentUser = await User.findById(currentUserId);
 
-    const commissionToAdd = commissionAmount;
+//     const commissionToAdd = commissionAmount;
 
-    if (!currentUser.thirtyChecker) {
-      currentUser.thirtyChecker = false;
-    }
+//     if (!currentUser.thirtyChecker) {
+//       currentUser.thirtyChecker = false;
+//     }
 
-    if (!currentUser.totalWallet) {
-      currentUser.totalWallet = currentUser.earning || 0;
-    }
+//     if (!currentUser.totalWallet) {
+//       currentUser.totalWallet = currentUser.earning || 0;
+//     }
 
-    const levelIncome = splitterTest(
-      commissionToAdd,
-      currentUser,
-      currentUser.thirtyChecker,
-      currentUser.currentPlan
-    );
-    currentUser.earning = levelIncome.earning;
-    currentUser.joiningAmount = levelIncome.joining;
-    currentUser.thirtyChecker = levelIncome.checker;
+//     const levelIncome = splitterTest(
+//       commissionToAdd,
+//       currentUser,
+//       currentUser.thirtyChecker,
+//       currentUser.currentPlan
+//     );
+//     currentUser.earning = levelIncome.earning;
+//     currentUser.joiningAmount = levelIncome.joining;
+//     currentUser.thirtyChecker = levelIncome.checker;
 
-    if (currentUser.currentPlan == "promoter") {
-      currentUser.totalWallet = Math.min(
-        30,
-        currentUser.totalWallet + levelIncome.addToTotalWallet
-      );
-    } else if (currentUser.currentPlan == "royalAchiever") {
-      currentUser.totalWallet = Math.min(
-        90,
-        currentUser.totalWallet + levelIncome.addToTotalWallet
-      );
-    } else if (currentUser.currentPlan == "crownAchiever") {
-      currentUser.totalWallet = Math.min(
-        90,
-        currentUser.totalWallet + levelIncome.addToTotalWallet
-      );
-    } else if (currentUser.currentPlan == "diamondAchiever") {
-      currentUser.totalWallet = Math.min(
-        90,
-        currentUser.totalWallet + levelIncome.addToTotalWallet
-      );
-    }
+//     if (currentUser.currentPlan == "promoter") {
+//       currentUser.totalWallet = Math.min(
+//         30,
+//         currentUser.totalWallet + levelIncome.addToTotalWallet
+//       );
+//     } else if (currentUser.currentPlan == "royalAchiever") {
+//       currentUser.totalWallet = Math.min(
+//         90,
+//         currentUser.totalWallet + levelIncome.addToTotalWallet
+//       );
+//     } else if (currentUser.currentPlan == "crownAchiever") {
+//       currentUser.totalWallet = Math.min(
+//         90,
+//         currentUser.totalWallet + levelIncome.addToTotalWallet
+//       );
+//     } else if (currentUser.currentPlan == "diamondAchiever") {
+//       currentUser.totalWallet = Math.min(
+//         90,
+//         currentUser.totalWallet + levelIncome.addToTotalWallet
+//       );
+//     }
 
-    // Save the updated user to the database
-    await currentUser.save();
+//     // Save the updated user to the database
+//     await currentUser.save();
 
-    // Move to the parent of the current user
-    currentUserId = currentUser.nodeId;
-    currentLevel++;
-  }
-};
+//     // Move to the parent of the current user
+//     currentUserId = currentUser.nodeId;
+//     currentLevel++;
+//   }
+// };
 
-export const splitterTest = (number, sponser, checker, plan) => {
-  let totalWallet = sponser.totalWallet;
+// export const splitterTest = (number, sponser, checker, plan) => {
+//   let totalWallet = sponser.totalWallet;
 
-  let addToTotalWallet = 0;
+//   let addToTotalWallet = 0;
 
-  let earningThreshold;
-  let joiningThreshold;
+//   let earningThreshold;
+//   let joiningThreshold;
 
-  // if (plan == "promoter") {
-  //   earningThreshold = 30;
-  //   joiningThreshold = 60;
-  // } else if (plan == "royalAchiever") {
-  //   earningThreshold = 60;
-  //   joiningThreshold = 100;
-  // } else if (plan == "crownAchiever") {
-  //   earningThreshold = 100;
-  //   joiningThreshold = 200;
-  // } else if (plan == "diamondAchiever") {
-  //   earningThreshold = 200;
-  //   joiningThreshold = 200;
-  // }
+//   // if (plan == "promoter") {
+//   //   earningThreshold = 30;
+//   //   joiningThreshold = 60;
+//   // } else if (plan == "royalAchiever") {
+//   //   earningThreshold = 60;
+//   //   joiningThreshold = 100;
+//   // } else if (plan == "crownAchiever") {
+//   //   earningThreshold = 100;
+//   //   joiningThreshold = 200;
+//   // } else if (plan == "diamondAchiever") {
+//   //   earningThreshold = 200;
+//   //   joiningThreshold = 200;
+//   // }
 
-  if (totalWallet <= 30) {
-    earningThreshold = 30;
-    joiningThreshold = 60;
-  } else if (totalWallet <= 90) {
-    earningThreshold = Math.min(90, 90 - totalWallet);
-    joiningThreshold = 100;
-  } else if (totalWallet <= 190) {
-    earningThreshold = Math.min(190, 190 - totalWallet);
-    joiningThreshold = 200;
-  } else if (totalWallet >= 390) {
-    earningThreshold = 200;
-    joiningThreshold = 200;
-  }
+//   if (totalWallet <= 30) {
+//     earningThreshold = 30;
+//     joiningThreshold = 60;
+//   } else if (totalWallet <= 90) {
+//     earningThreshold = Math.min(90, 90 - totalWallet);
+//     joiningThreshold = 100;
+//   } else if (totalWallet <= 190) {
+//     earningThreshold = Math.min(190, 190 - totalWallet);
+//     joiningThreshold = 200;
+//   } else if (totalWallet >= 390) {
+//     earningThreshold = 200;
+//     joiningThreshold = 200;
+//   }
 
-  let earning = sponser.earning;
-  let joining = sponser.joiningAmount;
+//   let earning = sponser.earning;
+//   let joining = sponser.joiningAmount;
 
-  let remainingEarningSpace;
-  let remainingJoiningSpace;
+//   let remainingEarningSpace;
+//   let remainingJoiningSpace;
 
-  if (sponser.currentPlan == "promoter") {
-    remainingEarningSpace = earningThreshold - earning;
-  } else {
-    remainingEarningSpace = earningThreshold;
-  }
+//   if (sponser.currentPlan == "promoter") {
+//     remainingEarningSpace = earningThreshold - earning;
+//   } else {
+//     remainingEarningSpace = earningThreshold;
+//   }
 
-  remainingJoiningSpace = joiningThreshold - joining;
-  // const remainingEarningSpace = earningThreshold - earning;
+//   remainingJoiningSpace = joiningThreshold - joining;
+//   // const remainingEarningSpace = earningThreshold - earning;
 
-  // Add to earning first
-  if (remainingEarningSpace > 0 && number > 0 && checker === false) {
-    const earningToAdd = Math.min(remainingEarningSpace, number);
-    addToTotalWallet += earningToAdd;
-    earning += earningToAdd;
-    number -= earningToAdd;
+//   // Add to earning first
+//   if (remainingEarningSpace > 0 && number > 0 && checker === false) {
+//     const earningToAdd = Math.min(remainingEarningSpace, number);
+//     addToTotalWallet += earningToAdd;
+//     earning += earningToAdd;
+//     number -= earningToAdd;
 
-    if (earning >= earningThreshold) {
-      checker = true;
-    }
-  }
+//     if (earning >= earningThreshold) {
+//       checker = true;
+//     }
+//   }
 
-  // Add to joining
-  if (remainingJoiningSpace > 0 && number > 0 && checker === true) {
-    const joiningToAdd = Math.min(remainingJoiningSpace, number);
-    joining += joiningToAdd;
-    number -= joiningToAdd;
+//   // Add to joining
+//   if (remainingJoiningSpace > 0 && number > 0 && checker === true) {
+//     const joiningToAdd = Math.min(remainingJoiningSpace, number);
+//     joining += joiningToAdd;
+//     number -= joiningToAdd;
 
-    if (joining >= joiningThreshold) {
-      checker = false;
-    }
-  }
+//     if (joining >= joiningThreshold) {
+//       checker = false;
+//     }
+//   }
 
-  // Add remaining to earning
-  if (number > 0) {
-    earning += number;
-  }
+//   // Add remaining to earning
+//   if (number > 0) {
+//     earning += number;
+//   }
 
-  return { earning, joining, checker, addToTotalWallet };
-};
+//   return { earning, joining, checker, addToTotalWallet };
+// };
