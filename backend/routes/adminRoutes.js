@@ -220,6 +220,23 @@ router.get(
           }
           sponser.overallIncome += 4;
 
+          if (
+            sponser.overallIncome >= 100 &&
+            sponser.currentPlan == "promoter"
+          ) {
+            sponser.currentPlan = "royalAchiever";
+          } else if (
+            sponser.overallIncome >= 250 &&
+            sponser.currentPlan == "royalAchiever"
+          ) {
+            sponser.currentPlan = "crownAchiever";
+          } else if (
+            sponser.overallIncome >= 600 &&
+            sponser.currentPlan == "crownAchiever"
+          ) {
+            sponser.currentPlan = "diamondAchiever";
+          }
+
           // if (!sponser.transactions) {
           //   sponser.transactions = [];
           // }
@@ -270,10 +287,27 @@ router.get(
           }
           sponser.overallIncome += 4;
 
+          if (
+            sponser.overallIncome >= 100 &&
+            sponser.currentPlan == "promoter"
+          ) {
+            sponser.currentPlan = "royalAchiever";
+          } else if (
+            sponser.overallIncome >= 250 &&
+            sponser.currentPlan == "royalAchiever"
+          ) {
+            sponser.currentPlan = "crownAchiever";
+          } else if (
+            sponser.overallIncome >= 600 &&
+            sponser.currentPlan == "crownAchiever"
+          ) {
+            sponser.currentPlan = "diamondAchiever";
+          }
+
           // if (!sponser.transactions) {
           //   sponser.transactions = [];
           // }
-          
+
           // sponser.transactions.push({
           //   amount: 4,
           //   category: "sponsorship",
@@ -405,10 +439,27 @@ router.post(
           }
           sponser.overallIncome += 4;
 
+          if (
+            sponser.overallIncome >= 100 &&
+            sponser.currentPlan == "promoter"
+          ) {
+            sponser.currentPlan = "royalAchiever";
+          } else if (
+            sponser.overallIncome >= 250 &&
+            sponser.currentPlan == "royalAchiever"
+          ) {
+            sponser.currentPlan = "crownAchiever";
+          } else if (
+            sponser.overallIncome >= 600 &&
+            sponser.currentPlan == "crownAchiever"
+          ) {
+            sponser.currentPlan = "diamondAchiever";
+          }
+
           // if (!sponser.transactions) {
           //   sponser.transactions = [];
           // }
-          
+
           // sponser.transactions.push({
           //   amount: 4,
           //   category: "sponsorship",
@@ -459,10 +510,27 @@ router.post(
           }
           sponser.overallIncome += 4;
 
+          if (
+            sponser.overallIncome >= 100 &&
+            sponser.currentPlan == "promoter"
+          ) {
+            sponser.currentPlan = "royalAchiever";
+          } else if (
+            sponser.overallIncome >= 250 &&
+            sponser.currentPlan == "royalAchiever"
+          ) {
+            sponser.currentPlan = "crownAchiever";
+          } else if (
+            sponser.overallIncome >= 600 &&
+            sponser.currentPlan == "crownAchiever"
+          ) {
+            sponser.currentPlan = "diamondAchiever";
+          }
+
           // if (!sponser.transactions) {
           //   sponser.transactions = [];
           // }
-          
+
           // sponser.transactions.push({
           //   amount: 4,
           //   category: "sponsorship",
@@ -722,6 +790,10 @@ router.get(
             user.autoPoolAmount += amountPerUser;
             user.overallIncome += amountPerUser;
 
+            if (user.overallIncome >= 100 && user.currentPlan == "promoter") {
+              user.currentPlan = "royalAchiever";
+            }
+
             // Add amount to each user start
             const splitCommission = payUser(
               amountPerUser,
@@ -768,6 +840,13 @@ router.get(
           for (const user of royalAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
             user.overallIncome += amountPerUser;
+
+            if (
+              user.overallIncome >= 250 &&
+              user.currentPlan == "royalAchiever"
+            ) {
+              user.currentPlan = "crownAchiever";
+            }
 
             // Add amount to each user start
             const splitCommission = payUser(
@@ -816,6 +895,13 @@ router.get(
           for (const user of crownAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
             user.overallIncome += amountPerUser;
+
+            if (
+              user.overallIncome >= 600 &&
+              user.currentPlan == "crownAchiever"
+            ) {
+              user.currentPlan = "diamondAchiever";
+            }
 
             // Add amount to each user start
             const splitCommission = payUser(

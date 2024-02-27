@@ -103,7 +103,25 @@ export const addCommissionToLine = async (
     if (!currentUser.overallIncome) {
       currentUser.overallIncome = 0;
     }
+
     currentUser.overallIncome += 4;
+
+    if (
+      currentUser.overallIncome >= 100 &&
+      currentUser.currentPlan == "promoter"
+    ) {
+      currentUser.currentPlan = "royalAchiever";
+    } else if (
+      currentUser.overallIncome >= 250 &&
+      currentUser.currentPlan == "royalAchiever"
+    ) {
+      currentUser.currentPlan = "crownAchiever";
+    } else if (
+      currentUser.overallIncome >= 600 &&
+      currentUser.currentPlan == "crownAchiever"
+    ) {
+      currentUser.currentPlan = "diamondAchiever";
+    }
 
     // Add to transactions history
 

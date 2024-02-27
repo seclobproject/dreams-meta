@@ -201,16 +201,16 @@ router.get(
       user.joiningAmount -= 30;
 
       // Upgrade user plan from current plan
-      if (user.currentPlan == "promoter") {
-        user.currentPlan = "royalAchiever";
-      } else if (user.currentPlan == "royalAchiever") {
-        user.currentPlan = "crownAchiever";
-      } else if (
-        user.currentPlan == "crownAchiever" ||
-        user.currentPlan == "crownAchiever"
-      ) {
-        user.currentPlan = "diamondAchiever";
-      }
+      // if (user.currentPlan == "promoter") {
+      //   user.currentPlan = "royalAchiever";
+      // } else if (user.currentPlan == "royalAchiever") {
+      //   user.currentPlan = "crownAchiever";
+      // } else if (
+      //   user.currentPlan == "crownAchiever" ||
+      //   user.currentPlan == "crownAchiever"
+      // ) {
+      //   user.currentPlan = "diamondAchiever";
+      // }
       // Upgrade user plan from current plan
 
       admin.rejoiningWallet += 30;
