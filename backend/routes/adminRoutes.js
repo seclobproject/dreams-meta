@@ -1232,6 +1232,8 @@ router.put(
 
       user.autoPoolAmount = req.body.autoPoolAmount ?? user.autoPoolAmount ?? 0;
 
+      user.currentPlan = req.body.currentPlan ?? user.currentPlan;
+
       if (req.body.password) {
         user.password = req.body.password;
       }

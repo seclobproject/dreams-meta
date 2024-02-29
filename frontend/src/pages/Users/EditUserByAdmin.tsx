@@ -28,6 +28,7 @@ const EditUserByAdmin = () => {
     const [autoPool, setAutoPool] = useState(userInfo?.autoPool || false);
     const [autoPoolAmount, setAutoPoolAmount] = useState(userInfo?.autoPoolAmount);
     const [password, setPassword] = useState('');
+    const [currentPlan, setCurrentPlan] = useState(userInfo?.currentPlan);
 
     useEffect(() => {
         dispatch(setPageTitle('Account Setting'));
@@ -46,6 +47,7 @@ const EditUserByAdmin = () => {
         setOverallIncome(userInfo?.overallIncome);
         setAutoPool(userInfo?.autoPool || false);
         setAutoPoolAmount(userInfo?.autoPoolAmount);
+        setCurrentPlan(userInfo?.currentPlan);
         setPassword('');
     }, [userInfo]);
 
@@ -72,7 +74,7 @@ const EditUserByAdmin = () => {
     const profileEditHandler = (e: any) => {
         e.preventDefault();
         dispatch(
-            editUserProfileByAdmin({ id, userName, email, password, earning, joiningAmount, lastWallet, totalWallet, generationIncome, sponsorshipIncome, overallIncome, autoPool, autoPoolAmount })
+            editUserProfileByAdmin({ id, userName, email, password, earning, joiningAmount, lastWallet, totalWallet, generationIncome, sponsorshipIncome, overallIncome, autoPool, autoPoolAmount, currentPlan })
         );
         showMessage2();
     };
@@ -164,6 +166,15 @@ const EditUserByAdmin = () => {
                                     <div>
                                         <label htmlFor="autoPoolAmount">Auto Pool Amount</label>
                                         <input id="autoPoolAmount" type="number" value={autoPoolAmount} onChange={(e: any) => setAutoPoolAmount(e.target.value)} className="form-input" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="currentPlan">Select Rank</label>
+                                        <select id="currentPlan" value={currentPlan} onChange={(e: any) => setCurrentPlan(e.target.value)} className="form-input">
+                                            <option value="promoter">Promoter</option>
+                                            <option value="royalAchiever">Royal Achiever</option>
+                                            <option value="crownAchiever">Crown Achiever</option>
+                                            <option value="diamondAchiever">Diamond Achiever</option>
+                                        </select>
                                     </div>
                                     <div className="mt-6">
                                         <button onClick={profileEditHandler} type="button" className="btn btn-primary">

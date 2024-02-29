@@ -513,13 +513,13 @@ export const editUserProfileByAdmin = createAsyncThunk('editUserProfileByAdmin',
             overallIncome: user.overallIncome,
             autoPool: user.autoPool,
             autoPoolAmount: user.autoPoolAmount,
+            currentPlan: user.currentPlan,
         },
         config
     );
 
     return response.data;
 });
-
 
 export const editUserByAdminSlice = createSlice({
     name: 'editUserByAdminSlice',
@@ -547,7 +547,7 @@ export const editUserByAdminSlice = createSlice({
                 } else if (action.error.message === 'Request failed with status code 400') {
                     state.error = 'Email or Phone already used!';
                 }
-            })
+            });
     },
 });
 
