@@ -772,6 +772,10 @@ router.get(
 
     const users = await User.find({ autoPool: true });
 
+    if (users.length <= 0) {
+      res.status(400).json({ sts: "00", msg: "No users found!" });
+    }
+
     if (users) {
       const autoPoolBalance = admin.autoPoolBank;
       let balanceUsed = 0;
@@ -1205,8 +1209,28 @@ router.put(
     const user = await User.findById(id);
 
     if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
+
+      user.earning = req.body.earning ?? user.earning;
+      
+      user.joiningAmount = req.body.joiningAmount ?? user.joiningAmount;
+      
+      user.lastWallet = req.body.lastWallet ?? user.lastWallet ?? 'earning';
+
+      user.totalWallet = req.body.totalWallet ?? user.totalWallet ?? 0;
+
+      user.generationIncome = req.body.generationIncome ?? user.generationIncome ?? 0;
+
+      user.sponsorshipIncome = req.body.sponsorshipIncome ?? user.sponsorshipIncome ?? 0;
+
+      user.overallIncome = req.body.overallIncome ?? user.overallIncome ?? 0;
+
+      user.name = req.body.name ?? user.name;
+
+      user.email = req.body.email ?? user.email;
+
+      user.autoPool = req.body.autoPool ?? user.autoPool;
+
+      user.autoPoolAmount = req.body.autoPoolAmount ?? user.autoPoolAmount ?? 0;
 
       if (req.body.password) {
         user.password = req.body.password;

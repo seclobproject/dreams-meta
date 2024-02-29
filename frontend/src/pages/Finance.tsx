@@ -26,7 +26,7 @@ const Finance = () => {
     // const currentHour = currentDateTime.getHours();
     // const currentMinute = currentDateTime.getMinutes();
     // const currentTime = currentDateTime.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
-    const [showButton, setShowButton] = useState(false);
+    // const [showButton, setShowButton] = useState(false);
 
     const { data: userInfo } = useAppSelector((state: any) => state.getUserDetailsReducer);
 
@@ -156,15 +156,15 @@ const Finance = () => {
         }
     }, [data]);
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            const currentHour = currentDateTime.getHours();
-            const currentMinute = currentDateTime.getMinutes();
-            setShowButton(currentHour === 17 || (currentHour > 17 && currentHour < 21));
-        }, 1000);
+    // useEffect(() => {
+    //     const intervalId = setInterval(() => {
+    //         const currentHour = currentDateTime.getHours();
+    //         const currentMinute = currentDateTime.getMinutes();
+    //         setShowButton(currentHour === 17 || (currentHour > 17 && currentHour < 21));
+    //     }, 1000);
 
-        return () => clearInterval(intervalId);
-    }, []);
+    //     return () => clearInterval(intervalId);
+    // }, []);
 
     const upgradeHandler = () => {
         const confirmed = window.confirm('Are you sure you want to upgrade your plan?');
@@ -264,7 +264,7 @@ const Finance = () => {
                             <div className="flex flex-col justify-center mt-5">
                                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.earning}</div>
                             </div>
-                            {showButton && userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
+                            {userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
                                 <>
                                     <button type="button" onClick={() => navigate('/withdraw')} className="btn rounded-lg p-2 mt-4 text-white">
                                         Withdraw
@@ -272,11 +272,11 @@ const Finance = () => {
                                     <div className="mt-3">Amount will be credited to your account within 24 hours</div>
                                 </>
                             )}
-                            {!showButton && (
+                            {/* {!showButton && (
                                 <div className="mt-2">
                                     <TimerComponent />
                                 </div>
-                            )}
+                            )} */}
                         </div>
 
                         {/*  Time On-Site */}

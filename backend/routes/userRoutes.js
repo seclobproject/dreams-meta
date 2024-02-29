@@ -41,7 +41,8 @@ router.post(
     const joiningAmount = 0;
     const children = [];
     const currentPlan = "promoter";
-    const thirtyChecker = false;
+    // const thirtyChecker = false;
+    const requestCount = [0, 1, 2, 3, 4];
 
     const user = await User.create({
       sponser,
@@ -53,7 +54,8 @@ router.post(
       joiningAmount,
       children,
       currentPlan,
-      thirtyChecker,
+      requestCount,
+      // thirtyChecker,
     });
 
     if (user) {
@@ -65,7 +67,6 @@ router.post(
         address: user.address,
         ownSponserId: user.ownSponserId,
         currentPlan: user.currentPlan,
-        thirtyChecker: user.thirtyChecker,
       });
     } else {
       res.status(400);
@@ -485,24 +486,38 @@ router.post(
 
     if (user) {
       if (user.earning >= amount) {
-        const withdrawalRequest = await WithdrawRequest.create({
-          user: userId,
-          amount: amount,
-          walletAddress: walletAddress,
-          status: false,
-          hash: "",
-        });
+        // Check withdrawal eligibility by the number of direct refferals
+        if (!user.requestCount || user.requestCount.length == 0) {
+          user.requestCount = [0, 1, 2, 3];
+        }
 
-        if (withdrawalRequest) {
-          user.showWithdraw = false;
+        const updateUser = await user.save();
 
-          const updatedUser = await user.save();
+        const currentReqState = updateUser.requestCount.shift();
 
-          if (updatedUser) {
-            res.status(201).json({
-              sts: "01",
-              msg: "Your request has been sent successfully!",
-            });
+        if (currentReqState <= updateUser.children.length) {
+          const withdrawalRequest = await WithdrawRequest.create({
+            user: userId,
+            amount: amount,
+            walletAddress: walletAddress,
+            status: false,
+            hash: "",
+          });
+
+          if (withdrawalRequest) {
+            updateUser.showWithdraw = false;
+            const updatedUser = await updateUser.save();
+            if (updatedUser) {
+              res.status(201).json({
+                sts: "01",
+                msg: "Your request has been sent successfully!",
+              });
+            } else {
+              res.status(400).json({
+                sts: "00",
+                msg: "Some error occured!",
+              });
+            }
           } else {
             res.status(400).json({
               sts: "00",
@@ -512,7 +527,7 @@ router.post(
         } else {
           res.status(400).json({
             sts: "00",
-            msg: "Some error occured!",
+            msg: "You don't have enough direct referrals!",
           });
         }
       } else {

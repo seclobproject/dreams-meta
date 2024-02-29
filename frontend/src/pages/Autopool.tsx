@@ -32,7 +32,10 @@ const Autopool = () => {
 
     const splitAmountHandler = (e: any) => {
         e.preventDefault();
-        dispatch(splitAutopoolAmount());
+        const result = confirm("Are you sure you want to split the auto pool?");
+        if (result) {
+            dispatch(splitAutopoolAmount());
+        }
         setModal2(false);
     };
 

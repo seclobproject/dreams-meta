@@ -158,6 +158,11 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    requestCount: [
+      {
+        type: Number,
+      },
+    ]
   },
   {
     timestamps: true,

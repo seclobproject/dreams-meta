@@ -15,6 +15,7 @@ const users = [
     currentPlan: "promoter",
     autoPool: false,
     joiningAmount: 0,
+    requestCount: [0, 1, 2, 3, 4],
   },
 ];
 

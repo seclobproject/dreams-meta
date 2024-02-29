@@ -190,7 +190,6 @@ export const splitAutopoolAmount = createAsyncThunk('splitAutopoolAmount', async
     const response = await axios.get(`${URL}/api/admin/split-autopool-income`, config);
 
     console.log(response.data);
-    
 
     return response.data;
 });
@@ -505,12 +504,22 @@ export const editUserProfileByAdmin = createAsyncThunk('editUserProfileByAdmin',
             name: user.userName,
             email: user.email,
             password: user.password,
+            earning: user.earning,
+            joiningAmount: user.joiningAmount,
+            lastWallet: user.lastWallet,
+            totalWallet: user.totalWallet,
+            generationIncome: user.generationIncome,
+            sponsorshipIncome: user.sponsorshipIncome,
+            overallIncome: user.overallIncome,
+            autoPool: user.autoPool,
+            autoPoolAmount: user.autoPoolAmount,
         },
         config
     );
 
     return response.data;
 });
+
 
 export const editUserByAdminSlice = createSlice({
     name: 'editUserByAdminSlice',
@@ -538,13 +547,12 @@ export const editUserByAdminSlice = createSlice({
                 } else if (action.error.message === 'Request failed with status code 400') {
                     state.error = 'Email or Phone already used!';
                 }
-            });
+            })
     },
 });
 
 // Redux action to upload image
 export const uploadImage = createAsyncThunk('uploadImage', async (file: File) => {
-    
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
 
@@ -559,9 +567,8 @@ export const uploadImage = createAsyncThunk('uploadImage', async (file: File) =>
     };
 
     const response = await axios.post(`${URL}/api/admin/upload-reward`, formData, config);
-    
+
     return response.data;
-    
 });
 
 export const uploadImageSlice = createSlice({

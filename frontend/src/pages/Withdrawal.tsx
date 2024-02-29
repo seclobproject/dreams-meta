@@ -13,8 +13,8 @@ const Withdrawal = () => {
     const [walletAddress, setWalletAddress] = useState('');
     const [message, setMessage] = useState(false);
 
-    const currentDateTime = new Date();
-    const [showButton, setShowButton] = useState(false);
+    // const currentDateTime = new Date();
+    // const [showButton, setShowButton] = useState(false);
 
     const { data: userInfo } = useAppSelector((state: any) => state.getUserDetailsReducer);
     const { data: withdrawInfo } = useAppSelector((state: any) => state.requestWithdrawalReducer);
@@ -35,15 +35,15 @@ const Withdrawal = () => {
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            const currentHour = currentDateTime.getHours();
-            const currentMinute = currentDateTime.getMinutes();
-            setShowButton(currentHour === 17 || (currentHour > 17 && currentHour < 21));
-        }, 1000);
+    // useEffect(() => {
+    //     const intervalId = setInterval(() => {
+    //         const currentHour = currentDateTime.getHours();
+    //         const currentMinute = currentDateTime.getMinutes();
+    //         setShowButton(currentHour === 17 || (currentHour > 17 && currentHour < 21));
+    //     }, 1000);
 
-        return () => clearInterval(intervalId);
-    }, []);
+    //     return () => clearInterval(intervalId);
+    // }, []);
 
     const submitHandlerToWallet = async (type: number) => {
         if (type === 9) {
@@ -154,18 +154,18 @@ const Withdrawal = () => {
                     <div className="text-center">{amount && `Addable amount to savings: ${amount - amount * 0.05}`}</div>
                     {userInfo && userInfo.showWithdraw && (
                         <div className="flex flex-row items-center justify-center gap-3">
-                            {showButton && userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
+                            {userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
                                 <>
                                     <button type="button" onClick={() => submitHandlerToWallet(9)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
                                         Withdraw to Wallet
                                     </button>
                                 </>
                             )}
-                            {!showButton && (
+                            {/* {!showButton && (
                                 <div className="">
                                     <TimerComponent />
                                 </div>
-                            )}
+                            )} */}
                             <button type="button" onClick={() => submitHandlerToSavings(10)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
                                 Add to Savings
                             </button>
