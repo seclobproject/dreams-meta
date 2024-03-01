@@ -167,7 +167,11 @@ router.get(
       user.userStatus = true;
 
       // Add $2 to Auto Pool bank of admin
-      admin.autoPoolBank += 2;
+      if (admin.autoPoolBank) {
+        admin.autoPoolBank += 2;
+      } else {
+        admin.autoPoolBank = 2;
+      }
 
       if (admin.rewards) {
         admin.rewards += 3;
@@ -389,7 +393,11 @@ router.post(
       user.userStatus = true;
 
       // Add $2 to Auto Pool bank of admin
-      admin.autoPoolBank += 2;
+      if (admin.autoPoolBank) {
+        admin.autoPoolBank += 2;
+      } else {
+        admin.autoPoolBank = 2;
+      }
 
       if (admin.rewards) {
         admin.rewards += 3;
@@ -788,7 +796,10 @@ router.get(
 
         if (promoterUsers.length > 0) {
           const fourtyPercent = autoPoolBalance * 0.4;
-          const amountPerUser = fourtyPercent / promoterUsers.length;
+          const amountPerUser = Math.round(
+            fourtyPercent / promoterUsers.length,
+            2
+          );
 
           for (const user of promoterUsers) {
             user.autoPoolAmount += amountPerUser;
@@ -839,7 +850,10 @@ router.get(
 
         if (royalAchieverUsers.length > 0) {
           const thirtyPercent = autoPoolBalance * 0.3;
-          const amountPerUser = thirtyPercent / royalAchieverUsers.length;
+          const amountPerUser = Math.round(
+            thirtyPercent / royalAchieverUsers.length,
+            2
+          );
 
           for (const user of royalAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
@@ -894,7 +908,10 @@ router.get(
 
         if (crownAchieverUsers.length > 0) {
           const twentyPercent = autoPoolBalance * 0.2;
-          const amountPerUser = twentyPercent / crownAchieverUsers.length;
+          const amountPerUser = Math.round(
+            twentyPercent / crownAchieverUsers.length,
+            2
+          );
 
           for (const user of crownAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
@@ -949,7 +966,11 @@ router.get(
 
         if (diamondAchieverUsers.length > 0) {
           const tenPercent = autoPoolBalance * 0.1;
-          const amountPerUser = tenPercent / diamondAchieverUsers.length;
+          const amountPerUser = Math.round(
+            tenPercent / diamondAchieverUsers.length,
+            2
+          );
+          console.log(amountPerUser);
 
           for (const user of diamondAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
@@ -1209,18 +1230,19 @@ router.put(
     const user = await User.findById(id);
 
     if (user) {
-
       user.earning = req.body.earning ?? user.earning;
-      
+
       user.joiningAmount = req.body.joiningAmount ?? user.joiningAmount;
-      
-      user.lastWallet = req.body.lastWallet ?? user.lastWallet ?? 'earning';
+
+      user.lastWallet = req.body.lastWallet ?? user.lastWallet ?? "earning";
 
       user.totalWallet = req.body.totalWallet ?? user.totalWallet ?? 0;
 
-      user.generationIncome = req.body.generationIncome ?? user.generationIncome ?? 0;
+      user.generationIncome =
+        req.body.generationIncome ?? user.generationIncome ?? 0;
 
-      user.sponsorshipIncome = req.body.sponsorshipIncome ?? user.sponsorshipIncome ?? 0;
+      user.sponsorshipIncome =
+        req.body.sponsorshipIncome ?? user.sponsorshipIncome ?? 0;
 
       user.overallIncome = req.body.overallIncome ?? user.overallIncome ?? 0;
 

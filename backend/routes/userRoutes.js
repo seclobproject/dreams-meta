@@ -216,7 +216,11 @@ router.get(
 
       admin.rejoiningWallet += 30;
 
-      admin.autoPoolBank += 2;
+      if (admin.autoPoolBank) {
+        admin.autoPoolBank += 2;
+      } else {
+        admin.autoPoolBank = 2;
+      }
 
       if (admin.rewards) {
         admin.rewards += 3;

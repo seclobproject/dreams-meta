@@ -252,7 +252,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Amount</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.overallIncome}</div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.overallIncome.toFixed(2)}</div>
                             </div>
                         </div>
 
@@ -262,7 +262,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Wallet Amount</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.earning}</div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.earning.toFixed(2)}</div>
                             </div>
                             {/* {userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
                                 <>
@@ -285,7 +285,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Rejoining Wallet Amount</div>
                             </div>
                             <div className="flex items-center justify-between mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.joiningAmount}</div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.joiningAmount.toFixed(2)}</div>
                                 <button type="button" onClick={upgradeHandler} className="btn rounded-lg p-2 mt-4 text-white">
                                     Rejoin
                                 </button>
@@ -300,7 +300,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Generation Income</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.generationIncome}</div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.generationIncome.toFixed(2)}</div>
                             </div>
                         </div>
 
@@ -310,7 +310,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Sponsorship Income</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.sponsorshipIncome}</div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.sponsorshipIncome.toFixed(2)}</div>
                             </div>
                         </div>
 
@@ -320,7 +320,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Global Autopool Income</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.autoPoolAmount}</div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.autoPoolAmount.toFixed(2)}</div>
                             </div>
                         </div>
 
@@ -330,7 +330,7 @@ const Finance = () => {
                                 <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Savings Account</div>
                             </div>
                             <div className="flex flex-col justify-center mt-5">
-                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.savingsIncome}</div>
+                                <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.savingsIncome.toFixed(2)}</div>
                             </div>
                         </div>
 
