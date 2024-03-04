@@ -1,5 +1,4 @@
 export const payUser = (amount, sponser, lastWallet) => {
-
   
   let earning = sponser.earning;
   let joining = sponser.joiningAmount;
@@ -11,7 +10,6 @@ export const payUser = (amount, sponser, lastWallet) => {
   // Loop until all amount is distributed
   while (amount > 0) {
 
-    
     if (currentWallet === 'earning') {
       
       const spaceInEarning = 30 - (totalWallet % 30);

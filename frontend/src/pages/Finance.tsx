@@ -264,14 +264,14 @@ const Finance = () => {
                             <div className="flex flex-col justify-center mt-5">
                                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${userInfo && userInfo.earning.toFixed(2)}</div>
                             </div>
-                            {/* {userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
+                            {userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
                                 <>
                                     <button type="button" onClick={() => navigate('/withdraw')} className="btn rounded-lg p-2 mt-4 text-white">
                                         Withdraw
                                     </button>
                                     <div className="mt-3">Amount will be credited to your account within 24 hours</div>
                                 </>
-                            )} */}
+                            )}
                             {/* {!showButton && (
                                 <div className="mt-2">
                                     <TimerComponent />

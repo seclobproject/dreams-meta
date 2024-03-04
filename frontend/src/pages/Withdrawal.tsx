@@ -152,7 +152,7 @@ const Withdrawal = () => {
                     <input type="text" value={walletAddress} onChange={(e: any) => setWalletAddress(e.target.value)} placeholder="Wallet Address" className="form-input" required />
                     <div className="text-center">{amount && `Withdrawable amount to wallet: ${amount - amount * 0.15}`}</div>
                     <div className="text-center">{amount && `Addable amount to savings: ${amount - amount * 0.05}`}</div>
-                    {/* {userInfo && userInfo.showWithdraw && (
+                    {userInfo && userInfo.showWithdraw && (
                         <div className="flex flex-row items-center justify-center gap-3">
                             {userInfo && userInfo.showWithdraw == true && userInfo.userStatus == true && (
                                 <>
@@ -165,7 +165,7 @@ const Withdrawal = () => {
                                 Add to Savings
                             </button>
                         </div>
-                    )} */}
+                    )}
                     {message && <div className="text-center">Submitted successfully!</div>}
                 </form>
             </div>

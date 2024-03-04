@@ -257,7 +257,7 @@ router.get(
           sponser.earning = splitCommission.earning;
           sponser.joiningAmount = splitCommission.joining;
           sponser.totalWallet += splitCommission.addToTotalWallet;
-          sponser.lastWallet += splitCommission.currentWallet;
+          sponser.lastWallet = splitCommission.currentWallet;
 
           sponser.sponsorshipIncome += splitCommission.variousIncome;
         } else {
@@ -795,9 +795,15 @@ router.get(
         });
 
         if (promoterUsers.length > 0) {
+          
           const fourtyPercent = autoPoolBalance * 0.4;
+          console.log(`fourtyPercent: ${fourtyPercent}`);
+
+          const amountPerUserCalc = fourtyPercent / promoterUsers.length;
+          console.log(`amountPerUser: ${amountPerUserCalc}`);
+          
           const amountPerUser = Math.round(
-            fourtyPercent / promoterUsers.length,
+            amountPerUserCalc,
             2
           );
 
@@ -819,7 +825,7 @@ router.get(
             user.earning = splitCommission.earning;
             user.joiningAmount = splitCommission.joining;
             user.totalWallet += splitCommission.addToTotalWallet;
-            user.lastWallet += splitCommission.currentWallet;
+            user.lastWallet = splitCommission.currentWallet;
             user.sponsorshipIncome += splitCommission.variousIncome;
             // Add amount to each user end
 
@@ -876,7 +882,7 @@ router.get(
             user.earning = splitCommission.earning;
             user.joiningAmount = splitCommission.joining;
             user.totalWallet += splitCommission.addToTotalWallet;
-            user.lastWallet += splitCommission.currentWallet;
+            user.lastWallet = splitCommission.currentWallet;
 
             user.sponsorshipIncome += splitCommission.variousIncome;
             // Add amount to each user end
@@ -934,7 +940,7 @@ router.get(
             user.earning = splitCommission.earning;
             user.joiningAmount = splitCommission.joining;
             user.totalWallet += splitCommission.addToTotalWallet;
-            user.lastWallet += splitCommission.currentWallet;
+            user.lastWallet = splitCommission.currentWallet;
 
             user.sponsorshipIncome += splitCommission.variousIncome;
             // Add amount to each user end
@@ -986,7 +992,7 @@ router.get(
             user.earning = splitCommission.earning;
             user.joiningAmount = splitCommission.joining;
             user.totalWallet += splitCommission.addToTotalWallet;
-            user.lastWallet += splitCommission.currentWallet;
+            user.lastWallet = splitCommission.currentWallet;
 
             user.sponsorshipIncome += splitCommission.variousIncome;
             // Add amount to each user end
