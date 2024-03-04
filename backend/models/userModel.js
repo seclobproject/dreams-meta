@@ -3,20 +3,20 @@ import bcrypt from "bcryptjs";
 
 const transactionSchema = new mongoose.Schema(
   {
-    referenceID: String,
-    amount: Number,
-    TDSAmount: Number,
-    lastAmount: Number,
+    amount: { type: Number, double: true },
+    lastAmount: { type: Number, double: true },
+    category: String,
+    basedOnWho: String,
+    joinedLevel: String,
     status: String,
   },
   {
     timestamps: true,
   }
 );
-
 const withdrawalSchema = new mongoose.Schema(
   {
-    amount: Number,
+    amount: { type: Number, double: true },
     status: String,
   },
   {
@@ -53,10 +53,17 @@ const userSchema = new mongoose.Schema(
     earning: {
       type: Number,
       default: 0,
+      double: true,
     },
     joiningAmount: {
       type: Number,
       default: 0,
+      double: true,
+    },
+    rejoiningWallet: {
+      type: Number,
+      default: 0,
+      double: true,
     },
     currentPlan: {
       type: String,
@@ -84,30 +91,6 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    royalAchieverLeft: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    royalAchieverRight: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    crownAchieverLeft: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    crownAchieverRight: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    diamondAchieverLeft: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    diamondAchieverRight: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
     autoPool: {
       type: Boolean,
       default: false,
@@ -117,10 +100,12 @@ const userSchema = new mongoose.Schema(
     },
     autoPoolAmount: {
       type: Number,
+      double: true,
       default: 0,
     },
     autoPoolBank: {
       type: Number,
+      double: true,
       default: 0,
     },
     isAdmin: {
@@ -132,10 +117,7 @@ const userSchema = new mongoose.Schema(
     },
     rewards: {
       type: Number,
-    },
-    rejoiningWallet: {
-      type: Number,
-      default: 0,
+      double: true,
     },
     hash: {
       type: String,
@@ -156,13 +138,43 @@ const userSchema = new mongoose.Schema(
     },
     totalWallet: {
       type: Number,
+      double: true,
       default: 0,
+    },
+    lastWallet: {
+      type: String,
     },
     showWithdraw: {
       type: Boolean,
       default: true,
     },
     withdrawalHistory: [withdrawalSchema],
+    generationIncome: {
+      type: Number,
+      double: true,
+      default: 0,
+    },
+    sponsorshipIncome: {
+      type: Number,
+      double: true,
+      default: 0,
+    },
+    overallIncome: {
+      type: Number,
+      double: true,
+      default: 0,
+    },
+    savingsIncome: {
+      type: Number,
+      double: true,
+      default: 0,
+    },
+    requestCount: [
+      {
+        type: Number,
+        
+      },
+    ],
   },
   {
     timestamps: true,

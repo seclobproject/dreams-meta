@@ -18,32 +18,16 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
     const [password, setPassword] = useState('');
     const [showPass, setShowPass] = useState(false);
 
-    const { userInfo } = useAppSelector((state: any) => state.authReducer);
+    const { pending, userInfo, error } = useAppSelector((state: any) => state.authReducer);
 
     useEffect(() => {
-        
         dispatch(setPageTitle('Login'));
         if (userInfo) navigate(`/dashboard`);
     }, [userInfo, navigate]);
 
-    // const isDark = useAppSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
-    // const isRtl = useAppSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-    // const themeConfig = useAppSelector((state: IRootState) => state.themeConfig);
-    // const setLocale = (flag: string) => {
-    //     setFlag(flag);
-    //     if (flag.toLowerCase() === 'ae') {
-    //         dispatch(toggleRTL('rtl'));
-    //     } else {
-    //         dispatch(toggleRTL('ltr'));
-    //     }
-    // };
-    // const [flag, setFlag] = useState(themeConfig.locale);
-
     const submitForm = (e: any) => {
         e.preventDefault();
-        console.log(email, password);
         dispatch(fetchUser({ email, password }));
-        // if (userInfo) navigate('/');
     };
 
     return (
@@ -110,9 +94,10 @@ const LoginBoxed: React.FC<ComponentProps> = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <button type="submit" onClick={submitForm} className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
+                                <button onClick={submitForm} type="submit"className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
                                     Sign in
                                 </button>
+                                <div className='text-center'>{userInfo ? 'Success' : error ? 'Please check the credentials' : ''}</div>
                             </form>
                         </div>
                     </div>

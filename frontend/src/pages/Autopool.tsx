@@ -32,7 +32,10 @@ const Autopool = () => {
 
     const splitAmountHandler = (e: any) => {
         e.preventDefault();
-        dispatch(splitAutopoolAmount());
+        const result = confirm("Are you sure you want to split the auto pool?");
+        if (result) {
+            dispatch(splitAutopoolAmount());
+        }
         setModal2(false);
     };
 
@@ -61,7 +64,7 @@ const Autopool = () => {
 
                             <div className="text-center px-2 flex justify-around">
                                 <button
-                                    onClick={() => setModal2(true)}
+                                    onClick={splitAmountHandler}
                                     type="button"
                                     className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 py-2 px-3 rounded-lg text-white ltr:mr-2 rtl:ml-2"
                                 >
@@ -105,7 +108,7 @@ const Autopool = () => {
                 </div>
             </div>
 
-            <Transition appear show={modal2} as={Fragment}>
+            {/* <Transition appear show={modal2} as={Fragment}>
                 <Dialog as="div" open={modal2} onClose={() => setModal2(false)}>
                     <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
                         <div className="fixed inset-0" />
@@ -138,7 +141,7 @@ const Autopool = () => {
                         </div>
                     </div>
                 </Dialog>
-            </Transition>
+            </Transition> */}
         </div>
     );
 };

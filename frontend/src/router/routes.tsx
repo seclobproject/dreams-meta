@@ -11,6 +11,7 @@ import RejoiningWallet from '../pages/RejoiningWallet';
 import Withdrawal from '../pages/Withdrawal';
 import ManageReward from '../pages/Forms/ManageReward';
 import WithdrawHistory from '../pages/DataTables/WithdrawHistory';
+import Reports from '../pages/DataTables/Reports';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -152,6 +153,10 @@ const routes = [
     {
         path: '/genealogy',
         element: <LevelTree />,
+    },
+    {
+        path: '/reports',
+        element: <Reports />,
     },
     {
         path: '/show-rewards',

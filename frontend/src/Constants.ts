@@ -1,3 +1,4 @@
+// export const URL = 'http://localhost:6002';
 export const URL = 'https://dreamzmeta.com';
 
 // export const testUsdtAddr = '0x61c03d276aa39a9485c00acab93724cd3df589bd';

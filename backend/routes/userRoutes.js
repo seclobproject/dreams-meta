@@ -1,18 +1,15 @@
 import express from "express";
 const router = express.Router();
-import Randomstring from "randomstring";
 
 import asyncHandler from "../middleware/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import { protect } from "../middleware/authMiddleware.js";
-import path from "path";
-import {
-  addCommissionToLineForUpgrade,
-  splitterTest,
-} from "./supportingFunctions/TreeFunctions.js";
+import { addCommissionToLine } from "./supportingFunctions/TreeFunctions.js";
 import JoiningRequest from "../models/joinRequestModel.js";
 import WithdrawRequest from "../models/withdrawalRequestModel.js";
+import { payUser } from "./supportingFunctions/payFunction.js";
+
 // import upload from "../middleware/fileUploadMiddleware.js";
 
 // Register new user
@@ -44,7 +41,8 @@ router.post(
     const joiningAmount = 0;
     const children = [];
     const currentPlan = "promoter";
-    const thirtyChecker = false;
+    // const thirtyChecker = false;
+    const requestCount = [0, 1, 2, 3, 4];
 
     const user = await User.create({
       sponser,
@@ -56,7 +54,8 @@ router.post(
       joiningAmount,
       children,
       currentPlan,
-      thirtyChecker,
+      requestCount,
+      // thirtyChecker,
     });
 
     if (user) {
@@ -68,7 +67,6 @@ router.post(
         address: user.address,
         ownSponserId: user.ownSponserId,
         currentPlan: user.currentPlan,
-        thirtyChecker: user.thirtyChecker,
       });
     } else {
       res.status(400);
@@ -200,217 +198,86 @@ router.get(
     const user = await User.findById(userId);
     const admin = await User.findOne({ isAdmin: true });
 
-    if (
-      user.joiningAmount >= 60 &&
-      user.currentPlan == "promoter" &&
-      user.children.length >= 1
-    ) {
-      user.joiningAmount -= 60;
-      admin.rejoiningWallet += 60;
-      user.currentPlan = "royalAchiever";
+    if (user.joiningAmount >= 30) {
+      user.joiningAmount -= 30;
 
-      admin.autoPoolBank += 4;
+      // Upgrade user plan from current plan
+      // if (user.currentPlan == "promoter") {
+      //   user.currentPlan = "royalAchiever";
+      // } else if (user.currentPlan == "royalAchiever") {
+      //   user.currentPlan = "crownAchiever";
+      // } else if (
+      //   user.currentPlan == "crownAchiever" ||
+      //   user.currentPlan == "crownAchiever"
+      // ) {
+      //   user.currentPlan = "diamondAchiever";
+      // }
+      // Upgrade user plan from current plan
 
-      if (admin.rewards) {
-        admin.rewards += 6;
+      admin.rejoiningWallet += 30;
+
+      if (admin.autoPoolBank) {
+        admin.autoPoolBank += 2;
       } else {
-        admin.rewards = 6;
+        admin.autoPoolBank = 2;
       }
 
-      // Give $8 commission to sponsor as well as people above in the tree till 4 levels
+      if (admin.rewards) {
+        admin.rewards += 3;
+      } else {
+        admin.rewards = 3;
+      }
+
+      const updateAdmin = await admin.save();
+
+      // Give $4 commission to sponsor as well as people above in the tree till 4 levels
       const sponser = await User.findById(user.sponser);
 
       // Code to add money to sponsor only
-      if (!sponser.thirtyChecker) {
-        sponser.thirtyChecker = false;
-      }
+      if (sponser) {
+        sponser.overallIncome += 4;
 
-      if (!sponser.totalWallet) {
-        sponser.totalWallet = 0;
-      }
+        const splitCommission = payUser(4, sponser, sponser.lastWallet);
 
-      const splitCommission = splitterTest(
-        8,
-        sponser,
-        sponser.thirtyChecker,
-        sponser.currentPlan
-      );
+        sponser.earning = splitCommission.earning;
+        sponser.joiningAmount = splitCommission.joining;
 
-      sponser.earning = splitCommission.earning;
-      sponser.joiningAmount = splitCommission.joining;
-      sponser.thirtyChecker = splitCommission.checker;
+        sponser.totalWallet += splitCommission.addToTotalWallet;
+        sponser.lastWallet = splitCommission.currentWallet;
 
-      if (sponser.currentPlan == "promoter") {
-        sponser.totalWallet = Math.min(
-          30,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      } else if (sponser.currentPlan == "royalAchiever") {
-        sponser.totalWallet = Math.min(
-          90,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      } else if (sponser.currentPlan == "crownAchiever") {
-        sponser.totalWallet = Math.min(
-          90,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      } else if (sponser.currentPlan == "diamondAchiever") {
-        sponser.totalWallet = Math.min(
-          90,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      }
+        sponser.sponsorshipIncome += splitCommission.variousIncome;
 
-      const updatedSponsor = await sponser.save();
-      // Code to add money to sponsor only end
-      if (updatedSponsor) {
-        await addCommissionToLineForUpgrade(user.nodeId, 3, 8);
-      }
-    } else if (
-      user.joiningAmount >= 100 &&
-      user.currentPlan == "royalAchiever" &&
-      user.children.length >= 2
-    ) {
-      user.joiningAmount -= 100;
-      user.currentPlan = "crownAchiever";
-      admin.rejoiningWallet += 100;
+        const updatedSponsor = await sponser.save();
 
-      admin.autoPoolBank += 8;
+        if (user.nodeId) {
+          const addCommission = await addCommissionToLine(user.nodeId, 3, 4);
 
-      if (admin.rewards) {
-        admin.rewards += 7;
+          const updatedUser = await user.save();
+
+          if (updatedSponsor && updatedUser) {
+            res
+              .status(200)
+              .json({ sts: "01", msg: "Plan upgraded successfully" });
+          } else {
+            res.status(400).json({ sts: "00", msg: "Plan upgrade failed" });
+          }
+        }
       } else {
-        admin.rewards = 7;
+        const updatedUser = await user.save();
+
+        if (updatedUser && updateAdmin) {
+          res
+            .status(200)
+            .json({ sts: "00", msg: "Plan upgraded successfully" });
+        } else {
+          res.status(400).json({ sts: "00", msg: "Plan upgrade failed" });
+        }
       }
-
-      // Give $15 commission to sponsor
-      const sponser = await User.findById(user.sponser);
-
-      // Code to add money to sponsor only
-      if (!sponser.thirtyChecker) {
-        sponser.thirtyChecker = false;
-      }
-
-      if (!sponser.totalWallet) {
-        sponser.totalWallet = 0;
-      }
-
-      const splitCommission = splitterTest(
-        15,
-        sponser,
-        sponser.thirtyChecker,
-        sponser.currentPlan
-      );
-
-      sponser.earning = splitCommission.earning;
-      sponser.joiningAmount = splitCommission.joining;
-      sponser.thirtyChecker = splitCommission.checker;
-
-      if (sponser.currentPlan == "promoter") {
-        sponser.totalWallet = Math.min(
-          30,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      } else if (sponser.currentPlan == "royalAchiever") {
-        sponser.totalWallet = Math.min(
-          90,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      } else if (sponser.currentPlan == "crownAchiever") {
-        sponser.totalWallet = Math.min(
-          90,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      } else if (sponser.currentPlan == "diamondAchiever") {
-        sponser.totalWallet = Math.min(
-          90,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      }
-
-      const updatedSponsor = await sponser.save();
       // Code to add money to sponsor only end
-
-      if (updatedSponsor) {
-        await addCommissionToLineForUpgrade(user.nodeId, 3, 15);
-      }
-    } else if (
-      user.joiningAmount >= 200 &&
-      (user.currentPlan == "crownAchiever" || "diamondAchiever") &&
-      user.children.length >= 3
-    ) {
-      user.joiningAmount -= 200;
-      admin.rejoiningWallet += 200;
-      user.currentPlan = "diamondAchiever";
-
-      admin.autoPoolBank += 15;
-
-      if (admin.rewards) {
-        admin.rewards += 10;
-      } else {
-        admin.rewards = 10;
-      }
-
-      // Give $30 commission to sponsor
-      const sponser = await User.findById(user.sponser);
-
-      // Code to add money to sponsor only
-      if (!sponser.thirtyChecker) {
-        sponser.thirtyChecker = false;
-      }
-
-      if (!sponser.totalWallet) {
-        sponser.totalWallet = 0;
-      }
-
-      const splitCommission = splitterTest(
-        30,
-        sponser,
-        sponser.thirtyChecker,
-        sponser.currentPlan
-      );
-
-      sponser.earning = splitCommission.earning;
-      sponser.joiningAmount = splitCommission.joining;
-      sponser.thirtyChecker = splitCommission.checker;
-
-      if (sponser.currentPlan == "promoter") {
-        sponser.totalWallet = Math.min(
-          30,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      } else if (sponser.currentPlan == "royalAchiever") {
-        sponser.totalWallet = Math.min(
-          90,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      } else if (sponser.currentPlan == "crownAchiever") {
-        sponser.totalWallet = Math.min(
-          90,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      } else if (sponser.currentPlan == "diamondAchiever") {
-        sponser.totalWallet = Math.min(
-          90,
-          sponser.totalWallet + splitCommission.addToTotalWallet
-        );
-      }
-
-      const updatedSponsor = await sponser.save();
-      // Code to add money to sponsor only end
-      if (updatedSponsor) {
-        await addCommissionToLineForUpgrade(user.nodeId, 3, 30);
-      }
     } else {
-      res.status(400).json({ msg: "User does not meet upgrade criteria" });
-    }
-
-    const updateAdmin = await admin.save();
-    const updateUser = await user.save();
-
-    if (updateUser && updateAdmin) {
-      res.status(200).json({ msg: "Success" });
+      res
+        .status(400)
+        .json({ sts: "00", msg: "Insufficient rejoining amount!" });
     }
   })
 );
@@ -623,24 +490,38 @@ router.post(
 
     if (user) {
       if (user.earning >= amount) {
-        const withdrawalRequest = await WithdrawRequest.create({
-          user: userId,
-          amount: amount,
-          walletAddress: walletAddress,
-          status: false,
-          hash: "",
-        });
+        // Check withdrawal eligibility by the number of direct refferals
+        if (!user.requestCount || user.requestCount.length == 0) {
+          user.requestCount = [0, 1, 2, 3];
+        }
 
-        if (withdrawalRequest) {
-          user.showWithdraw = false;
+        const updateUser = await user.save();
 
-          const updatedUser = await user.save();
+        const currentReqState = updateUser.requestCount.shift();
 
-          if (updatedUser) {
-            res.status(201).json({
-              sts: "01",
-              msg: "Your request has been sent successfully!",
-            });
+        if (currentReqState <= updateUser.children.length) {
+          const withdrawalRequest = await WithdrawRequest.create({
+            user: userId,
+            amount: amount,
+            walletAddress: walletAddress,
+            status: false,
+            hash: "",
+          });
+
+          if (withdrawalRequest) {
+            updateUser.showWithdraw = false;
+            const updatedUser = await updateUser.save();
+            if (updatedUser) {
+              res.status(201).json({
+                sts: "01",
+                msg: "Your request has been sent successfully!",
+              });
+            } else {
+              res.status(400).json({
+                sts: "00",
+                msg: "Some error occured!",
+              });
+            }
           } else {
             res.status(400).json({
               sts: "00",
@@ -650,7 +531,7 @@ router.post(
         } else {
           res.status(400).json({
             sts: "00",
-            msg: "Some error occured!",
+            msg: "You don't have enough direct referrals!",
           });
         }
       } else {
@@ -684,7 +565,66 @@ router.get(
         msg: "No withdrawal requests found!",
       });
     }
+  })
+);
 
+// Manage payment to savings
+router.post(
+  "/manage-payment-to-savings",
+  protect,
+  asyncHandler(async (req, res) => {
+    const { amount } = req.body;
+
+    if (!amount) {
+      res.status(400).json({ sts: "00", msg: "Invalid amount!" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (amount && user) {
+      const withdrawable = amount - amount * 0.05;
+
+      // Add 10% to user's savings income
+      if (!user.savingsIncome) {
+        user.savingsIncome = withdrawable;
+      } else {
+        user.savingsIncome += withdrawable;
+      }
+
+      const admin = await User.findOne({ isAdmin: true });
+
+      if (!admin.transactions) {
+        admin.transactions = [
+          {
+            category: "adminCharge",
+            amount: amount * 0.05,
+            basedOnWho: user.name,
+          },
+        ];
+      } else {
+        admin.transactions.push({
+          category: "adminCharge",
+          amount: amount * 0.05,
+          basedOnWho: user.name,
+        });
+      }
+
+      user.earning -= amount;
+
+      const updatedUser = await user.save();
+      const updatedAdmin = await admin.save();
+
+      if (updatedUser && updatedAdmin) {
+        res.status(200).json({
+          sts: "01",
+          msg: "Added to savings successfully",
+        });
+      } else {
+        res.status(400).json({ sts: "00", msg: "Savings not updated" });
+      }
+    } else {
+      res.status(400).json({ sts: "00", msg: "No user or amount found" });
+    }
   })
 );
 

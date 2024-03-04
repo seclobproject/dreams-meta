@@ -13,6 +13,7 @@ import {
     requestWithdrawalReducer,
     upgradeUserReducer,
     withdrawHistoryReducer,
+    addToSavingsReducer,
 } from './userSlice';
 
 import {
@@ -56,6 +57,7 @@ const rootReducer = combineReducers({
     verifyUserForAdminReducer,
     editUserByAdminReducer,
     withdrawHistoryReducer,
+    addToSavingsReducer,
 });
 
 const store = configureStore({

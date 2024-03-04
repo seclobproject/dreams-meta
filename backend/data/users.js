@@ -14,7 +14,8 @@ const users = [
     children: [],
     currentPlan: "promoter",
     autoPool: false,
-    rejoiningWallet: 0,
+    joiningAmount: 0,
+    requestCount: [0, 1, 2, 3, 4],
   },
 ];
 

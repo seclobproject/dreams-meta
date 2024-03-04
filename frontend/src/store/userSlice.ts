@@ -369,11 +369,9 @@ export const sendJoiningRequestSlice = createSlice({
 
 // Redux action to request withdrawal
 export const requestWithdrawal = createAsyncThunk('requestWithdrawal', async (data: any) => {
-
-    
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
-    
+
     const config = {
         headers: {
             Authorization: `Bearer ${parsedData.access_token}`,
@@ -382,11 +380,10 @@ export const requestWithdrawal = createAsyncThunk('requestWithdrawal', async (da
     };
 
     const { amount, walletAddress } = data;
-    
+
     const response = await axios.post(`${URL}/api/users/request-withdrawal`, { amount, walletAddress }, config);
 
     return response.data;
-
 });
 
 export const requestWithdrawalSlice = createSlice({
@@ -413,6 +410,49 @@ export const requestWithdrawalSlice = createSlice({
     },
 });
 
+// Redux action to add to savings
+export const addToSavings = createAsyncThunk('addToSavings', async (data: any) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const { amount } = data;
+
+    const response = await axios.post(`${URL}/api/users/manage-payment-to-savings`, { amount }, config);
+
+    return response.data;
+});
+
+export const addToSavingsSlice = createSlice({
+    name: 'addToSavingsSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(addToSavings.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(addToSavings.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(addToSavings.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
 // Redux action to upgrade/rejoining
 export const upgradeUser = createAsyncThunk('upgradeUser', async () => {
     const token: any = localStorage.getItem('userInfo');
@@ -427,11 +467,8 @@ export const upgradeUser = createAsyncThunk('upgradeUser', async () => {
 
     const response = await axios.get(`${URL}/api/users/upgrade-level`, config);
 
-    console.log(response.data);
-
     return response.data;
-
-})
+});
 
 export const upgradeUserSlice = createSlice({
     name: 'upgradeUserSlice',
@@ -460,7 +497,6 @@ export const upgradeUserSlice = createSlice({
 
 // Redux action to get withdraw history
 export const withdrawHistory = createAsyncThunk('withdrawHistory', async () => {
-
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
 
@@ -474,8 +510,7 @@ export const withdrawHistory = createAsyncThunk('withdrawHistory', async () => {
     const response = await axios.get(`${URL}/api/users/get-withdrawal-history`, config);
 
     return response.data;
-
-})
+});
 
 export const withdrawHistorySlice = createSlice({
     name: 'withdrawHistorySlice',
@@ -502,7 +537,7 @@ export const withdrawHistorySlice = createSlice({
     },
 });
 
-
+export const addToSavingsReducer = addToSavingsSlice.reducer;
 export const withdrawHistoryReducer = withdrawHistorySlice.reducer;
 export const upgradeUserReducer = upgradeUserSlice.reducer;
 export const requestWithdrawalReducer = requestWithdrawalSlice.reducer;

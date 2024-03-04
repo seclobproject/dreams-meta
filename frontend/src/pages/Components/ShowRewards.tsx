@@ -16,6 +16,7 @@ const getItems: any[] = [
 ];
 
 const ShowRewards = () => {
+    
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(setPageTitle('LightBox'));
