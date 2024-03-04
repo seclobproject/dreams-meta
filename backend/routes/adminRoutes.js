@@ -14,6 +14,7 @@ import Reward from "../models/rewardModel.js";
 import JoiningRequest from "../models/joinRequestModel.js";
 import WithdrawRequest from "../models/withdrawalRequestModel.js";
 import { payUser } from "./supportingFunctions/payFunction.js";
+import { log } from "console";
 
 // Verify the user and add the user to the proper position in the tree
 // after successful verification
@@ -795,17 +796,15 @@ router.get(
         });
 
         if (promoterUsers.length > 0) {
-          
           const fourtyPercent = autoPoolBalance * 0.4;
+
           console.log(`fourtyPercent: ${fourtyPercent}`);
 
           const amountPerUserCalc = fourtyPercent / promoterUsers.length;
+
           console.log(`amountPerUser: ${amountPerUserCalc}`);
-          
-          const amountPerUser = Math.round(
-            amountPerUserCalc,
-            2
-          );
+
+          const amountPerUser = Math.round(amountPerUserCalc * 100) / 100;
 
           for (const user of promoterUsers) {
             user.autoPoolAmount += amountPerUser;
@@ -856,10 +855,17 @@ router.get(
 
         if (royalAchieverUsers.length > 0) {
           const thirtyPercent = autoPoolBalance * 0.3;
-          const amountPerUser = Math.round(
-            thirtyPercent / royalAchieverUsers.length,
-            2
-          );
+
+          // const fourtyPercent = autoPoolBalance * 0.3;
+          console.log(`thirtyPercent: ${thirtyPercent}`);
+
+          const amountPerUserCalc = thirtyPercent / royalAchieverUsers.length;
+
+          console.log(`amountPerUser: ${amountPerUserCalc}`);
+
+          const amountPerUser = Math.round(amountPerUserCalc * 100) / 100;
+
+          console.log(`amountPerUserRounded: ${amountPerUser}`);
 
           for (const user of royalAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
@@ -914,10 +920,15 @@ router.get(
 
         if (crownAchieverUsers.length > 0) {
           const twentyPercent = autoPoolBalance * 0.2;
-          const amountPerUser = Math.round(
-            twentyPercent / crownAchieverUsers.length,
-            2
-          );
+
+          // const fourtyPercent = autoPoolBalance * 0.2;
+          console.log(`twentyPercent: ${twentyPercent}`);
+
+          const amountPerUserCalc = twentyPercent / crownAchieverUsers.length;
+
+          console.log(`amountPerUser: ${amountPerUserCalc}`);
+
+          const amountPerUser = Math.round(amountPerUserCalc * 100) / 100;
 
           for (const user of crownAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
@@ -972,11 +983,17 @@ router.get(
 
         if (diamondAchieverUsers.length > 0) {
           const tenPercent = autoPoolBalance * 0.1;
-          const amountPerUser = Math.round(
-            tenPercent / diamondAchieverUsers.length,
-            2
-          );
-          console.log(amountPerUser);
+
+          // const fourtyPercent = Math.round(autoPoolBalance * 0.1, 2);
+          console.log(`tenPercent: ${tenPercent}`);
+
+          const amountPerUserCalc = tenPercent / diamondAchieverUsers.length;
+
+          console.log(`amountPerUser: ${amountPerUserCalc}`);
+
+          const amountPerUser = Math.round(amountPerUserCalc * 100) / 100;
+
+          console.log(`amountPerUserRounded: ${amountPerUser}`);
 
           for (const user of diamondAchieverUsers) {
             user.autoPoolAmount += amountPerUser;

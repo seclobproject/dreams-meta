@@ -173,6 +173,10 @@ const Finance = () => {
         }
     };
 
+    useEffect(() => {
+        dispatch(upgradeUser());
+    }, [dispatch]);
+
     return (
         <div>
             <div className="pt-5">

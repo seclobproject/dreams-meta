@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 
 const transactionSchema = new mongoose.Schema(
   {
-    amount: Number,
-    lastAmount: Number,
+    amount: { type: Number, double: true },
+    lastAmount: { type: Number, double: true },
     category: String,
     basedOnWho: String,
     joinedLevel: String,
@@ -16,7 +16,7 @@ const transactionSchema = new mongoose.Schema(
 );
 const withdrawalSchema = new mongoose.Schema(
   {
-    amount: Number,
+    amount: { type: Number, double: true },
     status: String,
   },
   {
@@ -53,14 +53,17 @@ const userSchema = new mongoose.Schema(
     earning: {
       type: Number,
       default: 0,
+      double: true,
     },
     joiningAmount: {
       type: Number,
       default: 0,
+      double: true,
     },
     rejoiningWallet: {
       type: Number,
       default: 0,
+      double: true,
     },
     currentPlan: {
       type: String,
@@ -97,10 +100,12 @@ const userSchema = new mongoose.Schema(
     },
     autoPoolAmount: {
       type: Number,
+      double: true,
       default: 0,
     },
     autoPoolBank: {
       type: Number,
+      double: true,
       default: 0,
     },
     isAdmin: {
@@ -112,6 +117,7 @@ const userSchema = new mongoose.Schema(
     },
     rewards: {
       type: Number,
+      double: true,
     },
     hash: {
       type: String,
@@ -132,6 +138,7 @@ const userSchema = new mongoose.Schema(
     },
     totalWallet: {
       type: Number,
+      double: true,
       default: 0,
     },
     lastWallet: {
@@ -144,25 +151,30 @@ const userSchema = new mongoose.Schema(
     withdrawalHistory: [withdrawalSchema],
     generationIncome: {
       type: Number,
+      double: true,
       default: 0,
     },
     sponsorshipIncome: {
       type: Number,
+      double: true,
       default: 0,
     },
     overallIncome: {
       type: Number,
+      double: true,
       default: 0,
     },
     savingsIncome: {
       type: Number,
+      double: true,
       default: 0,
     },
     requestCount: [
       {
         type: Number,
+        
       },
-    ]
+    ],
   },
   {
     timestamps: true,
