@@ -552,12 +552,15 @@ export const editUserByAdminSlice = createSlice({
 });
 
 // Redux action to upload image
-export const uploadImage = createAsyncThunk('uploadImage', async (file: File) => {
+export const uploadImage = createAsyncThunk('uploadImage', async (file: any) => {
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
 
+    console.log('file', file.file);
+    
+
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('image', file.file);
 
     const config = {
         headers: {
@@ -571,6 +574,10 @@ export const uploadImage = createAsyncThunk('uploadImage', async (file: File) =>
     return response.data;
 });
 
+export const clearUploadData = createAsyncThunk('clearUploadData', async () => {
+    console.log('clearing data');
+});
+
 export const uploadImageSlice = createSlice({
     name: 'uploadImageSlice',
     initialState: {
@@ -581,14 +588,14 @@ export const uploadImageSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(editUserProfileByAdmin.pending, (state: any) => {
+            .addCase(uploadImage.pending, (state: any) => {
                 state.loading = true;
             })
-            .addCase(editUserProfileByAdmin.fulfilled, (state, action) => {
+            .addCase(uploadImage.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload;
             })
-            .addCase(editUserProfileByAdmin.rejected, (state, action) => {
+            .addCase(uploadImage.rejected, (state, action) => {
                 state.loading = false;
                 console.error('Error', action.payload);
 
@@ -597,10 +604,14 @@ export const uploadImageSlice = createSlice({
                 } else if (action.error.message === 'Request failed with status code 400') {
                     state.error = 'Email or Phone already used!';
                 }
+            })
+            .addCase(clearUploadData.fulfilled, (state) => {
+                state.data = null;
             });
     },
 });
 
+export const uploadImageReducer = uploadImageSlice.reducer;
 export const editUserByAdminReducer = editUserByAdminSlice.reducer;
 export const verifyUserForAdminReducer = verifyUserForAdminSlice.reducer;
 export const managePaymentSendReducer = managePaymentSendSlice.reducer;

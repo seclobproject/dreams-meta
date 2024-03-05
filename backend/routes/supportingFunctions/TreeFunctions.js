@@ -125,13 +125,13 @@ export const addCommissionToLine = async (
 
     // Add to transactions history
 
-    // if (!currentUser.transactions) {
-    //   currentUser.transactions = [];
-    // }
-    // currentUser.transactions.push({
-    //   amount: 4,
-    //   category: "sponsorship",
-    // });
+    if (!currentUser.transactions) {
+      currentUser.transactions = [];
+    }
+    currentUser.transactions.push({
+      amount: 4,
+      category: "levelIncome",
+    });
 
     // splitCommission = payUser(commissionToAdd, currentUser, currentUser.thirtyChecker);
     splitCommission = payUser(

@@ -628,4 +628,36 @@ router.post(
   })
 );
 
+// Get all transactions
+router.get(
+  "/get-all-transactions",
+  protect,
+  asyncHandler(async (req, res) => {
+    
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    if (user) {
+
+      const transactions = user.transactions;
+      if (transactions.length > 0) {
+        res.status(200).json(transactions);
+      } else {
+        res.status(400).json({
+          sts: "00",
+          msg: "No transactions found!",
+        });
+      }
+
+    } else {
+
+      res.status(400).json({
+        sts: "00",
+        msg: "No transactions found!",
+      });
+      
+    }
+  })
+);
+
 export default router;

@@ -230,6 +230,54 @@ export const getAllUsersSlice = createSlice({
     },
 });
 
+// Redux action to get all transactions
+export const getAllTransactions = createAsyncThunk('getAllTransactions', async () => {
+    
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/get-all-transactions`, config);
+
+    return response.data;
+});
+
+export const getAllTransactionsSlice = createSlice({
+    name: 'getAllTransactionsSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getAllTransactions.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getAllTransactions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getAllTransactions.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Please make sure you filled all the above details!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'Email or Phone already used!';
+                }
+            });
+    },
+});
+
 // Redux action to get the user details
 export const getUserDetails = createAsyncThunk('getUserDetails', async () => {
     const token: any = localStorage.getItem('userInfo');
@@ -537,6 +585,7 @@ export const withdrawHistorySlice = createSlice({
     },
 });
 
+export const getAllTransactionsReducer = getAllTransactionsSlice.reducer;
 export const addToSavingsReducer = addToSavingsSlice.reducer;
 export const withdrawHistoryReducer = withdrawHistorySlice.reducer;
 export const upgradeUserReducer = upgradeUserSlice.reducer;

@@ -475,16 +475,20 @@ router.post(
           //   basedOnWho: user.name,
           // });
 
+          
           // splitCommission = payUser(4, sponser, sponser.thirtyChecker);
           splitCommission = payUser(4, sponser, sponser.lastWallet);
-
+          
           sponser.earning = splitCommission.earning;
           sponser.joiningAmount = splitCommission.joining;
           // sponser.thirtyChecker = splitCommission.checker;
           sponser.totalWallet += splitCommission.addToTotalWallet;
           sponser.lastWallet = splitCommission.currentWallet;
-
+          
           sponser.sponsorshipIncome += splitCommission.variousIncome;
+
+          // const updatedSponser = await sponser.save();
+
         } else {
           // If original sponsor is not verified, admin is assigned as the sponsor.
           sponser = admin;
@@ -635,6 +639,7 @@ router.post(
   protect,
   upload.single("image"),
   asyncHandler(async (req, res) => {
+    
     if (!req.file) {
       res.status(400).json({ msg: "No file uploaded" });
     }

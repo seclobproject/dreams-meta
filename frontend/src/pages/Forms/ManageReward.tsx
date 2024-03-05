@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { uploadImage } from '../../store/adminSlice';
-import { useAppDispatch } from '../../store';
+import { clearUploadData, uploadImage } from '../../store/adminSlice';
+import { useAppDispatch, useAppSelector } from '../../store';
 
 const ManageReward = () => {
     const dispatch = useAppDispatch();
+
+    const { data: uploadedData } = useAppSelector((state: any) => state.uploadImageReducer);
 
     useEffect(() => {
         dispatch(setPageTitle('Upload Reward'));
@@ -47,6 +49,16 @@ const ManageReward = () => {
             dispatch(uploadImage(images[0]));
         }
     };
+
+    useEffect(() => {
+        if (uploadedData) {
+            alert('Image uploaded successfully');
+        }
+
+        return () => {
+            dispatch(clearUploadData());
+        }
+    }, [uploadedData]);
 
     return (
         <div>
