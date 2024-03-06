@@ -4,6 +4,7 @@ const router = express.Router();
 import asyncHandler from "../middleware/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
+import Reward from "../models/rewardModel.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { addCommissionToLine } from "./supportingFunctions/TreeFunctions.js";
 import JoiningRequest from "../models/joinRequestModel.js";

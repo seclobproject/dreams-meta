@@ -7,20 +7,21 @@ import IconBell from '../../components/Icon/IconBell';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { getReward } from '../../store/userSlice';
 
-const getItems: any[] = [
-    // {
-    //     id: '1',
-    //     src: '/assets/images/lightbox1.jpg',
-    //     title: 'Rewards',
-    //     description: 'Photo: Samuel Rohl',
-    // },
-];
+// const getItems: any[] = [
+//     {
+//         id: '1',
+//         src: '/assets/images/lightbox1.jpg',
+//         title: 'Rewards',
+//         description: 'Photo: Samuel Rohl',
+//     },
+// ];
 
 const ShowRewards = () => {
     const dispatch = useAppDispatch();
 
     const { data: rewardData } = useAppSelector((state: any) => state.getRewardReducer);
 
+    console.log(rewardData);
 
     useEffect(() => {
         dispatch(setPageTitle('Show Rewards'));
@@ -64,11 +65,10 @@ const ShowRewards = () => {
                                         </button>
                                     );
                                 })} */}
-                                
-                                <img src={`https://dreamzmeta.com/uploads/${rewardData}`} alt="reward-img" />
+                                {rewardData.imageName && <img src={`https://dreamzmeta.com/uploads/${rewardData.imageName}`} alt="reward-img" />}
                             </>
 
-                            {isOpen && (
+                            {/* {isOpen && (
                                 <Lightbox
                                     mainSrc={`${getItems[photoIndex]?.src}`}
                                     nextSrc={`${getItems[photoIndex + (1 % getItems.length)]?.src}`}
@@ -81,7 +81,7 @@ const ShowRewards = () => {
                                     animationDuration={300}
                                     keyRepeatLimit={180}
                                 />
-                            )}
+                            )} */}
                         </div>
                     </div>
                 </div>
