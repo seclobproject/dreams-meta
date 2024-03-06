@@ -232,7 +232,6 @@ export const getAllUsersSlice = createSlice({
 
 // Redux action to get all transactions
 export const getAllTransactions = createAsyncThunk('getAllTransactions', async () => {
-    
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
 
@@ -585,6 +584,51 @@ export const withdrawHistorySlice = createSlice({
     },
 });
 
+// Redux action to get reward
+export const getReward = createAsyncThunk('getReward', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/get-reward`, config);
+
+    return response.data;
+});
+
+export const getRewardSlice = createSlice({
+    name: 'getRewardSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: false,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getReward.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getReward.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getReward.rejected, (state, action) => {
+                state.loading = false;
+                state.error = true;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+
+
+export const getRewardReducer = getRewardSlice.reducer;
 export const getAllTransactionsReducer = getAllTransactionsSlice.reducer;
 export const addToSavingsReducer = addToSavingsSlice.reducer;
 export const withdrawHistoryReducer = withdrawHistorySlice.reducer;

@@ -4,7 +4,8 @@ import Lightbox from 'react-18-image-lightbox';
 import 'react-18-image-lightbox/style.css';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
-import { useAppDispatch } from '../../store';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { getReward } from '../../store/userSlice';
 
 const getItems: any[] = [
     // {
@@ -16,10 +17,13 @@ const getItems: any[] = [
 ];
 
 const ShowRewards = () => {
-    
     const dispatch = useAppDispatch();
+
+    const { data: rewardData } = useAppSelector((state: any) => state.getRewardReducer);
+
+
     useEffect(() => {
-        dispatch(setPageTitle('LightBox'));
+        dispatch(setPageTitle('Show Rewards'));
     });
     const [value, setValue] = useState<any>('all controls');
     const [isOpen, setIsOpen] = useState<any>(false);
@@ -32,6 +36,10 @@ const ShowRewards = () => {
         window['global'] = window as never;
     }, []);
 
+    useEffect(() => {
+        dispatch(getReward());
+    }, [dispatch]);
+
     return (
         <div>
             <div className="pt-5 space-y-8">
@@ -41,7 +49,7 @@ const ShowRewards = () => {
                     <div className="mb-5">
                         <div className="flex mt-10 justify-center">
                             <>
-                                {getItems.map((item, index) => {
+                                {/* {getItems.map((item, index) => {
                                     return (
                                         <button
                                             type="button"
@@ -55,7 +63,9 @@ const ShowRewards = () => {
                                             <img src={item.src} alt="gallery" data-fancybox="gallery" className="rounded-md w-full h-full object-cover" />
                                         </button>
                                     );
-                                })}
+                                })} */}
+                                
+                                <img src={`https://dreamzmeta.com/uploads/${rewardData}`} alt="reward-img" />
                             </>
 
                             {isOpen && (
