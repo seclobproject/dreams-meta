@@ -31,6 +31,7 @@ import {
     managePaymentSendReducer,
     editUserByAdminReducer,
     uploadImageReducer,
+    getTotalAmountsReducer,
 } from './adminSlice';
 
 import { TypedUseSelectorHook, useDispatch } from 'react-redux';
@@ -64,6 +65,7 @@ const rootReducer = combineReducers({
     uploadImageReducer,
     getAllTransactionsReducer,
     getRewardReducer,
+    getTotalAmountsReducer,
 });
 
 const store = configureStore({

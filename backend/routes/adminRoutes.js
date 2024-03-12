@@ -1311,4 +1311,38 @@ router.put(
   })
 );
 
+// Get the total amount needed inorder to know the amount to be given to the users
+router.get(
+  "/get-total-amount",
+  protect,
+  asyncHandler(async (req, res) => {
+    const totalEarning = await User.aggregate([
+      {
+        $match: {
+          earning: { $exists: true },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalEarning: { $sum: "$earning" },
+        },
+      },
+    ]);
+
+    // Get total autopool bank amount required
+    const admin = await User.findById(req.user._id);
+    const totalAutoPoolBank = admin.autoPoolBank;
+
+    if (totalEarning) {
+
+      const earningSum = totalEarning[0].totalEarning;
+      res.status(200).json({ earningSum, totalAutoPoolBank });
+      
+    } else {
+      res.status(400).json({ sts: "00", msg: "No earning found" });
+    }
+  })
+);
+
 export default router;

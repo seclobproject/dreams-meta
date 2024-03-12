@@ -557,7 +557,6 @@ export const uploadImage = createAsyncThunk('uploadImage', async (file: any) => 
     const parsedData = JSON.parse(token);
 
     console.log('file', file.file);
-    
 
     const formData = new FormData();
     formData.append('image', file.file);
@@ -611,6 +610,52 @@ export const uploadImageSlice = createSlice({
     },
 });
 
+export const getTotalAmounts = createAsyncThunk('getTotalAmounts', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/admin/get-total-amount`, config);
+
+    return response.data;
+});
+
+export const getTotalAmountSlice = createSlice({
+    name: 'getTotalAmountSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getTotalAmounts.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getTotalAmounts.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getTotalAmounts.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Please make sure you filled all the above details!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'Email or Phone already used!';
+                }
+            });
+    },
+});
+
+export const getTotalAmountsReducer = getTotalAmountSlice.reducer;
 export const uploadImageReducer = uploadImageSlice.reducer;
 export const editUserByAdminReducer = editUserByAdminSlice.reducer;
 export const verifyUserForAdminReducer = verifyUserForAdminSlice.reducer;

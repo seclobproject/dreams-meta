@@ -13,7 +13,7 @@ import WalletConnectButton from '../components/Button';
 import { useAccount } from 'wagmi';
 import { UsdtAddr } from '../Constants';
 import TimerComponent from '../components/Timer';
-import { verifyUser } from '../store/adminSlice';
+import { getTotalAmounts, verifyUser } from '../store/adminSlice';
 
 const Finance = () => {
     const dispatch = useAppDispatch();
@@ -33,6 +33,10 @@ const Finance = () => {
     const { loading: joiningLoading, data: joiningData, error: joiningError } = useAppSelector((state: any) => state.sendJoiningRequestReducer);
 
     const { data: upgradeInfo, error: upgradeError } = useAppSelector((state: any) => state.upgradeUserReducer);
+
+    const { data: totalAmountInfo } = useAppSelector((state: any) => state.getTotalAmountsReducer);
+
+    console.log(totalAmountInfo);
 
     useEffect(() => {
         if (upgradeInfo) {
@@ -85,6 +89,7 @@ const Finance = () => {
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
         dispatch(getUserDetails());
+        dispatch(getTotalAmounts());
     }, [dispatch]);
 
     //bitcoinoption
@@ -246,6 +251,26 @@ const Finance = () => {
                                     </div>
                                 </div>
                             </div>
+                            {userInfo && userInfo.isAdmin && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                    <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                                        <div className="flex justify-between">
+                                            <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Earning</div>
+                                        </div>
+                                        <div className="flex flex-col justify-center mt-5">
+                                            <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${totalAmountInfo && totalAmountInfo.earningSum}</div>
+                                        </div>
+                                    </div>
+                                    <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                                        <div className="flex justify-between">
+                                            <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Autopool</div>
+                                        </div>
+                                        <div className="flex flex-col justify-center mt-5">
+                                            <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${totalAmountInfo && totalAmountInfo.totalAutoPoolBank}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
