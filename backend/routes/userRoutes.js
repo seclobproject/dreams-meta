@@ -673,4 +673,34 @@ router.get(
   })
 );
 
+// Get all the users under a user
+router.get(
+  "/get-all-users-under-you",
+  protect,
+  asyncHandler(async (req, res) => {
+
+    const userId = req.user._id;
+    const users = await fetchUsers(userId);
+
+    if (users) {
+      res.status(200).json(users);
+    } else {
+      res.status(400).json({ sts: "00", msg: "No users found" });
+    }
+  })
+);
+
+const fetchUsers = async (userId, users = []) => {
+  const user = await User.findById(userId);
+
+  if (!user) return users;
+
+  users.push(user);
+
+  if (user.left) await fetchUsers(user.left, users);
+  if (user.right) await fetchUsers(user.right, users);
+
+  return users;
+};
+
 export default router;

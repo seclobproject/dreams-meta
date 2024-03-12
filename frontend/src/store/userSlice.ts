@@ -626,8 +626,49 @@ export const getRewardSlice = createSlice({
     },
 });
 
+// Get all users to user
+export const getAllUsersToUser = createAsyncThunk('getAllUsers', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
 
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
 
+    const response = await axios.get(`${URL}/api/users/get-all-users-under-you`, config);
+
+    return response.data;
+});
+
+export const getAllUsersToUserSlice = createSlice({
+    name: 'getAllUsersToUserSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: false,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getAllUsersToUser.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getAllUsersToUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getAllUsersToUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = true;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+export const getAllUsersToUserReducer = getAllUsersToUserSlice.reducer;
 export const getRewardReducer = getRewardSlice.reducer;
 export const getAllTransactionsReducer = getAllTransactionsSlice.reducer;
 export const addToSavingsReducer = addToSavingsSlice.reducer;
