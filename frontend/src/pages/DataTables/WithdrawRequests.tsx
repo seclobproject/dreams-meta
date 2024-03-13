@@ -14,7 +14,6 @@ const WithdrawRequests = () => {
     const [walletAddress, setWalletAddress] = useState('');
     const [requestId, setRequestId] = useState('');
 
-
     // const { loading, data: rowData, error } = useAppSelector((state: any) => state.getAllUsersToAdminReducer);
     const { loading, data: rowData, error } = useAppSelector((state: any) => state.getWithdrawRequestsReducer);
     const { loading: manageWithdrawLoading, data: manageWithdrawData, error: manageWithdrawError } = useAppSelector((state: any) => state.managePaymentSendReducer);
@@ -28,7 +27,6 @@ const WithdrawRequests = () => {
     }
 
     console.log(rowData);
-    
 
     useEffect(() => {
         dispatch(getWithdrawRequests());
@@ -57,25 +55,34 @@ const WithdrawRequests = () => {
         setRecordsData([...initialRecords.slice(from, to)]);
     }, [page, pageSize, initialRecords]);
 
-    useEffect(() => {
-        setInitialRecords(() => {
-            return (transformedData || []).filter((item: any) => {
-                return (
-                    item.user.name.toLowerCase().includes(search.toLowerCase()) ||
-                    item.walletAddress.toLowerCase().includes(search.toLowerCase()) ||
-                    item.payStatus.toLowerCase().includes(search.toLowerCase())
-                );
-            });
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [search, rowData]);
+    // useEffect(() => {
+    //     setInitialRecords(() => {
+    //         return (transformedData || []).filter((item: any) => {
+    //             return (
+    //                 item.user.name.toLowerCase().includes(search.toLowerCase()) ||
+    //                 item.walletAddress.toLowerCase().includes(search.toLowerCase()) ||
+    //                 item.payStatus.toLowerCase().includes(search.toLowerCase())
+    //             );
+    //         });
+    //     });
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [search, rowData]);
+
+    const formatDate = (date: any) => {
+        if (date) {
+            const dt = new Date(date);
+            const month = dt.getMonth() + 1 < 10 ? '0' + (dt.getMonth() + 1) : dt.getMonth() + 1;
+            const day = dt.getDate() < 10 ? '0' + dt.getDate() : dt.getDate();
+            return day + '/' + month + '/' + dt.getFullYear();
+        }
+        return '';
+    };
 
     const payHandler = async (requestId: any) => {
-        
-        if(confirm('Are you sure you want to pay this user?')){
+        if (confirm('Are you sure you want to pay this user?')) {
             dispatch(managePaymentSend(requestId));
         }
-    }
+    };
 
     return (
         <div className="space-y-6">
@@ -95,6 +102,11 @@ const WithdrawRequests = () => {
                             { accessor: 'amount', title: 'Request Amount' },
                             { accessor: 'walletAddress', title: 'Wallet Address' },
                             { accessor: 'payStatus', title: 'Status' },
+                            {
+                                accessor: 'createdAt',
+                                title: 'Request Date',
+                                render: ({ createdAt }) => <div>{formatDate(createdAt)}</div>,
+                            },
                             {
                                 accessor: 'Actions',
                                 title: 'Actions',

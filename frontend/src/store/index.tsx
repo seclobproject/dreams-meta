@@ -14,6 +14,9 @@ import {
     upgradeUserReducer,
     withdrawHistoryReducer,
     addToSavingsReducer,
+    getAllTransactionsReducer,
+    getRewardReducer,
+    getAllUsersToUserReducer
 } from './userSlice';
 
 import {
@@ -28,6 +31,9 @@ import {
     verifyUserForAdminReducer,
     managePaymentSendReducer,
     editUserByAdminReducer,
+    uploadImageReducer,
+    getTotalAmountsReducer,
+    deleteUserForAdminReducer
 } from './adminSlice';
 
 import { TypedUseSelectorHook, useDispatch } from 'react-redux';
@@ -58,6 +64,12 @@ const rootReducer = combineReducers({
     editUserByAdminReducer,
     withdrawHistoryReducer,
     addToSavingsReducer,
+    uploadImageReducer,
+    getAllTransactionsReducer,
+    getRewardReducer,
+    getTotalAmountsReducer,
+    getAllUsersToUserReducer,
+    deleteUserForAdminReducer
 });
 
 const store = configureStore({

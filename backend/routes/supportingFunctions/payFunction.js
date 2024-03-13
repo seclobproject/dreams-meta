@@ -1,4 +1,6 @@
 export const payUser = (amount, sponser, lastWallet) => {
+
+  console.log('reached here 007');
   
   let earning = sponser.earning;
   let joining = sponser.joiningAmount;

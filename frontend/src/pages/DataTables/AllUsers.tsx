@@ -3,17 +3,17 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
-import { deleteUserForAdmin, getAllUsersToAdmin, verifyUserForAdmin } from '../../store/adminSlice';
+import { getAllUsersToAdmin, verifyUserForAdmin } from '../../store/adminSlice';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { getAllUsers, getAllUsersToUser } from '../../store/userSlice';
 
-const AllMembers = () => {
+const AllUsers = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [userStatus, setUserStatus] = useState('Pending');
-    const { loading, data: rowData, error } = useAppSelector((state: any) => state.getAllUsersToAdminReducer);
+    const { loading, data: rowData, error } = useAppSelector((state: any) => state.getAllUsersToUserReducer);
     const { loading: verifiedUserLoading, data: verifiedUserData, error: verifiedUserError } = useAppSelector((state: any) => state.verifyUserForAdminReducer);
-    const { loading: deletedUserLoading, data: deletedUserData, error: deletedUserError } = useAppSelector((state: any) => state.deleteUserForAdminReducer);
 
     let transformedData: any;
     if (rowData) {
@@ -24,11 +24,11 @@ const AllMembers = () => {
     }
 
     useEffect(() => {
-        dispatch(getAllUsersToAdmin());
-    }, [dispatch, verifiedUserData, deletedUserData]);
+        dispatch(getAllUsersToUser());
+    }, [dispatch]);
 
     useEffect(() => {
-        dispatch(setPageTitle('All Members'));
+        dispatch(setPageTitle('All Users'));
     });
     const PAGE_SIZES = [10, 20, 30, 50, 100];
 
@@ -55,9 +55,7 @@ const AllMembers = () => {
             return (transformedData || []).filter((item: any) => {
                 return (
                     item.name.toLowerCase().includes(search.toLowerCase()) ||
-                    item.email.toLowerCase().includes(search.toLowerCase()) ||
-                    item.ownSponserId.toLowerCase().includes(search.toLowerCase()) ||
-                    item.userStatus.toLowerCase().includes(search.toLowerCase())
+                    item.email.toLowerCase().includes(search.toLowerCase())
                 );
             });
         });
@@ -75,23 +73,6 @@ const AllMembers = () => {
         }
     };
 
-    const deleteHandler = (userId: any) => {
-        const confirming = confirm('Are you sure?');
-        if (confirming) {
-            dispatch(deleteUserForAdmin(userId));
-        }
-    };
-
-    const formatDate = (date: any) => {
-        if (date) {
-            const dt = new Date(date);
-            const month = dt.getMonth() + 1 < 10 ? '0' + (dt.getMonth() + 1) : dt.getMonth() + 1;
-            const day = dt.getDate() < 10 ? '0' + dt.getDate() : dt.getDate();
-            return day + '/' + month + '/' + dt.getFullYear();
-        }
-        return '';
-    };
-
     return (
         <div className="space-y-6">
             {/* Skin: Striped  */}
@@ -107,42 +88,7 @@ const AllMembers = () => {
                         records={recordsData}
                         columns={[
                             { accessor: 'name', title: 'Name' },
-                            { accessor: 'sponser.ownSponserId', title: 'Sponsor' },
                             { accessor: 'userStatus', title: 'Status' },
-                            {
-                                accessor: 'createdAt',
-                                title: 'Joining Date',
-                                render: ({ createdAt }) => <div>{formatDate(createdAt)}</div>,
-                            },
-                            {
-                                accessor: 'Actions',
-                                title: 'Actions',
-                                render: (user: any) => (
-                                    <div className="flex space-x-2">
-                                        <button type="button" onClick={() => editHandler(user._id)} className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg">
-                                            Edit
-                                        </button>
-                                        {user.userStatus === 'Inactive' && (
-                                            <>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => verifyHandler(user._id)}
-                                                    className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white p-2 rounded-lg"
-                                                >
-                                                    Verify
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => deleteHandler(user._id)}
-                                                    className="bg-gradient-to-r from-red-400 via-red-500 to-red-600 text-white p-2 rounded-lg"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                ),
-                            },
                         ]}
                         totalRecords={initialRecords ? initialRecords.length : 0}
                         recordsPerPage={pageSize}
@@ -159,4 +105,4 @@ const AllMembers = () => {
     );
 };
 
-export default AllMembers;
+export default AllUsers;

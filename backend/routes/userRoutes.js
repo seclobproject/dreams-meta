@@ -4,6 +4,7 @@ const router = express.Router();
 import asyncHandler from "../middleware/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
+import Reward from "../models/rewardModel.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { addCommissionToLine } from "./supportingFunctions/TreeFunctions.js";
 import JoiningRequest from "../models/joinRequestModel.js";
@@ -627,5 +628,79 @@ router.post(
     }
   })
 );
+
+// Get all transactions
+router.get(
+  "/get-all-transactions",
+  protect,
+  asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    if (user) {
+      const transactions = user.transactions;
+      if (transactions.length > 0) {
+        res.status(200).json(transactions);
+      } else {
+        res.status(400).json({
+          sts: "00",
+          msg: "No transactions found!",
+        });
+      }
+    } else {
+      res.status(400).json({
+        sts: "00",
+        msg: "No transactions found!",
+      });
+    }
+  })
+);
+
+// Get reward fileName
+router.get(
+  "/get-reward",
+  protect,
+  asyncHandler(async (req, res) => {
+    const imageName = await Reward.findOne({ fixedValue: "ABC" }).select(
+      "imageName"
+    );
+
+    if (imageName) {
+      res.status(200).json(imageName);
+    } else {
+      res.status(400).json({ sts: "00", msg: "No file found" });
+    }
+  })
+);
+
+// Get all the users under a user
+router.get(
+  "/get-all-users-under-you",
+  protect,
+  asyncHandler(async (req, res) => {
+
+    const userId = req.user._id;
+    const users = await fetchUsers(userId);
+
+    if (users) {
+      res.status(200).json(users);
+    } else {
+      res.status(400).json({ sts: "00", msg: "No users found" });
+    }
+  })
+);
+
+const fetchUsers = async (userId, users = []) => {
+  const user = await User.findById(userId);
+
+  if (!user) return users;
+
+  users.push(user);
+
+  if (user.left) await fetchUsers(user.left, users);
+  if (user.right) await fetchUsers(user.right, users);
+
+  return users;
+};
 
 export default router;

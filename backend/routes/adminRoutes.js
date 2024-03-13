@@ -485,6 +485,8 @@ router.post(
           sponser.lastWallet = splitCommission.currentWallet;
 
           sponser.sponsorshipIncome += splitCommission.variousIncome;
+
+          // const updatedSponser = await sponser.save();
         } else {
           // If original sponsor is not verified, admin is assigned as the sponsor.
           sponser = admin;
@@ -598,6 +600,36 @@ router.post(
       }
     } else {
       res.status(401).json({ msg: "User not found" });
+    }
+  })
+);
+
+// Delete user by admin
+router.post(
+  "/delete-user-by-admin",
+  protect,
+  asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+    if (user) {
+      const sponser = await User.findById(user.sponser);
+      if (sponser) {
+        // Remove user from sponsor's children array
+        sponser.children = sponser.children.filter(
+          (child) => child.toString() !== userId.toString()
+        );
+      }
+      const updateSponsor = await sponser.save();
+
+      // Remove user document
+      const deleteUser = await User.findByIdAndDelete(userId);
+
+      if (deleteUser) {
+        res.status(200).json({ sts: "01", message: "Success" });
+      } else {
+        res.status(400).json({ msg: "Error occured while deleting!" });
+      }
+
     }
   })
 );
@@ -798,11 +830,7 @@ router.get(
         if (promoterUsers.length > 0) {
           const fourtyPercent = autoPoolBalance * 0.4;
 
-          console.log(`fourtyPercent: ${fourtyPercent}`);
-
           const amountPerUserCalc = fourtyPercent / promoterUsers.length;
-
-          console.log(`amountPerUser: ${amountPerUserCalc}`);
 
           const amountPerUser = Math.round(amountPerUserCalc * 100) / 100;
 
@@ -856,16 +884,9 @@ router.get(
         if (royalAchieverUsers.length > 0) {
           const thirtyPercent = autoPoolBalance * 0.3;
 
-          // const fourtyPercent = autoPoolBalance * 0.3;
-          console.log(`thirtyPercent: ${thirtyPercent}`);
-
           const amountPerUserCalc = thirtyPercent / royalAchieverUsers.length;
 
-          console.log(`amountPerUser: ${amountPerUserCalc}`);
-
           const amountPerUser = Math.round(amountPerUserCalc * 100) / 100;
-
-          console.log(`amountPerUserRounded: ${amountPerUser}`);
 
           for (const user of royalAchieverUsers) {
             user.autoPoolAmount += amountPerUser;
@@ -1305,6 +1326,55 @@ router.put(
     } else {
       res.status(404);
       throw new Error("User not found");
+    }
+  })
+);
+
+// Get the total amount needed inorder to know the amount to be given to the users
+router.get(
+  "/get-total-amount",
+  protect,
+  asyncHandler(async (req, res) => {
+    
+    const totalEarning = await User.aggregate([
+      {
+        $match: {
+          earning: { $exists: true },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalEarning: { $sum: "$earning" },
+        },
+      },
+    ]);
+
+    const totalSaving = await User.aggregate([
+      {
+        $match: {
+          savingsIncome: { $exists: true },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalEarning: { $sum: "$savingsIncome" },
+        },
+      },
+    ]);
+
+    // Get total autopool bank amount required
+    const admin = await User.findById(req.user._id);
+    const totalAutoPoolBank = admin.autoPoolBank;
+    const rewards = admin.rewards;
+
+    if (totalEarning) {
+      const earningSum = totalEarning[0].totalEarning;
+      const savingSum = totalSaving[0].totalSaving;
+      res.status(200).json({ earningSum, totalAutoPoolBank, rewards, savingSum });
+    } else {
+      res.status(400).json({ sts: "00", msg: "No earning found" });
     }
   })
 );

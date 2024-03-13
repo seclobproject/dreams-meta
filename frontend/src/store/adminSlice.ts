@@ -401,6 +401,48 @@ const verifyUserForAdminSlice = createSlice({
     },
 });
 
+// Delete user by admin
+export const deleteUserForAdmin = createAsyncThunk('deleteUserForAdmin', async (userId: any) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.post(`${URL}/api/admin/delete-user-by-admin`, { userId }, config);
+
+    return response.data;
+});
+
+const deleteUserForAdminSlice = createSlice({
+    name: 'deleteUserForAdminSlice',
+    initialState: {
+        loading: false,
+        data: '',
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(deleteUserForAdmin.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(deleteUserForAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(deleteUserForAdmin.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+                state.error = 'Something went wrong, please try again later';
+            });
+    },
+});
+
 // Get withdraw requests
 export const getWithdrawRequests = createAsyncThunk('getWithdrawRequests', async () => {
     const token: any = localStorage.getItem('userInfo');
@@ -552,12 +594,14 @@ export const editUserByAdminSlice = createSlice({
 });
 
 // Redux action to upload image
-export const uploadImage = createAsyncThunk('uploadImage', async (file: File) => {
+export const uploadImage = createAsyncThunk('uploadImage', async (file: any) => {
     const token: any = localStorage.getItem('userInfo');
     const parsedData = JSON.parse(token);
 
+    console.log('file', file.file);
+
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('image', file.file);
 
     const config = {
         headers: {
@@ -571,6 +615,10 @@ export const uploadImage = createAsyncThunk('uploadImage', async (file: File) =>
     return response.data;
 });
 
+export const clearUploadData = createAsyncThunk('clearUploadData', async () => {
+    console.log('clearing data');
+});
+
 export const uploadImageSlice = createSlice({
     name: 'uploadImageSlice',
     initialState: {
@@ -581,14 +629,62 @@ export const uploadImageSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(editUserProfileByAdmin.pending, (state: any) => {
+            .addCase(uploadImage.pending, (state: any) => {
                 state.loading = true;
             })
-            .addCase(editUserProfileByAdmin.fulfilled, (state, action) => {
+            .addCase(uploadImage.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload;
             })
-            .addCase(editUserProfileByAdmin.rejected, (state, action) => {
+            .addCase(uploadImage.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Please make sure you filled all the above details!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'Email or Phone already used!';
+                }
+            })
+            .addCase(clearUploadData.fulfilled, (state) => {
+                state.data = null;
+            });
+    },
+});
+
+export const getTotalAmounts = createAsyncThunk('getTotalAmounts', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/admin/get-total-amount`, config);
+
+    return response.data;
+});
+
+export const getTotalAmountSlice = createSlice({
+    name: 'getTotalAmountSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getTotalAmounts.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getTotalAmounts.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getTotalAmounts.rejected, (state, action) => {
                 state.loading = false;
                 console.error('Error', action.payload);
 
@@ -601,6 +697,9 @@ export const uploadImageSlice = createSlice({
     },
 });
 
+export const deleteUserForAdminReducer = deleteUserForAdminSlice.reducer;
+export const getTotalAmountsReducer = getTotalAmountSlice.reducer;
+export const uploadImageReducer = uploadImageSlice.reducer;
 export const editUserByAdminReducer = editUserByAdminSlice.reducer;
 export const verifyUserForAdminReducer = verifyUserForAdminSlice.reducer;
 export const managePaymentSendReducer = managePaymentSendSlice.reducer;

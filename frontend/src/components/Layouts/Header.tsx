@@ -264,6 +264,9 @@ const Header = () => {
                         </button>
                         <ul className="sub-menu">
                             <li>
+                                <NavLink to="/all-users">{t('Members')}</NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/direct-sponsors">{t('Direct Team')}</NavLink>
                             </li>
                             <li>

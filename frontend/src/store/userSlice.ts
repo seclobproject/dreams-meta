@@ -230,6 +230,53 @@ export const getAllUsersSlice = createSlice({
     },
 });
 
+// Redux action to get all transactions
+export const getAllTransactions = createAsyncThunk('getAllTransactions', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/get-all-transactions`, config);
+
+    return response.data;
+});
+
+export const getAllTransactionsSlice = createSlice({
+    name: 'getAllTransactionsSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getAllTransactions.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getAllTransactions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getAllTransactions.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+
+                if (action.error.message === 'Request failed with status code 500') {
+                    state.error = 'Please make sure you filled all the above details!';
+                } else if (action.error.message === 'Request failed with status code 400') {
+                    state.error = 'Email or Phone already used!';
+                }
+            });
+    },
+});
+
 // Redux action to get the user details
 export const getUserDetails = createAsyncThunk('getUserDetails', async () => {
     const token: any = localStorage.getItem('userInfo');
@@ -537,6 +584,93 @@ export const withdrawHistorySlice = createSlice({
     },
 });
 
+// Redux action to get reward
+export const getReward = createAsyncThunk('getReward', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/get-reward`, config);
+
+    return response.data;
+});
+
+export const getRewardSlice = createSlice({
+    name: 'getRewardSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: false,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getReward.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getReward.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getReward.rejected, (state, action) => {
+                state.loading = false;
+                state.error = true;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+// Get all users to user
+export const getAllUsersToUser = createAsyncThunk('getAllUsers', async () => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.get(`${URL}/api/users/get-all-users-under-you`, config);
+
+    return response.data;
+});
+
+export const getAllUsersToUserSlice = createSlice({
+    name: 'getAllUsersToUserSlice',
+    initialState: {
+        loading: false,
+        data: null,
+        error: false,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(getAllUsersToUser.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(getAllUsersToUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(getAllUsersToUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = true;
+                console.error('Error', action.payload);
+            });
+    },
+});
+
+export const getAllUsersToUserReducer = getAllUsersToUserSlice.reducer;
+export const getRewardReducer = getRewardSlice.reducer;
+export const getAllTransactionsReducer = getAllTransactionsSlice.reducer;
 export const addToSavingsReducer = addToSavingsSlice.reducer;
 export const withdrawHistoryReducer = withdrawHistorySlice.reducer;
 export const upgradeUserReducer = upgradeUserSlice.reducer;
