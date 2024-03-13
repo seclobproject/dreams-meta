@@ -180,6 +180,12 @@ router.get(
         admin.rewards = 3;
       }
 
+      if (admin.adminProfit) {
+        admin.adminProfit += 6;
+      } else {
+        admin.adminProfit = 6;
+      }
+
       await admin.save();
 
       // Find the sponsor (If OgSponsor is not activated, he should be replaced by admin)
@@ -406,6 +412,12 @@ router.post(
         admin.rewards = 3;
       }
 
+      if (admin.adminProfit) {
+        admin.adminProfit += 6;
+      } else {
+        admin.adminProfit = 6;
+      }
+
       await admin.save();
 
       // Find the sponser (If OgSponser is not activated, he should be replaced by admin)
@@ -629,7 +641,6 @@ router.post(
       } else {
         res.status(400).json({ msg: "Error occured while deleting!" });
       }
-
     }
   })
 );
@@ -1335,7 +1346,6 @@ router.get(
   "/get-total-amount",
   protect,
   asyncHandler(async (req, res) => {
-    
     const totalEarning = await User.aggregate([
       {
         $match: {
@@ -1368,11 +1378,14 @@ router.get(
     const admin = await User.findById(req.user._id);
     const totalAutoPoolBank = admin.autoPoolBank;
     const rewards = admin.rewards;
+    const adminProfit = admin.adminProfit
 
     if (totalEarning) {
       const earningSum = totalEarning[0].totalEarning;
       const savingSum = totalSaving[0].totalSaving;
-      res.status(200).json({ earningSum, totalAutoPoolBank, rewards, savingSum });
+      res
+        .status(200)
+        .json({ earningSum, totalAutoPoolBank, rewards, savingSum, adminProfit });
     } else {
       res.status(400).json({ sts: "00", msg: "No earning found" });
     }
