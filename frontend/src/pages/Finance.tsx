@@ -269,6 +269,22 @@ const Finance = () => {
                                             <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${totalAmountInfo && totalAmountInfo.totalAutoPoolBank}</div>
                                         </div>
                                     </div>
+                                    <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                                        <div className="flex justify-between">
+                                            <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Rewards</div>
+                                        </div>
+                                        <div className="flex flex-col justify-center mt-5">
+                                            <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${totalAmountInfo && totalAmountInfo.rewards}</div>
+                                        </div>
+                                    </div>
+                                    <div className="panel bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                                        <div className="flex justify-between">
+                                            <div className="ltr:mr-1 rtl:ml-1 text-md font-semibold">Total Savings</div>
+                                        </div>
+                                        <div className="flex flex-col justify-center mt-5">
+                                            <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">${totalAmountInfo && totalAmountInfo.totalSaving}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

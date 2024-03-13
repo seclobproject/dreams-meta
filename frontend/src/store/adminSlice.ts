@@ -401,6 +401,48 @@ const verifyUserForAdminSlice = createSlice({
     },
 });
 
+// Delete user by admin
+export const deleteUserForAdmin = createAsyncThunk('deleteUserForAdmin', async (userId: any) => {
+    const token: any = localStorage.getItem('userInfo');
+    const parsedData = JSON.parse(token);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${parsedData.access_token}`,
+            'content-type': 'application/json',
+        },
+    };
+
+    const response = await axios.post(`${URL}/api/admin/delete-user-by-admin`, { userId }, config);
+
+    return response.data;
+});
+
+const deleteUserForAdminSlice = createSlice({
+    name: 'deleteUserForAdminSlice',
+    initialState: {
+        loading: false,
+        data: '',
+        error: '',
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(deleteUserForAdmin.pending, (state: any) => {
+                state.loading = true;
+            })
+            .addCase(deleteUserForAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(deleteUserForAdmin.rejected, (state, action) => {
+                state.loading = false;
+                console.error('Error', action.payload);
+                state.error = 'Something went wrong, please try again later';
+            });
+    },
+});
+
 // Get withdraw requests
 export const getWithdrawRequests = createAsyncThunk('getWithdrawRequests', async () => {
     const token: any = localStorage.getItem('userInfo');
@@ -655,6 +697,7 @@ export const getTotalAmountSlice = createSlice({
     },
 });
 
+export const deleteUserForAdminReducer = deleteUserForAdminSlice.reducer;
 export const getTotalAmountsReducer = getTotalAmountSlice.reducer;
 export const uploadImageReducer = uploadImageSlice.reducer;
 export const editUserByAdminReducer = editUserByAdminSlice.reducer;
