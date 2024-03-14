@@ -108,11 +108,6 @@ const userSchema = new mongoose.Schema(
       double: true,
       default: 0,
     },
-    adminProfit: {
-      type: Number,
-      double: true,
-      default: 0,
-    },
     isAdmin: {
       type: Boolean,
       default: false,
